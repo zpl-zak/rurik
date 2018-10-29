@@ -1045,6 +1045,7 @@
   <object id="6" name="border_bottom" type="col" x="0" y="352" width="640" height="32"/>
   <object id="7" name="main_camera" type="cam" x="480" y="128">
    <properties>
+    <property name="depends" value="player;intro_cutscene"/>
     <property name="end" value="camera_end"/>
     <property name="follow" value="player"/>
     <property name="mode" type="int" value="1"/>
@@ -1079,6 +1080,7 @@
   <object id="14" name="intro_cutscene" type="talk" x="288" y="448">
    <properties>
     <property name="autostart" value="1"/>
+    <property name="depends" value="player"/>
     <property name="file" value="intro.json"/>
    </properties>
    <point/>

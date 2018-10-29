@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"strings"
 
 	"github.com/solarlune/resolv/resolv"
 
@@ -36,7 +37,7 @@ type Object struct {
 	Facing     rl.Vector2
 	Size       []int32
 	Meta       *tiled.Object
-	Depends    *Object
+	Depends    []*Object
 	Target     *Object
 	Started    bool
 	WasUpdated bool
@@ -127,23 +128,15 @@ func NewObject(o *tiled.Object) *Object {
 		Visible:         true,
 		Meta:            o,
 		Depends:         nil,
-		Finish:          finishDummy,
-		Update:          updateDummy,
-		Trigger:         triggerDummy,
-		Draw:            drawDummy,
-		DrawUI:          drawDummyUI,
-		HandleCollision: handleDummyCollision,
-		GetAABB:         getDummyAABB,
+		Finish:          func(o *Object) {},
+		Update:          func(o *Object, dt float32) {},
+		Trigger:         func(o, inst *Object) {},
+		Draw:            func(o *Object) {},
+		DrawUI:          func(o *Object) {},
+		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
+		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
 	}
 }
-
-func finishDummy(o *Object)                                        {}
-func updateDummy(o *Object, dt float32)                            {}
-func triggerDummy(o, inst *Object)                                 {}
-func drawDummy(o *Object)                                          {}
-func drawDummyUI(o *Object)                                        {}
-func handleDummyCollision(res *resolv.Collision, o, other *Object) {}
-func getDummyAABB(o *Object) rl.RectangleInt32                     { return rl.RectangleInt32{} }
 
 func spawnObject(objectData *tiled.Object) {
 	objType, ok := ObjectTypes[objectData.Type]
@@ -178,11 +171,18 @@ func resolveObjectDependencies(o *Object) {
 	depName := o.Meta.Properties.GetString("depends")
 
 	if depName != "" {
-		o.Depends, _ = FindObject(depName)
+		names := strings.Split(depName, ";")
+		o.Depends = []*Object{}
 
-		if o == o.Depends {
-			log.Fatalf("Object refers on self: '%s' !\n", o.Name)
-			return
+		for _, x := range names {
+			dep, _ := FindObject(x)
+
+			if o == dep {
+				log.Fatalf("Object depends on self: '%s' !\n", o.Name)
+				return
+			}
+
+			o.Depends = append(o.Depends, dep)
 		}
 	}
 }
@@ -229,33 +229,22 @@ func UpdateObjects() {
 
 func updateObject(o, orig *Object) {
 	if o.WasUpdated {
-		o.WasUpdated = false
 		return
 	}
 
-	if o.Depends != nil {
-		if o.Depends == orig {
-			depString := orig.Name + "->"
-			to := orig.Depends
-
-			for to != orig {
-				depString += to.Name
-
-				if to.Depends != orig {
-					depString += "->"
-				}
-
-				to = to.Depends
+	if len(o.Depends) > 0 {
+		for _, x := range o.Depends {
+			if x == orig {
+				log.Fatalf("Cyclic dependency on object update detected: '%s' !\n", orig.Name)
+				return
 			}
 
-			fmt.Printf("Loop detected: %s->%s\n", depString, orig.Name)
-			log.Fatalf("Cyclic dependency on object update detected: '%s' !\n", orig.Name)
-			return
+			updateObject(x, orig)
 		}
-		updateObject(o.Depends, orig)
 	}
 
 	o.Update(o, rl.GetFrameTime())
+	o.WasUpdated = true
 }
 
 // DrawObjects draws all drawable objects on the screen

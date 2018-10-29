@@ -24,7 +24,7 @@ func drawTextCentered(text string, posX, posY, fontSize int32, color rl.Color) {
 		fontSize = 10
 	}
 
-	rl.DrawText(text, posX-(rl.GetFontDefault().Chars.Rec.ToInt32().Width+fontSize/10)*int32(len(text))/2, posY, fontSize, color)
+	rl.DrawText(text, posX-rl.MeasureText(text, fontSize)/2, posY, fontSize, color)
 }
 
 func vector2Lerp(v1, v2 rl.Vector2, amount float32) (result rl.Vector2) {

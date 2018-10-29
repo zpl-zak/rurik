@@ -15,7 +15,7 @@ type script struct {
 }
 
 // NewScript instance
-func NewScript(o *Object) {
+func (o *Object) NewScript() {
 	if o.File == "" {
 		o.File = o.Meta.Properties.GetString("file")
 	}

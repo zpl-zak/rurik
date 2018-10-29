@@ -5,7 +5,7 @@ import (
 )
 
 // NewTarget instance
-func NewTarget(o *Object) {
+func (o *Object) NewTarget() {
 	o.Draw = func(o *Object) {
 		if !DebugMode {
 			return

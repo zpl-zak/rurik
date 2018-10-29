@@ -35,7 +35,7 @@ type camera struct {
 }
 
 // NewCamera instance
-func NewCamera(c *Object) {
+func (c *Object) NewCamera() {
 	c.Update = updateCamera
 	c.Finish = finishCamera
 	c.Zoom = 1

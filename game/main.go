@@ -41,7 +41,7 @@ func main() {
 
 	gameCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 
-	bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
+	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
 
 	for !rl.WindowShouldClose() {
 		rl.BeginTextureMode(*screenTexture)
@@ -88,7 +88,7 @@ func main() {
 		core.DrawObjectUI()
 		core.DrawEditor()
 
-		rl.BeginShaderMode(bloom)
+		/* rl.BeginShaderMode(bloom)
 
 		rl.DrawTextureRec(
 			screenTexture.Texture,
@@ -97,7 +97,7 @@ func main() {
 			rl.White,
 		)
 
-		rl.EndShaderMode()
+		rl.EndShaderMode() */
 
 		rl.EndDrawing()
 		rl.EndTextureMode()
@@ -119,7 +119,7 @@ func setupDefaultCamera() {
 	defCam.Class = "cam"
 	defCam.Position = rl.Vector2{}
 
-	core.NewCamera(defCam)
+	defCam.NewCamera()
 	defCam.Mode = core.CameraModeFollow
 	defCam.Follow = core.LocalPlayer
 

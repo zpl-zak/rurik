@@ -3,6 +3,7 @@ package core
 import (
 	"fmt"
 	"log"
+	"reflect"
 
 	"github.com/solarlune/resolv/resolv"
 
@@ -20,6 +21,8 @@ var (
 
 	// GlobalIndex is globally tracked object allocation index
 	GlobalIndex int
+
+	objTypes map[string]string
 )
 
 // Object is map object with logic and data
@@ -64,62 +67,34 @@ func initObjectTypes() {
 	ObjectTypes = make(map[string]func(objectData *tiled.Object) *Object)
 	flushObjects()
 
-	ObjectTypes["player"] = func(o *tiled.Object) *Object {
-		playerInstance := NewObject(o)
-
-		NewPlayer(playerInstance)
-
-		LocalPlayer = playerInstance
-
-		return playerInstance
+	objTypes = map[string]string{
+		"player": "Player",
+		"col":    "Collision",
+		"cam":    "Camera",
+		"target": "Target",
+		"wait":   "Wait",
+		"script": "Script",
+		"talk":   "Talk",
 	}
 
-	ObjectTypes["col"] = func(o *tiled.Object) *Object {
-		collisionInstance := NewObject(o)
+	for k := range objTypes {
+		ObjectTypes[k] = func(o *tiled.Object) *Object {
+			inst := NewObject(o)
 
-		NewCollision(collisionInstance)
+			class := objTypes[o.Type]
+			methodName := fmt.Sprintf("New%s", class)
 
-		return collisionInstance
-	}
+			method := reflect.ValueOf(inst).MethodByName(methodName)
 
-	ObjectTypes["cam"] = func(o *tiled.Object) *Object {
-		camInstance := NewObject(o)
+			if !method.IsValid() {
+				log.Fatalf("Object type creation of '%s' not found!\n", class)
+				return nil
+			}
 
-		NewCamera(camInstance)
+			method.Call([]reflect.Value{})
 
-		return camInstance
-	}
-
-	ObjectTypes["target"] = func(o *tiled.Object) *Object {
-		targetInstance := NewObject(o)
-
-		NewTarget(targetInstance)
-
-		return targetInstance
-	}
-
-	ObjectTypes["wait"] = func(o *tiled.Object) *Object {
-		waitInstance := NewObject(o)
-
-		NewWait(waitInstance)
-
-		return waitInstance
-	}
-
-	ObjectTypes["script"] = func(o *tiled.Object) *Object {
-		scriptInstance := NewObject(o)
-
-		NewScript(scriptInstance)
-
-		return scriptInstance
-	}
-
-	ObjectTypes["talk"] = func(o *tiled.Object) *Object {
-		talkInstance := NewObject(o)
-
-		NewTalk(talkInstance)
-
-		return talkInstance
+			return inst
+		}
 	}
 }
 

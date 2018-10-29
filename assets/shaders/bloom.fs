@@ -13,9 +13,9 @@ out vec4 finalColor;
 
 // NOTE: Add here your custom variables
 
-const vec2 size = vec2(640, 480);   // render size
+const vec2 size = vec2(640*2, 480*2);   // render size
 const float samples = 12.0;          // pixels per axis; higher = bigger glow, worse performance
-const float quality = 1.25; 	        // lower = smaller glow, better quality
+const float quality = 3.5; 	        // lower = smaller glow, better quality
 
 void main()
 {
@@ -25,7 +25,7 @@ void main()
     // Texel color fetching from texture sampler
     vec4 source = texture(texture0, fragTexCoord);
 
-    const int range = 2;            // should be = (samples - 1)/2;
+    const int range = (samples - 1)/2;            // should be = (samples - 1)/2;
 
     for (int x = -range; x <= range; x++)
     {
@@ -36,5 +36,5 @@ void main()
     }
 
     // Calculate final fragment color
-    finalColor = ((sum/(samples*samples)) + source)*colDiffuse;
+    finalColor = ((sum/(samples*samples)) + source);
 }

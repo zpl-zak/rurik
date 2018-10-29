@@ -18,7 +18,7 @@ type player struct {
 }
 
 // NewPlayer instance
-func NewPlayer(p *Object) {
+func (p *Object) NewPlayer() {
 	p.Ase = goaseprite.Load("assets/gfx/player.json")
 	p.Texture = system.GetTexture("assets/gfx/player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
@@ -26,6 +26,8 @@ func NewPlayer(p *Object) {
 	p.Draw = drawPlayer
 	p.GetAABB = getPlayerAABB
 	p.HandleCollision = handlePlayerCollision
+
+	LocalPlayer = p
 
 	p.Ase.Play("Stand")
 }

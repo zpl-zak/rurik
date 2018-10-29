@@ -28,7 +28,7 @@ var (
 )
 
 // NewTalk instance
-func NewTalk(o *Object) {
+func (o *Object) NewTalk() {
 	o.DialogueFileName = o.Meta.Properties.GetString("file")
 
 	if chatBanner == nil {

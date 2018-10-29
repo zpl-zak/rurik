@@ -1,0 +1,40 @@
+{
+    "name": "Ulrich",
+    "avatar": "ulrich.png",
+    "text": "Hello World! Are you ready to play?",
+    "choices": [
+        {
+            "text": "Yes, definitely!",
+            "next": {
+                "name": "Ulrich",
+                "avatar": "ulrich.png",
+                "text": "Let's start then!",
+                "target": "start_demo"
+            }
+        },
+        {
+            "text": "Sure, but skip all that crap.",
+            "next": {
+                "name": "Ulrich",
+                "avatar": "ulrich.png",
+                "text": "Okay...",
+                "target": "start_quick"
+            }
+        },
+        {
+            "text": "No, I don't even like this game!",
+            "next": {
+                "name": "Ulrich",
+                "avatar": "ulrich_angry.png",
+                "text": "So be it!",
+                "target": "angry",
+                "next": {
+                    "name": "Ulrich",
+                    "avatar": "ulrich_angry.png",
+                    "text": "Go back to DOS, you worm!",
+                    "target": "exit_game"
+                }
+            }
+        }
+    ]
+}

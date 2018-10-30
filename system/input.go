@@ -11,6 +11,9 @@ var (
 
 	// GamepadDeadZone movement threshold
 	GamepadDeadZone = 0.25
+
+	// GamepadID represents the controller index
+	GamepadID int32
 )
 
 type inputAction struct {
@@ -40,6 +43,8 @@ func BindInputAction(name string, action inputAction) {
 
 // InitInput initializes the input system
 func InitInput() {
+	GamepadID = 0
+
 	BindInputAction("horizontal", inputAction{
 		positiveKeys: []int32{rl.KeyD, rl.KeyRight},
 		negativeKeys: []int32{rl.KeyA, rl.KeyLeft},
@@ -77,7 +82,7 @@ func IsKeyDown(action string) bool {
 	}
 
 	for _, v := range keybindings[action].joyButtons {
-		if rl.IsGamepadButtonDown(0, v) {
+		if rl.IsGamepadButtonDown(GamepadID, v) {
 			return true
 		}
 	}
@@ -94,7 +99,7 @@ func IsKeyPressed(action string) bool {
 	}
 
 	for _, v := range keybindings[action].joyButtons {
-		if rl.IsGamepadButtonPressed(0, v) {
+		if rl.IsGamepadButtonPressed(GamepadID, v) {
 			return true
 		}
 	}
@@ -111,7 +116,7 @@ func IsKeyReleased(action string) bool {
 	}
 
 	for _, v := range keybindings[action].joyButtons {
-		if rl.IsGamepadButtonReleased(0, v) {
+		if rl.IsGamepadButtonReleased(GamepadID, v) {
 			return true
 		}
 	}
@@ -123,7 +128,7 @@ func IsKeyReleased(action string) bool {
 func GetAxis(action string) (rate float32) {
 	a := keybindings[action]
 
-	rate = rl.GetGamepadAxisMovement(0, a.joyAxis)
+	rate = rl.GetGamepadAxisMovement(GamepadID, a.joyAxis)
 
 	if math.Abs(float64(rate)) < GamepadDeadZone {
 		rate = 0

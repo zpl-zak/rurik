@@ -41,25 +41,12 @@ func updatePlayer(p *Object, dt float32) {
 	p.Movement.Y = 0
 
 	if !p.Locked {
-		if system.IsKeyDown("up") {
-			p.Movement.Y = -1
-		}
-
-		if system.IsKeyDown("down") {
-			p.Movement.Y = 1
-		}
-
-		if system.IsKeyDown("left") {
-			p.Movement.X = -1
-		}
-
-		if system.IsKeyDown("right") {
-			p.Movement.X = 1
-		}
+		p.Movement.X = system.GetAxis("horizontal")
+		p.Movement.Y = system.GetAxis("vertical")
 	}
 
 	if ry.Vector2Length(p.Movement) > 0 {
-		ry.Vector2Normalize(&p.Movement)
+		//ry.Vector2Normalize(&p.Movement)
 		ry.Vector2Scale(&p.Movement, moveSpeed)
 
 		p.Facing.X = p.Movement.X

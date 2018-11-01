@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"log"
 
 	ry "github.com/gen2brain/raylib-go/raymath"
 
@@ -26,10 +27,11 @@ func (p *Object) NewPlayer() {
 	p.Draw = drawPlayer
 	p.GetAABB = getPlayerAABB
 	p.HandleCollision = handlePlayerCollision
+	p.Facing = rl.NewVector2(1, 0)
 
 	LocalPlayer = p
 
-	p.Ase.Play("Stand")
+	playAnim(p, "StandE")
 }
 
 func updatePlayer(p *Object, dt float32) {
@@ -45,6 +47,8 @@ func updatePlayer(p *Object, dt float32) {
 		p.Movement.Y = system.GetAxis("vertical")
 	}
 
+	var tag string
+
 	if ry.Vector2Length(p.Movement) > 0 {
 		//ry.Vector2Normalize(&p.Movement)
 		ry.Vector2Scale(&p.Movement, moveSpeed)
@@ -52,7 +56,25 @@ func updatePlayer(p *Object, dt float32) {
 		p.Facing.X = p.Movement.X
 		p.Facing.Y = p.Movement.Y
 		ry.Vector2Normalize(&p.Facing)
+
+		tag = "Walk"
+	} else {
+		tag = "Stand"
 	}
+
+	if p.Facing.Y > 0 {
+		tag += "N"
+	} else if p.Facing.Y < 0 {
+		tag += "S"
+	}
+
+	if p.Facing.X > 0 {
+		tag += "E"
+	} else if p.Facing.X < 0 {
+		tag += "W"
+	}
+
+	playAnim(p, tag)
 
 	p.Movement.X *= dt
 	p.Movement.Y *= dt
@@ -98,4 +120,12 @@ func getPlayerAABB(p *Object) rl.RectangleInt32 {
 
 func handlePlayerCollision(res *resolv.Collision, p, other *Object) {
 	fmt.Println("Collision has happened!")
+}
+
+func playAnim(p *Object, animName string) {
+	if p.Ase.GetAnimation(animName) != nil {
+		p.Ase.Play(animName)
+	} else {
+		log.Println("Animation name:", animName, "not found!")
+	}
 }

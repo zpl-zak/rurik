@@ -1,7 +1,10 @@
 package core
 
 import (
+	"encoding/xml"
 	"fmt"
+	"io/ioutil"
+	"log"
 
 	"../system"
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -9,17 +12,39 @@ import (
 )
 
 var (
-	tilemap      *tiled.Map
-	tilemapImage rl.Texture2D
-	tilesets     int
-	mapName      string
+	tilemap  *tiled.Map
+	tilesets map[string]*tilesetData
+	mapName  string
 )
+
+type tilesetImageData struct {
+	Source string `xml:"source,attr"`
+	Width  int32  `xml:"width,attr"`
+	Height int32  `xml:"height,attr"`
+}
+
+type tilesetData struct {
+	Version      string           `xml:"version,attr"`
+	TiledVersion string           `xml:"tiledversion,attr"`
+	Name         string           `xml:"name,attr"`
+	TileWidth    int32            `xml:"tilewidth,attr"`
+	TileHeight   int32            `xml:"tileheight,attr"`
+	TileCount    int32            `xml:"tilecount,attr"`
+	Columns      int32            `xml:"columns,attr"`
+	ImageInfo    tilesetImageData `xml:"image"`
+	Image        rl.Texture2D
+}
 
 // LoadMap loads map data
 func LoadMap(name string) {
+	var err error
+	tilesets = make(map[string]*tilesetData)
+	tilemap, err = tiled.LoadFromFile(fmt.Sprintf("assets/map/%s/%s.tmx", name, name))
 
-	// TODO: Fix tileset path
-	loadTilemap(fmt.Sprintf("assets/map/%s/%s.tmx", name, name), "assets/gfx/tileset.png")
+	if err != nil {
+		log.Fatalf("Map %s could not be loaded!\n", name)
+		return
+	}
 
 	mapName = name
 
@@ -34,12 +59,33 @@ func ReloadMap() {
 	LoadMap(mapName)
 }
 
-// LoadTilemap loads the data of a map into the memory
-func loadTilemap(tilemapPath, tilesetPath string) {
-	tilemap, _ = tiled.LoadFromFile(tilemapPath)
-	tilemapImage = system.GetTexture(tilesetPath)
+func loadTilesetData(tilesetName string) *tilesetData {
+	val, ok := tilesets[tilesetName]
 
-	fmt.Println(tilemap.Tilesets)
+	if ok {
+		return val
+	}
+
+	data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/%s", mapName, tilesetName))
+
+	if err != nil {
+		log.Fatalf("Tileset data %s could not be loaded!\n", tilesetName)
+		return nil
+	}
+
+	loadedTileset := &tilesetData{}
+
+	err = xml.Unmarshal(data, loadedTileset)
+
+	if err != nil {
+		log.Fatalf("Tileset data %s could not be parsed:\n\t %s!\n", tilesetName, err.Error())
+		return nil
+	}
+
+	loadedTileset.Image = system.GetTexture(fmt.Sprintf("assets/map/%s/%s", mapName, loadedTileset.ImageInfo.Source))
+
+	tilesets[tilesetName] = loadedTileset
+	return loadedTileset
 }
 
 // CreateObjects iterates over all object definitions and spawns objects
@@ -56,10 +102,7 @@ func DrawTilemap() {
 	tileW := float32(tilemap.TileWidth)
 	tileH := float32(tilemap.TileHeight)
 
-	tileRow := int(tilemapImage.Width) / int(tileW)
-
 	for _, layer := range tilemap.Layers {
-
 		if !layer.Visible {
 			continue
 		}
@@ -70,6 +113,16 @@ func DrawTilemap() {
 			if tile.IsNil() {
 				continue
 			}
+
+			tilesetData := loadTilesetData(tile.Tileset.Source)
+
+			if tilesetData == nil {
+				log.Fatalf("Tileset data '%s' points to nil reference!\n", tile.Tileset.Source)
+				return
+			}
+
+			tilemapImage := tilesetData.Image
+			tileRow := int(tilemapImage.Width) / int(tileW)
 
 			tileWorldX, tileWorldY := GetPositionFromID(uint32(tileIndex), tileW, tileH)
 

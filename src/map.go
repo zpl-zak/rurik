@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"encoding/xml"
@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 
-	"../system"
 	rl "github.com/gen2brain/raylib-go/raylib"
 	tiled "github.com/lafriks/go-tiled"
 )
@@ -41,6 +40,10 @@ func LoadMap(name string) {
 	tilesets = make(map[string]*tilesetData)
 	tilemap, err = tiled.LoadFromFile(fmt.Sprintf("assets/map/%s/%s.tmx", name, name))
 
+	if tilemap.Properties == nil {
+		tilemap.Properties = &tiled.Properties{}
+	}
+
 	if err != nil {
 		log.Fatalf("Map %s could not be loaded!\n", name)
 		return
@@ -51,6 +54,7 @@ func LoadMap(name string) {
 	flushObjects()
 	CreateObjects()
 	postProcessObjects()
+	WeatherInit()
 }
 
 // ReloadMap reloads map data
@@ -82,7 +86,7 @@ func loadTilesetData(tilesetName string) *tilesetData {
 		return nil
 	}
 
-	loadedTileset.Image = system.GetTexture(fmt.Sprintf("assets/map/%s/%s", mapName, loadedTileset.ImageInfo.Source))
+	loadedTileset.Image = GetTexture(fmt.Sprintf("assets/map/%s/%s", mapName, loadedTileset.ImageInfo.Source))
 
 	tilesets[tilesetName] = loadedTileset
 	return loadedTileset
@@ -147,7 +151,7 @@ func DrawTilemap() {
 
 			rl.DrawTexturePro(tilemapImage,
 				sourceRect,
-				rl.NewRectangle(tileWorldX+tileW/2, tileWorldY+tileH/2, tileW, tileH), rl.NewVector2(tileW/2, tileH/2), rot, rl.White)
+				rl.NewRectangle(tileWorldX+tileW/2, tileWorldY+tileH/2, tileW, tileH), rl.NewVector2(tileW/2, tileH/2), rot, SkyColor)
 		}
 	}
 }

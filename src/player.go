@@ -1,13 +1,10 @@
-package core
+package main
 
 import (
 	"fmt"
-	"log"
 
-	ry "github.com/gen2brain/raylib-go/raymath"
-
-	"../system"
 	rl "github.com/gen2brain/raylib-go/raylib"
+	ry "github.com/gen2brain/raylib-go/raymath"
 	"github.com/solarlune/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
 )
@@ -21,7 +18,7 @@ type player struct {
 // NewPlayer instance
 func (p *Object) NewPlayer() {
 	p.Ase = goaseprite.Load("assets/gfx/player.json")
-	p.Texture = system.GetTexture("assets/gfx/player.png")
+	p.Texture = GetTexture("assets/gfx/player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
 	p.Update = updatePlayer
 	p.Draw = drawPlayer
@@ -43,8 +40,8 @@ func updatePlayer(p *Object, dt float32) {
 	p.Movement.Y = 0
 
 	if !p.Locked {
-		p.Movement.X = system.GetAxis("horizontal")
-		p.Movement.Y = system.GetAxis("vertical")
+		p.Movement.X = GetAxis("horizontal")
+		p.Movement.Y = GetAxis("vertical")
 	}
 
 	var tag string
@@ -100,7 +97,7 @@ func drawPlayer(p *Object) {
 
 	dest := rl.NewRectangle(p.Position.X-float32(p.Ase.FrameWidth/2), p.Position.Y-float32(p.Ase.FrameHeight/2), float32(p.Ase.FrameWidth), float32(p.Ase.FrameHeight))
 
-	rl.DrawTexturePro(p.Texture, source, dest, rl.Vector2{}, 0, rl.White)
+	rl.DrawTexturePro(p.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
 
 	if DebugMode {
 		c := getPlayerAABB(p)
@@ -126,6 +123,6 @@ func playAnim(p *Object, animName string) {
 	if p.Ase.GetAnimation(animName) != nil {
 		p.Ase.Play(animName)
 	} else {
-		log.Println("Animation name:", animName, "not found!")
+		//log.Println("Animation name:", animName, "not found!")
 	}
 }

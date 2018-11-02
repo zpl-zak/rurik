@@ -1,11 +1,10 @@
-package core
+package main
 
 import (
 	"fmt"
 	"reflect"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-
 	"github.com/robertkrimen/otto"
 )
 

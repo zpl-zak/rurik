@@ -1,4 +1,4 @@
-package core
+package main // import madaraszd.net/rurik/core
 
 var (
 	// MainCamera is the primary camera used for the viewport

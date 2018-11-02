@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"encoding/json"
@@ -6,7 +6,6 @@ import (
 	"io/ioutil"
 	"log"
 
-	"../system"
 	"github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -32,7 +31,7 @@ func (o *Object) NewTalk() {
 	o.DialogueFileName = o.Meta.Properties.GetString("file")
 
 	if chatBanner == nil {
-		img := system.GetTexture("assets/gfx/chat_banner.png")
+		img := GetTexture("assets/gfx/chat_banner.png")
 		chatBanner = &img
 	}
 
@@ -48,7 +47,7 @@ func (o *Object) NewTalk() {
 		}
 
 		if len(o.currentText.Choices) > 0 {
-			if system.IsKeyPressed("up") {
+			if IsKeyPressed("up") {
 				o.selectedChoice--
 
 				if o.selectedChoice < 0 {
@@ -56,7 +55,7 @@ func (o *Object) NewTalk() {
 				}
 			}
 
-			if system.IsKeyPressed("down") {
+			if IsKeyPressed("down") {
 				o.selectedChoice++
 
 				if o.selectedChoice >= len(o.currentText.Choices) {
@@ -65,7 +64,7 @@ func (o *Object) NewTalk() {
 			}
 		}
 
-		if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
+		if IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
 
 			if o.mouseDoublePressTime > 0 {
 				o.mouseDoublePressTime = 0
@@ -120,10 +119,9 @@ func (o *Object) NewTalk() {
 
 		var height int32 = 120
 		var width int32 = 640
-		start := system.ScreenHeight - height
-		offsetX := (system.ScreenWidth - width) / 2
+		start := ScreenHeight - height
+		offsetX := (ScreenWidth - width) / 2
 
-		// TODO: Replace with textured banner
 		rl.DrawRectangle(int32(offsetX), start, width, height, rl.Black)
 		rl.DrawTexture(*chatBanner, int32(offsetX), start, rl.White)
 		ot := o.currentText

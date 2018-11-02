@@ -1,13 +1,12 @@
-package core
+package main
 
 import (
 	"fmt"
 	"log"
 	"strconv"
 
-	"github.com/gen2brain/raylib-go/raymath"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/gen2brain/raylib-go/raymath"
 )
 
 const (
@@ -68,7 +67,8 @@ func (c *Object) NewCamera() {
 		}
 
 		rl.DrawCircle(int32(o.Position.X), int32(o.Position.Y), 2, rl.White)
-		drawTextCentered(fmt.Sprintf("%s\nMode: %s", o.Name, mode), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
+		drawTextCentered(fmt.Sprintf("%s", o.Name), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
+		drawTextCentered(fmt.Sprintf("Mode: %s", mode), int32(o.Position.X), int32(o.Position.Y)+15, 10, rl.White)
 	}
 }
 

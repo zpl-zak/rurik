@@ -1,8 +1,6 @@
-package core
+package main
 
 import (
-	"../system"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/solarlune/resolv/resolv"
 )
@@ -46,8 +44,8 @@ func isMouseInRectangle(x, y, x2, y2 int32) bool {
 
 	mo := rl.GetMousePosition()
 	m := [2]int32{
-		int32(mo.X) / system.ScaleRatio,
-		int32(mo.Y) / system.ScaleRatio,
+		int32(mo.X) / ScaleRatio,
+		int32(mo.Y) / ScaleRatio,
 	}
 
 	if m[0] > x && m[0] < x2 &&

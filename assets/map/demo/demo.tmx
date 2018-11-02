@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-down" width="32" height="16" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="20">
+ <properties>
+  <property name="skyColor" type="color" value="#ffa299ff"/>
+ </properties>
  <tileset firstgid="1" source="Street.tsx"/>
  <layer id="8" name="Main" width="32" height="16">
   <data>
@@ -9,20 +12,20 @@
    <tile gid="26"/>
    <tile gid="2684354585"/>
    <tile gid="2"/>
-   <tile gid="3221225482"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
+   <tile gid="2"/>
    <tile/>
    <tile/>
    <tile/>
@@ -41,20 +44,20 @@
    <tile gid="33"/>
    <tile gid="2684354586"/>
    <tile gid="2"/>
-   <tile gid="3221225482"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="9"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
-   <tile gid="1"/>
+   <tile gid="5"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
+   <tile gid="1610612746"/>
    <tile/>
    <tile/>
    <tile/>
@@ -78,7 +81,7 @@
    <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>
-   <tile gid="9"/>
+   <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>
    <tile gid="1"/>
@@ -1034,15 +1037,15 @@
   </data>
  </layer>
  <objectgroup color="#ffffff" id="2" name="Main Objects">
-  <object id="2" name="buildings" type="col" x="0" y="0" width="160" height="384">
+  <object id="2" name="buildings" type="col" x="0" y="-32" width="160" height="416">
    <properties>
     <property name="colType" value="solid"/>
    </properties>
   </object>
   <object id="3" name="player" type="player" x="288" y="192"/>
-  <object id="4" name="border_top" type="col" x="0" y="0" width="640" height="32"/>
-  <object id="5" name="border_right" type="col" x="608" y="0" width="32" height="384"/>
-  <object id="6" name="border_bottom" type="col" x="0" y="352" width="640" height="32"/>
+  <object id="4" name="border_top" type="col" x="160" y="-32" width="512" height="32"/>
+  <object id="5" name="border_right" type="col" x="640" y="0" width="32" height="416"/>
+  <object id="6" name="border_bottom" type="col" x="0" y="384" width="640" height="32"/>
   <object id="7" name="main_camera" type="cam" x="480" y="128">
    <properties>
     <property name="depends" value="player;intro_cutscene"/>

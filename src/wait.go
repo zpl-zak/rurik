@@ -1,4 +1,4 @@
-package core
+package main
 
 import (
 	"fmt"
@@ -41,7 +41,8 @@ func (o *Object) NewWait() {
 		}
 
 		rl.DrawCircle(int32(o.Position.X), int32(o.Position.Y), 5, rl.White)
-		drawTextCentered(fmt.Sprintf("%s\nRemaining: %d ms", o.Name, o.Remaining), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
+		drawTextCentered(fmt.Sprintf("%s", o.Name), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
+		drawTextCentered(fmt.Sprintf("Remaining: %d ms", o.Remaining), int32(o.Position.X), int32(o.Position.Y)+15, 10, rl.White)
 	}
 }
 

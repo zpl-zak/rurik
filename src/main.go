@@ -1,12 +1,10 @@
-package main
+package main // import madaraszd.net/rurik/go
 
 import (
 	"flag"
 	"log"
 
-	"../core"
-	"../system"
-	"github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 const (
@@ -20,73 +18,85 @@ const (
 
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
+	noSound := flag.Int("nosound", 0, "Disables in-game sounds.")
 	flag.Parse()
 
-	if core.DebugMode {
+	if DebugMode {
 		if dbgMode != nil {
-			core.DebugMode = *dbgMode == 1
+			DebugMode = *dbgMode == 1
 		}
 	}
 
-	system.InitRenderer("Sample scene | Rurik Engine", windowW, windowH)
-	system.CreateRenderTarget(screenW, screenH)
-	system.InitInput()
+	InitRenderer("Sample scene | Rurik Engine", windowW, windowH)
+	CreateRenderTarget(screenW, screenH)
+	InitInput()
+	rl.InitAudioDevice()
+	LoadPlaylist("tracklist.txt")
 	defer shutdown()
 
-	core.Init()
+	if *noSound > 0 {
+		SetMusicVolume(0.0)
+	}
 
-	core.LoadMap("demo")
+	Init()
 
-	screenTexture := system.GetRenderTarget()
+	LoadMap("demo")
+
+	screenTexture := GetRenderTarget()
 
 	gameCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 
 	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
 
 	for !rl.WindowShouldClose() {
+		UpdateMusic()
 		rl.BeginTextureMode(*screenTexture)
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Black)
 		drawBackground()
 		rl.BeginMode2D(gameCamera)
 
-		if system.IsKeyPressed("exit") {
+		if IsKeyPressed("exit") {
 			return
 		}
 
-		if core.LocalPlayer == nil {
+		if LocalPlayer == nil {
 			log.Fatalln("Local player not defined!")
 			return
 		}
 
-		if core.MainCamera == nil {
+		if MainCamera == nil {
 			setupDefaultCamera()
 		}
 
-		if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
-			core.ReloadMap()
+		if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
+			ReloadMap()
 		}
 
-		core.UpdateObjects()
+		if DebugMode && rl.IsKeyPressed(rl.KeyF7) {
+			LoadNextTrack()
+		}
+
+		UpdateObjects()
 
 		wheel := rl.GetMouseWheelMove()
 		if wheel != 0 {
-			core.SetCameraZoom(core.MainCamera, core.MainCamera.Zoom+float32(wheel)*0.05)
+			SetCameraZoom(MainCamera, MainCamera.Zoom+float32(wheel)*0.05)
 		}
-		gameCamera.Zoom = core.MainCamera.Zoom
+		gameCamera.Zoom = MainCamera.Zoom
 
 		gameCamera.Offset = rl.Vector2{
-			X: float32(int(-core.MainCamera.Position.X*core.MainCamera.Zoom + screenW/2)),
-			Y: float32(int(-core.MainCamera.Position.Y*core.MainCamera.Zoom + screenH/2)),
+			X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + screenW/2)),
+			Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + screenH/2)),
 		}
 
-		core.DrawTilemap()
-		core.DrawObjects()
+		DrawTilemap()
+		DrawObjects()
 
 		rl.EndMode2D()
 
-		core.DrawObjectUI()
-		core.DrawEditor()
+		DrawObjectUI()
+		DrawEditor()
 
 		/* rl.BeginShaderMode(bloom)
 
@@ -113,21 +123,21 @@ func shutdown() {
 }
 
 func setupDefaultCamera() {
-	defCam := core.NewObject(nil)
+	defCam := NewObject(nil)
 
 	defCam.Name = "main_camera"
 	defCam.Class = "cam"
 	defCam.Position = rl.Vector2{}
 
 	defCam.NewCamera()
-	defCam.Mode = core.CameraModeFollow
-	defCam.Follow = core.LocalPlayer
+	defCam.Mode = CameraModeFollow
+	defCam.Follow = LocalPlayer
 
-	core.Objects = append(core.Objects, defCam)
+	Objects = append(Objects, defCam)
 }
 
 func drawBackground() {
-	bgImage := system.GetTexture("assets/gfx/bg.png")
+	bgImage := GetTexture("assets/gfx/bg.png")
 
 	rows := int(screenW/bgImage.Width) + 1
 	cols := int(screenH/bgImage.Height) + 1

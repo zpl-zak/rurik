@@ -5,15 +5,17 @@ import (
 	"strconv"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gen2brain/raylib-go/raymath"
-	"github.com/lucasb-eyer/go-colorful"
 )
 
 var (
 	// SkyColor is the tint color used for drawn sprites/tiles
 	SkyColor rl.Color
 
+	// WeatherTimeScale specifies time cycle scale
+	WeatherTimeScale float64
+
 	useTimeCycle    bool
+	skyStageName    string
 	skyTime         float64
 	skyTargetTime   float64
 	skyStageIndex   int
@@ -21,9 +23,12 @@ var (
 	skyLastColor    rl.Vector3
 	skyCurrentColor rl.Vector3
 	skyTargetColor  rl.Vector3
+
+	weatherIsCollapsed = true
 )
 
 type weatherStage struct {
+	name     string
 	color    rl.Vector3
 	duration float64
 }
@@ -46,8 +51,9 @@ func WeatherInit() {
 	appendSkyStage("skyDawnColor", "dawnDuration")
 	appendSkyStage("skyNightColor", "nightDuration")
 
-	if len(skyStages) > 1 {
+	if len(skyStages) > 0 {
 		skyLastColor = skyCurrentColor
+		skyStageName = skyStages[0].name
 		skyTargetColor = skyStages[0].color
 		skyTime = skyStages[0].duration
 		skyTargetTime = skyTime
@@ -59,6 +65,8 @@ func WeatherInit() {
 			nextSkyStage()
 		}
 	}
+
+	weatherIsCollapsed = true
 }
 
 // UpdateWeather updates the time cycle and weather effects
@@ -67,7 +75,7 @@ func UpdateWeather() {
 		if skyTime <= 0 {
 			nextSkyStage()
 		} else {
-			skyTime -= float64(rl.GetFrameTime())
+			skyTime -= float64(rl.GetFrameTime()) * WeatherTimeScale
 		}
 
 		if skyTargetTime != 0 {
@@ -78,14 +86,17 @@ func UpdateWeather() {
 
 		SkyColor = vec3ToColor(skyCurrentColor)
 	}
+
+	if DebugMode {
+		weatherElement := pushEditorElement(rootElement, "weather", &weatherIsCollapsed)
+		pushEditorElement(weatherElement, fmt.Sprintf("Sky: %s (%d)", skyStageName, skyStageIndex), nil)
+		pushEditorElement(weatherElement, fmt.Sprintf("Sky time: %d/%d", int(skyTargetTime-skyTime), int(skyTargetTime)), nil)
+	}
 }
 
 // DrawWeather draws weather effects
 func DrawWeather() {
-	if DebugMode {
-		rl.DrawText(fmt.Sprintf("Sky stage: id %d val %v", skyStageIndex, skyStages[skyStageIndex]), 5, 20, 10, rl.White)
-		rl.DrawText(fmt.Sprintf("Sky time: %f", skyTime), 5, 30, 10, rl.White)
-	}
+
 }
 
 func nextSkyStage() {
@@ -96,43 +107,11 @@ func nextSkyStage() {
 	}
 
 	stage := skyStages[skyStageIndex]
+	skyStageName = stage.name
 	skyTime = stage.duration
 	skyTargetTime = skyTime
 	skyTargetColor = stage.color
 	skyLastColor = skyCurrentColor
-}
-
-func vec3ToColor(a rl.Vector3) rl.Color {
-	return rl.NewColor(
-		uint8(a.X*255),
-		uint8(a.Y*255),
-		uint8(a.Z*255),
-		255,
-	)
-}
-
-func lerpColor(a, b rl.Vector3, t float64) rl.Vector3 {
-	return raymath.Vector3Lerp(a, b, float32(t))
-}
-
-func getColorFromHex(hex string) (rl.Vector3, error) {
-	if hex == "" {
-		return rl.Vector3{}, fmt.Errorf("hex not specified")
-	}
-
-	c, err := colorful.Hex("#" + hex[3:])
-
-	if err != nil {
-		return rl.Vector3{}, err
-	}
-
-	d := rl.NewVector3(
-		float32(c.R),
-		float32(c.G),
-		float32(c.B),
-	)
-
-	return d, nil
 }
 
 func appendSkyStage(skyName, stageName string) {
@@ -147,6 +126,7 @@ func appendSkyStage(skyName, stageName string) {
 	duration, _ := strconv.ParseFloat(tilemap.Properties.GetString(stageName), 10)
 
 	skyStages = append(skyStages, weatherStage{
+		name:     skyName,
 		color:    color,
 		duration: duration * 60,
 	})

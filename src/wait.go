@@ -16,7 +16,6 @@ type wait struct {
 // NewWait instance
 func (o *Object) NewWait() {
 	o.Duration, _ = strconv.Atoi(o.Meta.Properties.GetString("duration"))
-	autostart, _ := strconv.Atoi(o.Meta.Properties.GetString("autostart"))
 	o.Trigger = triggerWait
 	o.Update = updateWait
 
@@ -26,12 +25,12 @@ func (o *Object) NewWait() {
 		scr := NewObject(nil)
 		scr.Name = o.Name + "_script"
 
-		scr.File = scriptName
+		scr.FileName = scriptName
 		scr.NewScript()
 		Objects = append(Objects, scr)
 	}
 
-	if autostart == 1 {
+	if o.AutoStart {
 		o.Trigger(o, nil)
 	}
 

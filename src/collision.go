@@ -13,6 +13,7 @@ type collision struct {
 // NewCollision instance
 func (o *Object) NewCollision() {
 	o.colType = o.Meta.Properties.GetString("colType")
+	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 	o.Draw = drawCollision
 	o.GetAABB = getCollisionAABB
@@ -58,18 +59,46 @@ func CheckForCollision(o *Object, deltaX, deltaY int32) (*resolv.Collision, bool
 			continue
 		}
 
-		first := rayRectangleInt32ToResolv(o.GetAABB(o))
-		second := rayRectangleInt32ToResolv(c.GetAABB(c))
+		col, ok := resolveContact(o, c, deltaX, deltaY)
 
-		try := resolv.Resolve(first, second, deltaX, deltaY)
-
-		if try.Colliding() {
-			if DebugMode {
-				c.isColliding = true
-			}
-
-			return &try, true
+		if ok {
+			return col, true
 		}
+	}
+
+	d := GetObjectsOfType("col", true)
+
+	for _, c := range d {
+		if !c.IsCollidable {
+			continue
+		}
+
+		if c == o {
+			continue
+		}
+
+		col, ok := resolveContact(o, c, deltaX, deltaY)
+
+		if ok {
+			return col, true
+		}
+	}
+
+	return nil, false
+}
+
+func resolveContact(a, b *Object, deltaX, deltaY int32) (*resolv.Collision, bool) {
+	first := rayRectangleInt32ToResolv(a.GetAABB(a))
+	second := rayRectangleInt32ToResolv(b.GetAABB(b))
+
+	try := resolv.Resolve(first, second, deltaX, deltaY)
+
+	if try.Colliding() {
+		if DebugMode {
+			b.isColliding = true
+		}
+
+		return &try, true
 	}
 
 	return nil, false

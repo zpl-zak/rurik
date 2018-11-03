@@ -19,12 +19,11 @@ const (
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	noSound := flag.Int("nosound", 0, "Disables in-game sounds.")
+	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
 	flag.Parse()
 
 	if DebugMode {
-		if dbgMode != nil {
-			DebugMode = *dbgMode == 1
-		}
+		DebugMode = *dbgMode == 1
 	}
 
 	InitRenderer("Sample scene | Rurik Engine", windowW, windowH)
@@ -40,7 +39,7 @@ func main() {
 		SetMusicVolume(1)
 	}
 
-	Init()
+	InitCore()
 
 	LoadMap("demo")
 
@@ -49,6 +48,7 @@ func main() {
 	gameCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 
 	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
+	WeatherTimeScale = *weatherTimeScale
 
 	for !rl.WindowShouldClose() {
 		UpdateMusic()
@@ -99,8 +99,8 @@ func main() {
 		rl.EndMode2D()
 
 		DrawObjectUI()
-		DrawEditor()
 		DrawWeather()
+		DrawEditor()
 
 		/* rl.BeginShaderMode(bloom)
 

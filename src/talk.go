@@ -14,7 +14,6 @@ const (
 )
 
 type talk struct {
-	DialogueFileName     string
 	Texts                *Dialogue
 	currentText          *Dialogue
 	selectedChoice       int
@@ -28,8 +27,6 @@ var (
 
 // NewTalk instance
 func (o *Object) NewTalk() {
-	o.DialogueFileName = o.Meta.Properties.GetString("file")
-
 	if chatBanner == nil {
 		img := GetTexture("assets/gfx/chat_banner.png")
 		chatBanner = &img
@@ -90,16 +87,16 @@ func (o *Object) NewTalk() {
 	}
 
 	o.Trigger = func(o, inst *Object) {
-		data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", mapName, o.DialogueFileName))
+		data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", mapName, o.FileName))
 
 		if err != nil {
-			log.Fatalf("Could not load texts for %s [%s]: %s\n", o.Name, o.DialogueFileName, err.Error())
+			log.Fatalf("Could not load texts for %s [%s]: %s\n", o.Name, o.FileName, err.Error())
 		}
 
 		err = json.Unmarshal(data, &o.Texts)
 
 		if err != nil {
-			log.Fatalf("Error loading text %s for %s: %s\n", o.DialogueFileName, o.Name, err.Error())
+			log.Fatalf("Error loading text %s for %s: %s\n", o.FileName, o.Name, err.Error())
 			return
 		}
 
@@ -200,7 +197,7 @@ func (o *Object) NewTalk() {
 		}
 	}
 
-	if o.Meta.Properties.GetString("autostart") == "1" {
+	if o.AutoStart {
 		o.Trigger(o, nil)
 	}
 }

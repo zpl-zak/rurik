@@ -1,4 +1,4 @@
-package main
+package main // madaraszd.net/zaklaus/rurik
 
 var (
 	// MainCamera is the primary camera used for the viewport
@@ -9,9 +9,12 @@ var (
 
 	// DebugMode switch
 	DebugMode = true
+
+	// TimeScale is game update time scale
+	TimeScale = 1
 )
 
-// Init initializes the game engine
-func Init() {
+// InitCore initializes the game engine
+func InitCore() {
 	initObjectTypes()
 }

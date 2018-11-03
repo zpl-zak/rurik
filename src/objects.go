@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"log"
 	"reflect"
+	"sort"
 	"strings"
 
-	"github.com/solarlune/resolv/resolv"
-
 	"github.com/gen2brain/raylib-go/raylib"
-
 	"github.com/lafriks/go-tiled"
+	goaseprite "github.com/solarlune/GoAseprite"
+	"github.com/solarlune/resolv/resolv"
 )
 
 var (
@@ -28,17 +28,23 @@ var (
 
 // Object is map object with logic and data
 type Object struct {
-	GID        int
-	Name       string
-	Class      string
-	Visible    bool
-	Position   rl.Vector2
-	Movement   rl.Vector2
-	Facing     rl.Vector2
-	Size       []int32
-	Meta       *tiled.Object
-	Depends    []*Object
-	Target     *Object
+	GID          int
+	Name         string
+	Class        string
+	Visible      bool
+	Position     rl.Vector2
+	Movement     rl.Vector2
+	Facing       rl.Vector2
+	Size         []int32
+	Meta         *tiled.Object
+	Depends      []*Object
+	Target       *Object
+	FileName     string
+	Texture      rl.Texture2D
+	Ase          goaseprite.File
+	AutoStart    bool
+	IsCollidable bool
+
 	Started    bool
 	WasUpdated bool
 
@@ -58,6 +64,7 @@ type Object struct {
 	wait
 	script
 	talk
+	anim
 }
 
 func flushObjects() {
@@ -76,6 +83,7 @@ func initObjectTypes() {
 		"wait":   "Wait",
 		"script": "Script",
 		"talk":   "Talk",
+		"anim":   "Anim",
 	}
 
 	for k := range objTypes {
@@ -128,6 +136,8 @@ func NewObject(o *tiled.Object) *Object {
 		Visible:         true,
 		Meta:            o,
 		Depends:         nil,
+		AutoStart:       o.Properties.GetString("autostart") == "1",
+		FileName:        o.Properties.GetString("file"),
 		Finish:          func(o *Object) {},
 		Update:          func(o *Object, dt float32) {},
 		Trigger:         func(o, inst *Object) {},
@@ -243,12 +253,17 @@ func updateObject(o, orig *Object) {
 		}
 	}
 
-	o.Update(o, rl.GetFrameTime())
+	o.Update(o, rl.GetFrameTime()*float32(TimeScale))
 	o.WasUpdated = true
 }
 
 // DrawObjects draws all drawable objects on the screen
+// It sorts all objects by Y position
 func DrawObjects() {
+	sort.Slice(Objects, func(i, j int) bool {
+		return Objects[i].Position.Y < Objects[j].Position.Y
+	})
+
 	for _, o := range Objects {
 		if o.Visible {
 			o.Draw(o)

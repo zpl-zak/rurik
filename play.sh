@@ -1,3 +1,3 @@
 #!/bin/sh
 
-build/rurik.exe $1
+build/rurik.exe $*

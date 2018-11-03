@@ -16,6 +16,10 @@ const (
 	windowH = screenH * 2
 )
 
+var (
+	demoMap *Map
+)
+
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	noSound := flag.Int("nosound", 0, "Disables in-game sounds.")
@@ -40,8 +44,7 @@ func main() {
 	}
 
 	InitCore()
-
-	LoadMap("demo")
+	demoMap = LoadMap("demo")
 
 	screenTexture := GetRenderTarget()
 
@@ -72,7 +75,8 @@ func main() {
 		}
 
 		if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
-			ReloadMap()
+			demoMap = ReloadMap(demoMap)
+			CurrentMap = demoMap
 		}
 
 		if DebugMode && rl.IsKeyPressed(rl.KeyF7) {
@@ -80,7 +84,7 @@ func main() {
 		}
 
 		UpdateWeather()
-		UpdateObjects()
+		UpdateMaps()
 
 		wheel := rl.GetMouseWheelMove()
 		if wheel != 0 {
@@ -93,12 +97,11 @@ func main() {
 			Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + screenH/2)),
 		}
 
-		DrawTilemap()
-		DrawObjects()
+		DrawMap()
 
 		rl.EndMode2D()
 
-		DrawObjectUI()
+		DrawMapUI()
 		DrawWeather()
 		DrawEditor()
 
@@ -127,7 +130,7 @@ func shutdown() {
 }
 
 func setupDefaultCamera() {
-	defCam := NewObject(nil)
+	defCam := demoMap.world.NewObject(nil)
 
 	defCam.Name = "main_camera"
 	defCam.Class = "cam"
@@ -137,7 +140,7 @@ func setupDefaultCamera() {
 	defCam.Mode = CameraModeFollow
 	defCam.Follow = LocalPlayer
 
-	Objects = append(Objects, defCam)
+	demoMap.world.Objects = append(demoMap.world.Objects, defCam)
 }
 
 func drawBackground() {

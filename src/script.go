@@ -19,7 +19,7 @@ func (o *Object) NewScript() {
 		o.FileName = o.Meta.Properties.GetString("file")
 	}
 
-	src, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/scripts/%s", mapName, o.FileName))
+	src, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/scripts/%s", CurrentMap.mapName, o.FileName))
 
 	if err != nil {
 		log.Fatalf("Script object's %s file %s was not found!\n", o.Name, o.FileName)
@@ -29,7 +29,7 @@ func (o *Object) NewScript() {
 	o.Source = string(src)
 
 	o.Ctx = otto.New()
-	initGameAPI(o.Ctx)
+	initGameAPI(o, o.Ctx)
 
 	o.Trigger = func(o, inst *Object) {
 		_, err := o.Ctx.Eval(o.Source)

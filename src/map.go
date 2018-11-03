@@ -11,10 +11,20 @@ import (
 )
 
 var (
+	// CurrentMap points to currently loaded map
+	CurrentMap *Map
+
+	// Maps holds all loaded maps
+	Maps map[string]*Map
+)
+
+// Map defines the environment and simulation region (world)
+type Map struct {
 	tilemap  *tiled.Map
 	tilesets map[string]*tilesetData
 	mapName  string
-)
+	world    *World
+}
 
 type tilesetImageData struct {
 	Source string `xml:"source,attr"`
@@ -35,42 +45,89 @@ type tilesetData struct {
 }
 
 // LoadMap loads map data
-func LoadMap(name string) {
-	var err error
-	tilesets = make(map[string]*tilesetData)
-	tilemap, err = tiled.LoadFromFile(fmt.Sprintf("assets/map/%s/%s.tmx", name, name))
+func LoadMap(name string) *Map {
+	if Maps == nil {
+		Maps = make(map[string]*Map)
+	}
 
-	if tilemap.Properties == nil {
-		tilemap.Properties = &tiled.Properties{}
+	cmap := &Map{}
+	var err error
+	cmap.tilesets = make(map[string]*tilesetData)
+	cmap.tilemap, err = tiled.LoadFromFile(fmt.Sprintf("assets/map/%s/%s.tmx", name, name))
+
+	if cmap.tilemap.Properties == nil {
+		cmap.tilemap.Properties = &tiled.Properties{}
 	}
 
 	if err != nil {
 		log.Fatalf("Map %s could not be loaded!\n", name)
-		return
+		return nil
 	}
 
-	mapName = name
+	cmap.mapName = name
 
-	flushObjects()
-	CreateObjects()
-	postProcessObjects()
+	world := &World{
+		Objects: []*Object{},
+	}
+
+	if CurrentMap == nil {
+		CurrentMap = cmap
+	}
+
+	cmap.CreateObjects(world)
+	world.postProcessObjects()
 	WeatherInit()
+
+	cmap.world = world
+
+	Maps[name] = cmap
+
+	return cmap
+}
+
+// SwitchMap selects the primarily rendered map
+func SwitchMap(name string) {
+	m, ok := Maps[name]
+
+	if ok {
+		CurrentMap = m
+	}
+}
+
+// UpdateMaps updates all maps' simulation regions (worlds)
+func UpdateMaps() {
+	for _, m := range Maps {
+		m.world.UpdateObjects()
+	}
+}
+
+// DrawMap draws the tilemap and all renderable objects
+func DrawMap() {
+	CurrentMap.DrawTilemap()
+
+	CurrentMap.world.DrawObjects()
+}
+
+// DrawMapUI draw current map's UI elements
+func DrawMapUI() {
+	CurrentMap.world.DrawObjectUI()
 }
 
 // ReloadMap reloads map data
 // Useful during development due to runtime asset hot-reloading capability.
-func ReloadMap() {
-	LoadMap(mapName)
+func ReloadMap(oldMap *Map) *Map {
+	oldMap.world.flushObjects()
+	return LoadMap(oldMap.mapName)
 }
 
-func loadTilesetData(tilesetName string) *tilesetData {
-	val, ok := tilesets[tilesetName]
+func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
+	val, ok := m.tilesets[tilesetName]
 
 	if ok {
 		return val
 	}
 
-	data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/%s", mapName, tilesetName))
+	data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/%s", m.mapName, tilesetName))
 
 	if err != nil {
 		log.Fatalf("Tileset data %s could not be loaded!\n", tilesetName)
@@ -86,27 +143,27 @@ func loadTilesetData(tilesetName string) *tilesetData {
 		return nil
 	}
 
-	loadedTileset.Image = GetTexture(fmt.Sprintf("assets/map/%s/%s", mapName, loadedTileset.ImageInfo.Source))
+	loadedTileset.Image = GetTexture(fmt.Sprintf("assets/map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
 
-	tilesets[tilesetName] = loadedTileset
+	m.tilesets[tilesetName] = loadedTileset
 	return loadedTileset
 }
 
 // CreateObjects iterates over all object definitions and spawns objects
-func CreateObjects() {
-	for _, objectGroup := range tilemap.ObjectGroups {
+func (m *Map) CreateObjects(w *World) {
+	for _, objectGroup := range m.tilemap.ObjectGroups {
 		for _, object := range objectGroup.Objects {
-			spawnObject(object)
+			w.spawnObject(object)
 		}
 	}
 }
 
 // DrawTilemap renders the loaded map
-func DrawTilemap() {
-	tileW := float32(tilemap.TileWidth)
-	tileH := float32(tilemap.TileHeight)
+func (m *Map) DrawTilemap() {
+	tileW := float32(m.tilemap.TileWidth)
+	tileH := float32(m.tilemap.TileHeight)
 
-	for _, layer := range tilemap.Layers {
+	for _, layer := range m.tilemap.Layers {
 		if !layer.Visible {
 			continue
 		}
@@ -118,7 +175,7 @@ func DrawTilemap() {
 				continue
 			}
 
-			tilesetData := loadTilesetData(tile.Tileset.Source)
+			tilesetData := m.loadTilesetData(tile.Tileset.Source)
 
 			if tilesetData == nil {
 				log.Fatalf("Tileset data '%s' points to nil reference!\n", tile.Tileset.Source)
@@ -128,7 +185,7 @@ func DrawTilemap() {
 			tilemapImage := tilesetData.Image
 			tileRow := int(tilemapImage.Width) / int(tileW)
 
-			tileWorldX, tileWorldY := GetPositionFromID(uint32(tileIndex), tileW, tileH)
+			tileWorldX, tileWorldY := m.GetPositionFromID(uint32(tileIndex), tileW, tileH)
 
 			tileX := float32(id%tileRow) * tileW
 			tileY := float32(id/tileRow) * tileH
@@ -157,9 +214,9 @@ func DrawTilemap() {
 }
 
 // GetPositionFromID returns XY world position based on tile ID
-func GetPositionFromID(index uint32, tileW, tileH float32) (float32, float32) {
-	tileWorldX := float32(index%uint32(tilemap.Width)) * tileW
-	tileWorldY := float32(index/uint32(tilemap.Width)) * tileH
+func (m *Map) GetPositionFromID(index uint32, tileW, tileH float32) (float32, float32) {
+	tileWorldX := float32(index%uint32(m.tilemap.Width)) * tileW
+	tileWorldY := float32(index/uint32(m.tilemap.Width)) * tileH
 
 	return tileWorldX, tileWorldY
 }

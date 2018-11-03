@@ -36,7 +36,7 @@ type weatherStage struct {
 // WeatherInit sets up the mood by initializing sky color tint and other properties
 func WeatherInit() {
 	var err error
-	skyCurrentColor, err = getColorFromHex(tilemap.Properties.GetString("skyColor"))
+	skyCurrentColor, err = getColorFromHex(CurrentMap.tilemap.Properties.GetString("skyColor"))
 
 	if err != nil {
 		SkyColor = rl.White
@@ -115,7 +115,7 @@ func nextSkyStage() {
 }
 
 func appendSkyStage(skyName, stageName string) {
-	color, err := getColorFromHex(tilemap.Properties.GetString(skyName))
+	color, err := getColorFromHex(CurrentMap.tilemap.Properties.GetString(skyName))
 
 	if err == nil {
 		useTimeCycle = true
@@ -123,7 +123,7 @@ func appendSkyStage(skyName, stageName string) {
 		return
 	}
 
-	duration, _ := strconv.ParseFloat(tilemap.Properties.GetString(stageName), 10)
+	duration, _ := strconv.ParseFloat(CurrentMap.tilemap.Properties.GetString(stageName), 10)
 
 	skyStages = append(skyStages, weatherStage{
 		name:     skyName,

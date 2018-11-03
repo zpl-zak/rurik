@@ -15,20 +15,30 @@ import (
 
 var (
 	// ObjectTypes contains all definitions of objects in the game
-	ObjectTypes map[string]func(objectData *tiled.Object) *Object
+	ObjectTypes map[string]func(w *World, objectData *tiled.Object) *Object
 
+	// Worlds are all the worlds loaded within the game
+	Worlds []*World
+
+	objTypes   map[string]string
+	worldIndex int
+)
+
+// World represents the simulation region of the current map
+type World struct {
 	// Objects contains all spawned objects in the game
 	Objects []*Object
 
 	// GlobalIndex is globally tracked object allocation index
 	GlobalIndex int
 
-	objTypes map[string]string
-)
+	WorldID int
+}
 
 // Object is map object with logic and data
 type Object struct {
 	GID          int
+	World        *World
 	Name         string
 	Class        string
 	Visible      bool
@@ -69,13 +79,13 @@ type Object struct {
 	area
 }
 
-func flushObjects() {
-	Objects = []*Object{}
+func (w *World) flushObjects() {
+	w.Objects = []*Object{}
+	w.GlobalIndex = 0
 }
 
 func initObjectTypes() {
-	ObjectTypes = make(map[string]func(objectData *tiled.Object) *Object)
-	flushObjects()
+	ObjectTypes = make(map[string]func(w *World, objectData *tiled.Object) *Object)
 
 	objTypes = map[string]string{
 		"player": "Player",
@@ -90,8 +100,8 @@ func initObjectTypes() {
 	}
 
 	for k := range objTypes {
-		ObjectTypes[k] = func(o *tiled.Object) *Object {
-			inst := NewObject(o)
+		ObjectTypes[k] = func(w *World, o *tiled.Object) *Object {
+			inst := w.NewObject(o)
 
 			class := objTypes[o.Type]
 			methodName := fmt.Sprintf("New%s", class)
@@ -111,8 +121,8 @@ func initObjectTypes() {
 }
 
 // GetObjectsOfType returns all objects of a given type
-func GetObjectsOfType(name string, avoidType bool) (ret []*Object) {
-	for _, o := range Objects {
+func (w *World) GetObjectsOfType(name string, avoidType bool) (ret []*Object) {
+	for _, o := range w.Objects {
 		if !avoidType && o.Class == name {
 			ret = append(ret, o)
 		} else if avoidType && o.Class != name {
@@ -124,16 +134,17 @@ func GetObjectsOfType(name string, avoidType bool) (ret []*Object) {
 }
 
 // NewObject creates a new object
-func NewObject(o *tiled.Object) *Object {
+func (w *World) NewObject(o *tiled.Object) *Object {
 	if o == nil {
 		o = &tiled.Object{}
 	}
 
-	idx := GlobalIndex
-	GlobalIndex++
+	idx := w.GlobalIndex
+	w.GlobalIndex++
 
 	return &Object{
 		GID:             idx,
+		World:           w,
 		Name:            o.Name,
 		Class:           o.Type,
 		Visible:         true,
@@ -151,7 +162,7 @@ func NewObject(o *tiled.Object) *Object {
 	}
 }
 
-func spawnObject(objectData *tiled.Object) {
+func (w *World) spawnObject(objectData *tiled.Object) {
 	objType, ok := ObjectTypes[objectData.Type]
 
 	if !ok {
@@ -159,7 +170,7 @@ func spawnObject(objectData *tiled.Object) {
 		return
 	}
 
-	obj := objType(objectData)
+	obj := objType(w, objectData)
 
 	if obj == nil {
 		log.Printf("Object creation failed!\n")
@@ -169,18 +180,18 @@ func spawnObject(objectData *tiled.Object) {
 	obj.Position = rl.NewVector2(float32(objectData.X), float32(objectData.Y))
 	obj.Movement = rl.NewVector2(0, 0)
 
-	Objects = append(Objects, obj)
+	w.Objects = append(w.Objects, obj)
 }
 
-func postProcessObjects() {
-	for _, o := range Objects {
-		resolveObjectDependencies(o)
-		findTargets(o)
+func (w *World) postProcessObjects() {
+	for _, o := range w.Objects {
+		w.resolveObjectDependencies(o)
+		w.findTargets(o)
 		o.Finish(o)
 	}
 }
 
-func resolveObjectDependencies(o *Object) {
+func (w *World) resolveObjectDependencies(o *Object) {
 	depName := o.Meta.Properties.GetString("depends")
 
 	if depName != "" {
@@ -188,7 +199,7 @@ func resolveObjectDependencies(o *Object) {
 		o.Depends = []*Object{}
 
 		for _, x := range names {
-			dep, _ := FindObject(x)
+			dep, _ := w.FindObject(x)
 
 			if o == dep {
 				log.Fatalf("Object depends on self: '%s' !\n", o.Name)
@@ -200,17 +211,17 @@ func resolveObjectDependencies(o *Object) {
 	}
 }
 
-func findTargets(o *Object) {
+func (w *World) findTargets(o *Object) {
 	target := o.Meta.Properties.GetString("target")
 
 	if target != "" {
-		o.Target, _ = FindObject(target)
+		o.Target, _ = w.FindObject(target)
 	}
 }
 
 // FindObject looks up an object with specified name
-func FindObject(name string) (*Object, int) {
-	for _, o := range Objects {
+func (w *World) FindObject(name string) (*Object, int) {
+	for _, o := range w.Objects {
 		if o.Name == name {
 			return o, o.GID
 		}
@@ -219,8 +230,8 @@ func FindObject(name string) (*Object, int) {
 	return nil, 0
 }
 
-func getObject(gid int) *Object {
-	for _, o := range Objects {
+func (w *World) getObject(gid int) *Object {
+	for _, o := range w.Objects {
 		if o.GID == gid {
 			return o
 		}
@@ -230,12 +241,12 @@ func getObject(gid int) *Object {
 }
 
 // UpdateObjects performs an update on all objects
-func UpdateObjects() {
-	for _, o := range Objects {
+func (w *World) UpdateObjects() {
+	for _, o := range w.Objects {
 		o.WasUpdated = false
 	}
 
-	for _, o := range Objects {
+	for _, o := range w.Objects {
 		updateObject(o, o)
 	}
 }
@@ -262,12 +273,12 @@ func updateObject(o, orig *Object) {
 
 // DrawObjects draws all drawable objects on the screen
 // It sorts all objects by Y position
-func DrawObjects() {
-	sort.Slice(Objects, func(i, j int) bool {
-		return Objects[i].Position.Y < Objects[j].Position.Y
+func (w *World) DrawObjects() {
+	sort.Slice(w.Objects, func(i, j int) bool {
+		return w.Objects[i].Position.Y < w.Objects[j].Position.Y
 	})
 
-	for _, o := range Objects {
+	for _, o := range w.Objects {
 		if o.Visible {
 			o.Draw(o)
 		}
@@ -275,8 +286,8 @@ func DrawObjects() {
 }
 
 // DrawObjectUI draws all drawable objects's UI on the screen
-func DrawObjectUI() {
-	for _, o := range Objects {
+func (w *World) DrawObjectUI() {
+	for _, o := range w.Objects {
 		if o.Visible {
 			o.DrawUI(o)
 		}

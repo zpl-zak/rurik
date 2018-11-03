@@ -67,7 +67,7 @@ func (o *Object) NewTalk() {
 				o.mouseDoublePressTime = 0
 			}
 
-			tgt, _ := FindObject(o.currentText.Target)
+			tgt, _ := o.World.FindObject(o.currentText.Target)
 
 			if len(o.currentText.Choices) > 0 {
 				o.currentText = o.currentText.Choices[o.selectedChoice].Next
@@ -90,7 +90,7 @@ func (o *Object) NewTalk() {
 
 	o.Trigger = func(o, inst *Object) {
 		if o.Texts == nil {
-			data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", mapName, o.FileName))
+			data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", CurrentMap.mapName, o.FileName))
 
 			if err != nil {
 				log.Fatalf("Could not load texts for %s [%s]: %s\n", o.Name, o.FileName, err.Error())

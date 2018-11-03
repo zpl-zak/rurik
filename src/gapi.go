@@ -8,7 +8,7 @@ import (
 	"github.com/robertkrimen/otto"
 )
 
-func initGameAPI(vm *otto.Otto) {
+func initGameAPI(o *Object, vm *otto.Otto) {
 	vm.Set("log", func(call otto.FunctionCall) otto.Value {
 		obj := call.Argument(0)
 		fmt.Println(obj)
@@ -18,7 +18,9 @@ func initGameAPI(vm *otto.Otto) {
 
 	vm.Set("findObject", func(call otto.FunctionCall) otto.Value {
 		arg, _ := call.Argument(0).ToString()
-		obj, _ := FindObject(arg)
+		wv, _ := vm.Get("CurrentWorld")
+		w, _ := wv.Export()
+		obj, _ := w.(*World).FindObject(arg)
 		ret, _ := vm.ToValue(obj)
 		return ret
 	})
@@ -40,4 +42,5 @@ func initGameAPI(vm *otto.Otto) {
 		return otto.Value{}
 	})
 
+	vm.Set("CurrentWorld", o.World)
 }

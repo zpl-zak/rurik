@@ -23,12 +23,12 @@ func (o *Object) NewWait() {
 	scriptName := o.Meta.Properties.GetString("file")
 
 	if scriptName != "" {
-		o.Script = NewObject(nil)
+		o.Script = o.World.NewObject(nil)
 		o.Script.Name = o.Name + "_script"
 
 		o.Script.FileName = scriptName
 		o.Script.NewScript()
-		Objects = append(Objects, o.Script)
+		o.World.Objects = append(o.World.Objects, o.Script)
 	}
 
 	if o.AutoStart {

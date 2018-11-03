@@ -48,7 +48,7 @@ func drawCollision(o *Object) {
 
 // CheckForCollision performs collision detection and resolution
 func CheckForCollision(o *Object, deltaX, deltaY int32) (*resolv.Collision, bool) {
-	a := GetObjectsOfType("col", false)
+	a := o.World.GetObjectsOfType("col", false)
 
 	for _, c := range a {
 		if c == o {
@@ -66,7 +66,7 @@ func CheckForCollision(o *Object, deltaX, deltaY int32) (*resolv.Collision, bool
 		}
 	}
 
-	d := GetObjectsOfType("col", true)
+	d := o.World.GetObjectsOfType("col", true)
 
 	for _, c := range d {
 		if !c.IsCollidable {

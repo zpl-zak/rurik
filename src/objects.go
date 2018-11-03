@@ -37,24 +37,25 @@ type World struct {
 
 // Object is map object with logic and data
 type Object struct {
-	GID          int
-	World        *World
-	Name         string
-	Class        string
-	Visible      bool
-	Position     rl.Vector2
-	Movement     rl.Vector2
-	Facing       rl.Vector2
-	Size         []int32
-	Meta         *tiled.Object
-	Depends      []*Object
-	Target       *Object
-	FileName     string
-	Texture      rl.Texture2D
-	Ase          goaseprite.File
-	LastTrigger  float32
-	AutoStart    bool
-	IsCollidable bool
+	GID           int
+	World         *World
+	Name          string
+	Class         string
+	Visible       bool
+	Position      rl.Vector2
+	Movement      rl.Vector2
+	Facing        rl.Vector2
+	Size          []int32
+	Meta          *tiled.Object
+	Depends       []*Object
+	Target        *Object
+	FileName      string
+	Texture       rl.Texture2D
+	Ase           goaseprite.File
+	LastTrigger   float32
+	AutoStart     bool
+	IsCollidable  bool
+	CollisionType string
 
 	Started    bool
 	WasUpdated bool
@@ -150,6 +151,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Visible:         true,
 		Meta:            o,
 		Depends:         nil,
+		CollisionType:   o.Properties.GetString("colType"),
 		AutoStart:       o.Properties.GetString("autostart") == "1",
 		FileName:        o.Properties.GetString("file"),
 		Finish:          func(o *Object) {},
@@ -179,6 +181,10 @@ func (w *World) spawnObject(objectData *tiled.Object) {
 
 	obj.Position = rl.NewVector2(float32(objectData.X), float32(objectData.Y))
 	obj.Movement = rl.NewVector2(0, 0)
+
+	if obj.CollisionType != "" {
+		obj.IsCollidable = obj.CollisionType != "none"
+	}
 
 	w.Objects = append(w.Objects, obj)
 }

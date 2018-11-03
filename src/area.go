@@ -25,7 +25,7 @@ func (o *Object) NewArea() {
 	o.Update = func(o *Object, dt float32) {
 		vd := raymath.Vector2Distance(getAreaOrigin(o), LocalPlayer.Position)
 
-		if vd < float32(o.Radius*2) {
+		if vd < float32(o.Radius) {
 			o.isInCircle = true
 
 			if IsKeyPressed("use") {

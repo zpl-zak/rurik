@@ -36,8 +36,9 @@ func DrawEditor() {
 	}
 }
 
-func drawEditorElement(element *editorElement, offsetX, offsetY int32) {
+func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 	color := rl.White
+	var ext int32 = 10
 
 	if element.isCollapsed != nil && isMouseInRectangle(offsetX, offsetY, rl.MeasureText(element.text, 10), 10) {
 		color = rl.Red
@@ -47,15 +48,18 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) {
 		}
 	}
 
+	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)
 	rl.DrawText(element.text, offsetX, offsetY, 10, color)
 
 	if element.isCollapsed != nil && *element.isCollapsed {
-		return
+		return ext
 	}
 
-	for i, v := range element.children {
-		drawEditorElement(v, offsetX+5, offsetY+int32(10*(i+1)))
+	for _, v := range element.children {
+		ext += drawEditorElement(v, offsetX+5, offsetY+ext)
 	}
+
+	return ext
 }
 
 func flushEditorElement() {

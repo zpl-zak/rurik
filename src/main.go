@@ -76,7 +76,7 @@ func main() {
 
 		if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
 			demoMap = ReloadMap(demoMap)
-			CurrentMap = demoMap
+			SwitchMap(demoMap.mapName)
 		}
 
 		if DebugMode && rl.IsKeyPressed(rl.KeyF7) {
@@ -98,11 +98,11 @@ func main() {
 		}
 
 		DrawMap()
+		DrawWeather()
 
 		rl.EndMode2D()
 
 		DrawMapUI()
-		DrawWeather()
 		DrawEditor()
 
 		/* rl.BeginShaderMode(bloom)

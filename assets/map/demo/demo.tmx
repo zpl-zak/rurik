@@ -1122,14 +1122,9 @@
   <object id="20" name="bouncing_ball" type="anim" x="448" y="192">
    <properties>
     <property name="autostart" value="1"/>
+    <property name="colType" value="none"/>
     <property name="file" value="ball"/>
     <property name="tag" value="Base"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="22" name="bounce_ball_talk" type="talk" x="416" y="224">
-   <properties>
-    <property name="file" value="bounceBall.json"/>
    </properties>
    <point/>
   </object>

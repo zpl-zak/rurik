@@ -16,6 +16,11 @@ var (
 
 	// Maps holds all loaded maps
 	Maps map[string]*Map
+
+	mapNode                *editorElement
+	mapNodeIsCollapsed     = true
+	worldNodeIsCollapsed   = false
+	objectsNodeIsCollapsed = true
 )
 
 // Map defines the environment and simulation region (world)
@@ -111,6 +116,33 @@ func DrawMap() {
 // DrawMapUI draw current map's UI elements
 func DrawMapUI() {
 	CurrentMap.world.DrawObjectUI()
+
+	if DebugMode {
+		mapNode = pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
+		{
+			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.mapName), nil)
+			pushEditorElement(mapNode, fmt.Sprintf("tiled version: %s", CurrentMap.tilemap.Version), nil)
+			pushEditorElement(mapNode, fmt.Sprintf("no. of tiles: %d", len(CurrentMap.tilesets)), nil)
+			pushEditorElement(mapNode, fmt.Sprintf("map width: %d", CurrentMap.tilemap.Width), nil)
+			pushEditorElement(mapNode, fmt.Sprintf("map height: %d", CurrentMap.tilemap.Height), nil)
+			drawWorldUI()
+		}
+	}
+}
+
+func drawWorldUI() {
+	worldNode := pushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
+	{
+		pushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.world.Objects)), nil)
+		pushEditorElement(worldNode, fmt.Sprintf("global id cursor: %d", CurrentMap.world.GlobalIndex), nil)
+
+		objsNode := pushEditorElement(worldNode, "objects", &objectsNodeIsCollapsed)
+		{
+			for i, v := range CurrentMap.world.Objects {
+				pushEditorElement(objsNode, fmt.Sprintf("%d. %s (%s)", i, v.Name, v.Class), nil)
+			}
+		}
+	}
 }
 
 // ReloadMap reloads map data

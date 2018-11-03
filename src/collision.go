@@ -6,13 +6,11 @@ import (
 )
 
 type collision struct {
-	colType     string
 	isColliding bool
 }
 
 // NewCollision instance
 func (o *Object) NewCollision() {
-	o.colType = o.Meta.Properties.GetString("colType")
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 	o.Draw = drawCollision

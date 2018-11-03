@@ -42,6 +42,7 @@ type Object struct {
 	FileName     string
 	Texture      rl.Texture2D
 	Ase          goaseprite.File
+	LastTrigger  float32
 	AutoStart    bool
 	IsCollidable bool
 
@@ -65,6 +66,7 @@ type Object struct {
 	script
 	talk
 	anim
+	area
 }
 
 func flushObjects() {
@@ -84,6 +86,7 @@ func initObjectTypes() {
 		"script": "Script",
 		"talk":   "Talk",
 		"anim":   "Anim",
+		"area":   "Area",
 	}
 
 	for k := range objTypes {

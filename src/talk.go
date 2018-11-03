@@ -84,20 +84,24 @@ func (o *Object) NewTalk() {
 				tgt.Trigger(tgt, o)
 			}
 		}
+
+		o.LastTrigger = rl.GetTime()
 	}
 
 	o.Trigger = func(o, inst *Object) {
-		data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", mapName, o.FileName))
+		if o.Texts == nil {
+			data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", mapName, o.FileName))
 
-		if err != nil {
-			log.Fatalf("Could not load texts for %s [%s]: %s\n", o.Name, o.FileName, err.Error())
-		}
+			if err != nil {
+				log.Fatalf("Could not load texts for %s [%s]: %s\n", o.Name, o.FileName, err.Error())
+			}
 
-		err = json.Unmarshal(data, &o.Texts)
+			err = json.Unmarshal(data, &o.Texts)
 
-		if err != nil {
-			log.Fatalf("Error loading text %s for %s: %s\n", o.FileName, o.Name, err.Error())
-			return
+			if err != nil {
+				log.Fatalf("Error loading text %s for %s: %s\n", o.FileName, o.Name, err.Error())
+				return
+			}
 		}
 
 		o.currentText = o.Texts

@@ -11,6 +11,7 @@ import (
 type wait struct {
 	Duration  int
 	Remaining int
+	Script    *Object
 }
 
 // NewWait instance
@@ -22,12 +23,12 @@ func (o *Object) NewWait() {
 	scriptName := o.Meta.Properties.GetString("file")
 
 	if scriptName != "" {
-		scr := NewObject(nil)
-		scr.Name = o.Name + "_script"
+		o.Script = NewObject(nil)
+		o.Script.Name = o.Name + "_script"
 
-		scr.FileName = scriptName
-		scr.NewScript()
-		Objects = append(Objects, scr)
+		o.Script.FileName = scriptName
+		o.Script.NewScript()
+		Objects = append(Objects, o.Script)
 	}
 
 	if o.AutoStart {
@@ -56,7 +57,13 @@ func updateWait(o *Object, dt float32) {
 
 		if o.Target != nil {
 			o.Target.Trigger(o.Target, o)
-		} else {
+		}
+
+		if o.Script != nil {
+			o.Script.Trigger(o.Script, o)
+		}
+
+		if o.Target == nil && o.Script == nil {
 			log.Printf("Timer %s has no target attached!\n", o.Name)
 		}
 

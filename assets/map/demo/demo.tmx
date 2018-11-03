@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-down" width="32" height="16" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="21">
+<map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-down" width="32" height="16" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="24">
  <properties>
   <property name="dawnDuration" type="int" value="6"/>
   <property name="dayDuration" type="int" value="8"/>
@@ -1084,7 +1084,6 @@
     <property name="autostart" value="1"/>
     <property name="duration" value="0"/>
     <property name="file" value="lockPlayerControls.js"/>
-    <property name="target" value="player_lock_controls_script"/>
    </properties>
    <point/>
   </object>
@@ -1125,6 +1124,20 @@
     <property name="autostart" value="1"/>
     <property name="file" value="ball"/>
     <property name="tag" value="Base"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="22" name="bounce_ball_talk" type="talk" x="416" y="224">
+   <properties>
+    <property name="file" value="bounceBall.json"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="23" name="bouncing_ball_talk" type="area" x="480" y="192">
+   <properties>
+    <property name="proxy" value="bouncing_ball"/>
+    <property name="radius" value="15"/>
+    <property name="talk" value="bouncingBall.json"/>
    </properties>
    <point/>
   </object>

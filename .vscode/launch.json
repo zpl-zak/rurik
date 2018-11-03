@@ -11,7 +11,7 @@
             "mode": "auto",
             "program": "${workspaceRoot}\\src",
             "env": {},
-            "args": ["-nosound=1"],
+            "args": ["-musicvol=40"],
             "cwd": "${workspaceRoot}",
             "output": "${workspaceRoot}\\build\\rurik.exe"
         }

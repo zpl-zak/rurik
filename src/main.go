@@ -22,7 +22,7 @@ var (
 
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
-	noSound := flag.Int("nosound", 0, "Disables in-game sounds.")
+	musicVol := flag.Int("musicvol", 100, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
 	flag.Parse()
 
@@ -37,8 +37,8 @@ func main() {
 	LoadPlaylist("tracklist.txt")
 	defer shutdown()
 
-	if *noSound > 0 {
-		SetMusicVolume(0)
+	if musicVol != nil {
+		SetMusicVolume(float32(*musicVol) / 100)
 	} else {
 		SetMusicVolume(1)
 	}
@@ -86,9 +86,11 @@ func main() {
 		UpdateWeather()
 		UpdateMaps()
 
-		wheel := rl.GetMouseWheelMove()
-		if wheel != 0 {
-			SetCameraZoom(MainCamera, MainCamera.Zoom+float32(wheel)*0.05)
+		if DebugMode {
+			wheel := rl.GetMouseWheelMove()
+			if wheel != 0 {
+				SetCameraZoom(MainCamera, MainCamera.Zoom+float32(wheel)*0.05)
+			}
 		}
 		gameCamera.Zoom = MainCamera.Zoom
 
@@ -130,7 +132,7 @@ func shutdown() {
 }
 
 func setupDefaultCamera() {
-	defCam := demoMap.world.NewObject(nil)
+	defCam := CurrentMap.world.NewObject(nil)
 
 	defCam.Name = "main_camera"
 	defCam.Class = "cam"
@@ -140,7 +142,7 @@ func setupDefaultCamera() {
 	defCam.Mode = CameraModeFollow
 	defCam.Follow = LocalPlayer
 
-	demoMap.world.Objects = append(demoMap.world.Objects, defCam)
+	CurrentMap.world.Objects = append(CurrentMap.world.Objects, defCam)
 }
 
 func drawBackground() {

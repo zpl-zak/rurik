@@ -43,4 +43,8 @@ func initGameAPI(o *Object, vm *otto.Otto) {
 	})
 
 	vm.Set("CurrentWorld", o.World)
+	vm.Set("CurrentMap", CurrentMap)
+	vm.Set("Self", o)
+	vm.Set("LocalPlayer", LocalPlayer)
+	vm.Set("MainCamera", MainCamera)
 }

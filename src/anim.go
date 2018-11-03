@@ -11,7 +11,7 @@ type anim struct {
 	animStarted bool
 }
 
-// NewAnim instance
+// NewAnim animated sprite
 func (o *Object) NewAnim() {
 	o.Ase = goaseprite.Load(fmt.Sprintf("assets/gfx/%s.json", o.FileName))
 	o.Texture = GetTexture(fmt.Sprintf("assets/gfx/%s.png", o.FileName))

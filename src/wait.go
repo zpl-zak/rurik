@@ -14,7 +14,7 @@ type wait struct {
 	Script    *Object
 }
 
-// NewWait instance
+// NewWait timer/unconditioned trigger instigator
 func (o *Object) NewWait() {
 	o.Duration, _ = strconv.Atoi(o.Meta.Properties.GetString("duration"))
 	o.Trigger = triggerWait

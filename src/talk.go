@@ -25,7 +25,7 @@ var (
 	chatBanner *rl.Texture2D
 )
 
-// NewTalk instance
+// NewTalk dialogue handler
 func (o *Object) NewTalk() {
 	if chatBanner == nil {
 		img := GetTexture("assets/gfx/chat_banner.png")

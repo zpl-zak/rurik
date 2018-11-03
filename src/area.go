@@ -14,7 +14,7 @@ type area struct {
 	Talk       *Object
 }
 
-// NewArea instance
+// NewArea trigger zone using various styles of execution
 func (o *Object) NewArea() {
 	o.Finish = func(o *Object) {
 		o.Proxy, _ = o.World.FindObject(o.Meta.Properties.GetString("proxy"))

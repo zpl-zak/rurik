@@ -13,7 +13,7 @@ type player struct {
 	Locked bool
 }
 
-// NewPlayer instance
+// NewPlayer player
 func (p *Object) NewPlayer() {
 	p.Ase = goaseprite.Load("assets/gfx/player.json")
 	p.Texture = GetTexture("assets/gfx/player.png")

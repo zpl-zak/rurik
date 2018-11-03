@@ -9,7 +9,7 @@ type collision struct {
 	isColliding bool
 }
 
-// NewCollision instance
+// NewCollision static map collision
 func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}

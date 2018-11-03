@@ -31,8 +31,6 @@ type World struct {
 
 	// GlobalIndex is globally tracked object allocation index
 	GlobalIndex int
-
-	WorldID int
 }
 
 // Object is map object with logic and data
@@ -56,11 +54,12 @@ type Object struct {
 	AutoStart     bool
 	IsCollidable  bool
 	CollisionType string
+	Started       bool
 
-	Started    bool
+	// Internal fields
 	WasUpdated bool
 
-	// TODO: Improve this
+	// Callbacks
 	Finish          func(o *Object)
 	Update          func(o *Object, dt float32)
 	Draw            func(o *Object)
@@ -69,7 +68,7 @@ type Object struct {
 	HandleCollision func(res *resolv.Collision, o, other *Object)
 	GetAABB         func(o *Object) rl.RectangleInt32
 
-	// TODO: figure out better way to do this
+	// Specialized data
 	player
 	collision
 	camera

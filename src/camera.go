@@ -33,7 +33,7 @@ type camera struct {
 	First      bool
 }
 
-// NewCamera instance
+// NewCamera game camera
 func (c *Object) NewCamera() {
 	c.Update = updateCamera
 	c.Finish = finishCamera

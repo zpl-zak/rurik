@@ -4,7 +4,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-// NewTarget instance
+// NewTarget dummy target point
 func (o *Object) NewTarget() {
 	o.Draw = func(o *Object) {
 		if !DebugMode {

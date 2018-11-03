@@ -17,9 +17,10 @@ var (
 	// Maps holds all loaded maps
 	Maps map[string]*Map
 
-	mapNodeIsCollapsed     = true
-	worldNodeIsCollapsed   = false
-	objectsNodeIsCollapsed = true
+	mapNodeIsCollapsed      = true
+	worldNodeIsCollapsed    = false
+	tilesetsNodeIsCollapsed = true
+	objectsNodeIsCollapsed  = true
 )
 
 // Map defines the environment and simulation region (world)
@@ -46,6 +47,7 @@ type tilesetData struct {
 	Columns      int32            `xml:"columns,attr"`
 	ImageInfo    tilesetImageData `xml:"image"`
 	Image        rl.Texture2D
+	IsCollapsed  bool
 }
 
 // LoadMap loads map data
@@ -120,8 +122,23 @@ func DrawMapUI() {
 		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
 		{
 			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.mapName), nil)
-			pushEditorElement(mapNode, fmt.Sprintf("tiled version: %s", CurrentMap.tilemap.Version), nil)
-			pushEditorElement(mapNode, fmt.Sprintf("no. of tiles: %d", len(CurrentMap.tilesets)), nil)
+			pushEditorElement(mapNode, fmt.Sprintf("no. of tilesets: %d", len(CurrentMap.tilesets)), nil)
+
+			tilesetsNode := pushEditorElement(mapNode, "tilesets", &tilesetsNodeIsCollapsed)
+			{
+				i := 0
+				for _, v := range CurrentMap.tilesets {
+					tilesetNode := pushEditorElement(tilesetsNode, fmt.Sprintf("%d. %s", i, v.Name), &v.IsCollapsed)
+					i++
+					{
+						pushEditorElement(tilesetNode, fmt.Sprintf("name: %s", v.Name), nil)
+						pushEditorElement(tilesetNode, fmt.Sprintf("image: %s", v.ImageInfo.Source), nil)
+						pushEditorElement(tilesetNode, fmt.Sprintf("width: %d", v.ImageInfo.Width), nil)
+						pushEditorElement(tilesetNode, fmt.Sprintf("height: %d", v.ImageInfo.Height), nil)
+					}
+				}
+			}
+
 			pushEditorElement(mapNode, fmt.Sprintf("map width: %d", CurrentMap.tilemap.Width), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("map height: %d", CurrentMap.tilemap.Height), nil)
 			drawWorldUI(mapNode)
@@ -175,6 +192,7 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 	}
 
 	loadedTileset.Image = GetTexture(fmt.Sprintf("assets/map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
+	loadedTileset.IsCollapsed = true
 
 	m.tilesets[tilesetName] = loadedTileset
 	return loadedTileset

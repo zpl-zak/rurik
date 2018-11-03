@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-down" width="32" height="16" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="20">
  <properties>
-  <property name="skyColor" type="color" value="#ffa299ff"/>
+  <property name="dawnDuration" type="int" value="6"/>
+  <property name="dayDuration" type="int" value="8"/>
+  <property name="nightDuration" type="int" value="4"/>
+  <property name="riseDuration" type="int" value="6"/>
+  <property name="skyColor" type="color" value=""/>
+  <property name="skyDawnColor" type="color" value="#ffffc0a0"/>
+  <property name="skyDayColor" type="color" value="#ffe5fffa"/>
+  <property name="skyNightColor" type="color" value="#ff58589f"/>
+  <property name="skyRiseColor" type="color" value="#fffff999"/>
  </properties>
  <tileset firstgid="1" source="Street.tsx"/>
  <layer id="8" name="Main" width="32" height="16">

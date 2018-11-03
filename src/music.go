@@ -54,10 +54,15 @@ func LoadNextTrack() {
 		}
 	}
 
+	if trackName == "" {
+		return
+	}
+
 	st, ok := tracks[trackName]
 
 	if !ok {
 		tr := rl.LoadMusicStream(fmt.Sprintf("assets/music/%s", trackName))
+		log.Printf("Loading track: %s!", trackName)
 		tracks[trackName] = tr
 		st = tr
 	}

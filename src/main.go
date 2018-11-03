@@ -1,4 +1,4 @@
-package main // import madaraszd.net/rurik/go
+package main
 
 import (
 	"flag"
@@ -35,7 +35,9 @@ func main() {
 	defer shutdown()
 
 	if *noSound > 0 {
-		SetMusicVolume(0.0)
+		SetMusicVolume(0)
+	} else {
+		SetMusicVolume(1)
 	}
 
 	Init()
@@ -77,6 +79,7 @@ func main() {
 			LoadNextTrack()
 		}
 
+		UpdateWeather()
 		UpdateObjects()
 
 		wheel := rl.GetMouseWheelMove()
@@ -97,6 +100,7 @@ func main() {
 
 		DrawObjectUI()
 		DrawEditor()
+		DrawWeather()
 
 		/* rl.BeginShaderMode(bloom)
 

@@ -17,7 +17,6 @@ var (
 	// Maps holds all loaded maps
 	Maps map[string]*Map
 
-	mapNode                *editorElement
 	mapNodeIsCollapsed     = true
 	worldNodeIsCollapsed   = false
 	objectsNodeIsCollapsed = true
@@ -118,19 +117,19 @@ func DrawMapUI() {
 	CurrentMap.world.DrawObjectUI()
 
 	if DebugMode {
-		mapNode = pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
+		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
 		{
 			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.mapName), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("tiled version: %s", CurrentMap.tilemap.Version), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("no. of tiles: %d", len(CurrentMap.tilesets)), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("map width: %d", CurrentMap.tilemap.Width), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("map height: %d", CurrentMap.tilemap.Height), nil)
-			drawWorldUI()
+			drawWorldUI(mapNode)
 		}
 	}
 }
 
-func drawWorldUI() {
+func drawWorldUI(mapNode *editorElement) {
 	worldNode := pushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
 	{
 		pushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.world.Objects)), nil)

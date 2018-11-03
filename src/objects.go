@@ -143,16 +143,18 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 	w.GlobalIndex++
 
 	return &Object{
-		GID:             idx,
-		World:           w,
-		Name:            o.Name,
-		Class:           o.Type,
-		Visible:         true,
-		Meta:            o,
-		Depends:         nil,
-		CollisionType:   o.Properties.GetString("colType"),
-		AutoStart:       o.Properties.GetString("autostart") == "1",
-		FileName:        o.Properties.GetString("file"),
+		GID:           idx,
+		World:         w,
+		Name:          o.Name,
+		Class:         o.Type,
+		Visible:       true,
+		Meta:          o,
+		Depends:       []*Object{},
+		CollisionType: o.Properties.GetString("colType"),
+		AutoStart:     o.Properties.GetString("autostart") == "1",
+		FileName:      o.Properties.GetString("file"),
+
+		// Callbacks
 		Finish:          func(o *Object) {},
 		Update:          func(o *Object, dt float32) {},
 		Trigger:         func(o, inst *Object) {},
@@ -201,7 +203,6 @@ func (w *World) resolveObjectDependencies(o *Object) {
 
 	if depName != "" {
 		names := strings.Split(depName, ";")
-		o.Depends = []*Object{}
 
 		for _, x := range names {
 			dep, _ := w.FindObject(x)

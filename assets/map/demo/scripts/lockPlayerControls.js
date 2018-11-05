@@ -1,2 +1,1 @@
-var player = findObject("player");
-player.Locked = true;
+LocalPlayer.locked = true

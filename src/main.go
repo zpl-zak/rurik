@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -17,7 +18,9 @@ const (
 )
 
 var (
-	demoMap *Map
+	demoMap         *Map
+	gameCamera      rl.Camera2D
+	frameRateString = "frametime: 0 ms (0 FPS)"
 )
 
 func main() {
@@ -48,80 +51,85 @@ func main() {
 
 	screenTexture := GetRenderTarget()
 
-	gameCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
+	gameCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 
 	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
 	WeatherTimeScale = *weatherTimeScale
 
+	lastTime := float64(rl.GetTime())
+	var unprocessedTime float64
+	var frameCounter float64
+	var frames int32
+
 	for !rl.WindowShouldClose() {
-		UpdateMusic()
-		rl.BeginTextureMode(*screenTexture)
-		rl.BeginDrawing()
-		rl.ClearBackground(rl.Black)
-		drawBackground()
-		rl.BeginMode2D(gameCamera)
+		shouldRender := false
+		startTime := float64(rl.GetTime())
+		passedTime := startTime - lastTime
+		lastTime = startTime
+		unprocessedTime += passedTime
+		frameCounter += passedTime
 
-		if IsKeyPressed("exit") {
-			return
+		if frameCounter > 1 {
+			totalTime := ((1000 * frameCounter) / (float64(frames)))
+
+			frameRateString = fmt.Sprintf("frametime: %.02f ms (%.02f FPS)", totalTime, 1000/totalTime)
+			frames = 0
+			frameCounter = 0
 		}
 
-		if LocalPlayer == nil {
-			log.Fatalln("Local player not defined!")
-			return
-		}
-
-		if MainCamera == nil {
-			setupDefaultCamera()
-		}
-
-		if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
-			demoMap = ReloadMap(demoMap)
-			SwitchMap(demoMap.mapName)
-		}
-
-		if DebugMode && rl.IsKeyPressed(rl.KeyF7) {
-			LoadNextTrack()
-		}
-
-		UpdateWeather()
-		UpdateMaps()
-
-		if DebugMode {
-			wheel := rl.GetMouseWheelMove()
-			if wheel != 0 {
-				SetCameraZoom(MainCamera, MainCamera.Zoom+float32(wheel)*0.05)
+		for unprocessedTime > float64(FrameTime) {
+			if DebugMode {
+				pushEditorElement(rootElement, frameRateString, nil)
 			}
+
+			UpdateMusic()
+			UpdateWeather()
+			UpdateMaps()
+			updateEssentials()
+			shouldRender = true
+
+			unprocessedTime -= float64(FrameTime)
 		}
-		gameCamera.Zoom = MainCamera.Zoom
 
-		gameCamera.Offset = rl.Vector2{
-			X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + screenW/2)),
-			Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + screenH/2)),
+		if shouldRender {
+			rl.BeginTextureMode(*screenTexture)
+			rl.BeginDrawing()
+			{
+				rl.ClearBackground(rl.Black)
+				drawBackground()
+
+				rl.BeginMode2D(gameCamera)
+				{
+					DrawMap()
+					DrawWeather()
+				}
+				rl.EndMode2D()
+
+				DrawMapUI()
+				DrawEditor()
+
+				/* rl.BeginShaderMode(bloom)
+
+				rl.DrawTextureRec(
+					screenTexture.Texture,
+					rl.NewRectangle(0, 0, float32(screenTexture.Texture.Width), float32(-screenTexture.Texture.Height)),
+					rl.Vector2{},
+					rl.White,
+				)
+
+				rl.EndShaderMode() */
+
+			}
+			rl.EndDrawing()
+			rl.EndTextureMode()
+
+			rl.DrawTexturePro(screenTexture.Texture, rl.NewRectangle(0, 0, screenW, -screenH),
+				rl.NewRectangle(0, 0, float32(windowW), float32(windowH)), rl.NewVector2(0, 0), 0, rl.White)
+
+			frames++
+		} else {
+			//time.Sleep(time.Millisecond)
 		}
-
-		DrawMap()
-		DrawWeather()
-
-		rl.EndMode2D()
-
-		DrawMapUI()
-		DrawEditor()
-
-		/* rl.BeginShaderMode(bloom)
-
-		rl.DrawTextureRec(
-			screenTexture.Texture,
-			rl.NewRectangle(0, 0, float32(screenTexture.Texture.Width), float32(-screenTexture.Texture.Height)),
-			rl.Vector2{},
-			rl.White,
-		)
-
-		rl.EndShaderMode() */
-
-		rl.EndDrawing()
-		rl.EndTextureMode()
-		rl.DrawTexturePro(screenTexture.Texture, rl.NewRectangle(0, 0, screenW, -screenH),
-			rl.NewRectangle(0, 0, float32(windowW), float32(windowH)), rl.NewVector2(0, 0), 0, rl.White)
 	}
 }
 
@@ -165,5 +173,42 @@ func drawBackground() {
 				rl.White,
 			)
 		}
+	}
+}
+
+func updateEssentials() {
+	if IsKeyPressed("exit") {
+		return
+	}
+
+	if LocalPlayer == nil {
+		log.Fatalln("Local player not defined!")
+		return
+	}
+
+	if MainCamera == nil {
+		setupDefaultCamera()
+	}
+
+	if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
+		demoMap = ReloadMap(demoMap)
+		SwitchMap(demoMap.mapName)
+	}
+
+	if DebugMode && rl.IsKeyPressed(rl.KeyF7) {
+		LoadNextTrack()
+	}
+
+	if DebugMode {
+		wheel := rl.GetMouseWheelMove()
+		if wheel != 0 {
+			MainCamera.SetCameraZoom(MainCamera.Zoom + float32(wheel)*0.05)
+		}
+	}
+	gameCamera.Zoom = MainCamera.Zoom
+
+	gameCamera.Offset = rl.Vector2{
+		X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + screenW/2)),
+		Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + screenH/2)),
 	}
 }

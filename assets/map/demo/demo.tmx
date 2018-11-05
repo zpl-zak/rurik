@@ -1059,7 +1059,7 @@
     <property name="depends" value="player;intro_cutscene"/>
     <property name="end" value="camera_end"/>
     <property name="follow" value="player"/>
-    <property name="mode" type="int" value="1"/>
+    <property name="mode" value="static"/>
     <property name="speed" type="float" value="0.23"/>
     <property name="start" value="camera_start"/>
     <property name="target" value="wait_2sec"/>

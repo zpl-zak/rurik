@@ -21,13 +21,16 @@ var (
 
 	// ScaleRatio between window and screen resolution
 	ScaleRatio int32
+
+	// FrameTime is the target update time
+	FrameTime float32 = 1 / 60.0
 )
 
 // InitRenderer initializes the renderer and creates the window
 func InitRenderer(title string, winW, winH int32) {
 	//rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(winW, winH, title)
-	rl.SetTargetFPS(60)
+	rl.SetTargetFPS(1000)
 
 	WindowWidth = winW
 	WindowHeight = winH

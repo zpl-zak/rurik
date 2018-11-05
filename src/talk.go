@@ -38,7 +38,7 @@ func (o *Object) NewTalk() {
 		}
 
 		if o.mouseDoublePressTime > 0 {
-			o.mouseDoublePressTime -= int32(dt * 1000)
+			o.mouseDoublePressTime -= int32(1000 * dt)
 		} else if o.mouseDoublePressTime < 0 {
 			o.mouseDoublePressTime = 0
 		}

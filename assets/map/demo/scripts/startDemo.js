@@ -1,6 +1,6 @@
-var cam = findObject("main_camera")
+var cam = MainCamera
 
-cam.Mode = 3
+cam.SetCameraMode("lerp")
 setProperty(cam, "Start", findObject("camera_start"))
 setProperty(cam, "End", findObject("camera_end"))
 findObject("player").Locked = true

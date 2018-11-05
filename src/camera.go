@@ -41,8 +41,10 @@ func (c *Object) NewCamera() {
 	c.TargetZoom = c.Zoom
 	c.ZoomSpeed = 0.8
 	c.First = true
-	c.Mode, _ = strconv.Atoi(c.Meta.Properties.GetString("mode"))
+	strMode := c.Meta.Properties.GetString("mode")
 	spd, _ := strconv.ParseFloat(c.Meta.Properties.GetString("speed"), 32)
+
+	c.SetCameraMode(strMode)
 
 	if spd == 0 {
 		spd = 1
@@ -141,7 +143,21 @@ func updateCamera(c *Object, dt float32) {
 }
 
 // SetCameraZoom overrides camera zoom
-func SetCameraZoom(o *Object, t float32) {
-	o.Zoom = t
-	o.TargetZoom = t
+func (c *Object) SetCameraZoom(t float32) {
+	c.Zoom = t
+	c.TargetZoom = t
+}
+
+// SetCameraMode sets the camera behavior mode
+func (c *Object) SetCameraMode(strMode string) {
+	switch strMode {
+	default:
+		fallthrough
+	case "static":
+		c.Mode = 1
+	case "follow":
+		c.Mode = 2
+	case "lerp":
+		c.Mode = 3
+	}
 }

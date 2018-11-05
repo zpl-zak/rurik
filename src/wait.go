@@ -70,7 +70,7 @@ func updateWait(o *Object, dt float32) {
 		return
 	}
 
-	o.Remaining -= int(dt * 1000)
+	o.Remaining -= int(1000.0 * dt)
 }
 
 func triggerWait(o, inst *Object) {

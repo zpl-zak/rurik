@@ -1,6 +1,6 @@
-var cam = findObject("main_camera")
+var cam = MainCamera
 
-cam.Mode = 2 // follow
+cam.SetCameraMode("follow")
 cam.TargetZoom = 4.0
 cam.ZoomSpeed = 0.9
 setProperty(cam, "Follow", findObject("player"))

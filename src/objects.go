@@ -273,7 +273,7 @@ func updateObject(o, orig *Object) {
 		}
 	}
 
-	o.Update(o, rl.GetFrameTime()*float32(TimeScale))
+	o.Update(o, FrameTime*float32(TimeScale))
 	o.WasUpdated = true
 }
 

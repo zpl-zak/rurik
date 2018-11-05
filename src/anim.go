@@ -8,6 +8,7 @@ import (
 )
 
 type anim struct {
+	AnimTag     string
 	animStarted bool
 }
 
@@ -17,8 +18,12 @@ func (o *Object) NewAnim() {
 	o.Texture = GetTexture(fmt.Sprintf("assets/gfx/%s.png", o.FileName))
 	o.IsCollidable = true
 
+	if o.AnimTag == "" {
+		o.AnimTag = o.Meta.Properties.GetString("tag")
+	}
+
 	o.Trigger = func(o, inst *Object) {
-		o.Ase.Play(o.Meta.Properties.GetString("tag"))
+		o.Ase.Play(o.AnimTag)
 		o.animStarted = true
 	}
 
@@ -34,13 +39,13 @@ func (o *Object) NewAnim() {
 		source := getSpriteRectangle(o)
 		dest := getSpriteOrigin(o)
 
-		rl.DrawTexturePro(o.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
-
 		if DebugMode {
 			c := getSpriteAABB(o)
 			rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
 			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
+
+		rl.DrawTexturePro(o.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
 	}
 
 	if o.AutoStart {

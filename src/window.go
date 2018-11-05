@@ -28,9 +28,10 @@ var (
 
 // InitRenderer initializes the renderer and creates the window
 func InitRenderer(title string, winW, winH int32) {
+	rl.SetTraceLog(rl.LogError)
 	//rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(winW, winH, title)
-	rl.SetTargetFPS(1000)
+	rl.SetTargetFPS(0) // we use our own game loop timing.
 
 	WindowWidth = winW
 	WindowHeight = winH

@@ -25,6 +25,15 @@ func initGameAPI(o *Object, vm *otto.Otto) {
 		return ret
 	})
 
+	vm.Set("findObject", func(call otto.FunctionCall) otto.Value {
+		arg, _ := call.Argument(0).ToString()
+		wv, _ := vm.Get("CurrentWorld")
+		w, _ := wv.Export()
+		obj, _ := w.(*World).FindObject(arg)
+		ret, _ := vm.ToValue(obj)
+		return ret
+	})
+
 	vm.Set("setProperty", func(call otto.FunctionCall) otto.Value {
 		source, _ := call.Argument(0).Export()
 		field, _ := call.Argument(1).ToString()

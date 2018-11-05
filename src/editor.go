@@ -32,8 +32,12 @@ func pushEditorElement(element *editorElement, text string, isCollapsed *bool) *
 func DrawEditor() {
 	if DebugMode {
 		drawEditorElement(rootElement, 5, 5)
-		flushEditorElement()
 	}
+}
+
+// UpdateEditor updates editor debug UI
+func UpdateEditor() {
+	flushEditorElement()
 }
 
 func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {

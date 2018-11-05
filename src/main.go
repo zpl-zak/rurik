@@ -27,6 +27,7 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 100, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
+	playMapName := flag.String("map", "demo", "Map name to play.")
 	flag.Parse()
 
 	if DebugMode {
@@ -47,7 +48,7 @@ func main() {
 	}
 
 	InitCore()
-	demoMap = LoadMap("demo")
+	demoMap = LoadMap(*playMapName)
 
 	screenTexture := GetRenderTarget()
 
@@ -60,6 +61,15 @@ func main() {
 	var unprocessedTime float64
 	var frameCounter float64
 	var frames int32
+
+	if LocalPlayer == nil {
+		log.Fatalln("Local player not defined!")
+		return
+	}
+
+	if MainCamera == nil {
+		setupDefaultCamera()
+	}
 
 	for !rl.WindowShouldClose() {
 		shouldRender := false
@@ -78,13 +88,14 @@ func main() {
 		}
 
 		for unprocessedTime > float64(FrameTime) {
+			UpdateEditor()
 			if DebugMode {
 				pushEditorElement(rootElement, frameRateString, nil)
 			}
-
 			UpdateMusic()
 			UpdateWeather()
 			UpdateMaps()
+			UpdateMapUI()
 			updateEssentials()
 			shouldRender = true
 
@@ -106,6 +117,7 @@ func main() {
 				rl.EndMode2D()
 
 				DrawMapUI()
+
 				DrawEditor()
 
 				/* rl.BeginShaderMode(bloom)
@@ -120,6 +132,7 @@ func main() {
 				rl.EndShaderMode() */
 
 			}
+
 			rl.EndDrawing()
 			rl.EndTextureMode()
 
@@ -149,6 +162,7 @@ func setupDefaultCamera() {
 	defCam.NewCamera()
 	defCam.Mode = CameraModeFollow
 	defCam.Follow = LocalPlayer
+	defCam.Visible = false
 
 	CurrentMap.world.Objects = append(CurrentMap.world.Objects, defCam)
 }
@@ -179,15 +193,6 @@ func drawBackground() {
 func updateEssentials() {
 	if IsKeyPressed("exit") {
 		return
-	}
-
-	if LocalPlayer == nil {
-		log.Fatalln("Local player not defined!")
-		return
-	}
-
-	if MainCamera == nil {
-		setupDefaultCamera()
 	}
 
 	if DebugMode && rl.IsKeyPressed(rl.KeyF5) {

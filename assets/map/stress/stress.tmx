@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.0" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="3">
+ <tileset firstgid="1" source="../demo/Street.tsx"/>
+ <layer id="1" name="Tile Layer 1" width="20" height="12">
+  <data encoding="csv">
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,
+28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28,28
+</data>
+ </layer>
+ <objectgroup id="2" name="main">
+  <object id="1" name="player" type="player" x="320" y="192">
+   <point/>
+  </object>
+  <object id="2" name="spawn_sprites" type="wait" x="96" y="-32">
+   <properties>
+    <property name="autostart" value="1"/>
+    <property name="file" value="spawnSprites.js"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+</map>

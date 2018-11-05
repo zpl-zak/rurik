@@ -9,6 +9,11 @@ import (
 	"github.com/solarlune/resolv/resolv"
 )
 
+const (
+	// FrustumSafeMargin safe margin to be considered safe to render off-screen
+	FrustumSafeMargin = 32.0
+)
+
 func rayRectangleInt32ToResolv(i rl.RectangleInt32) *resolv.Rectangle {
 	return &resolv.Rectangle{
 		BasicShape: resolv.BasicShape{
@@ -117,4 +122,29 @@ func getSpriteRectangle(o *Object) rl.Rectangle {
 
 func getSpriteOrigin(o *Object) rl.Rectangle {
 	return rl.NewRectangle(o.Position.X-float32(o.Ase.FrameWidth/2), o.Position.Y-float32(o.Ase.FrameHeight/2), float32(o.Ase.FrameWidth), float32(o.Ase.FrameHeight))
+}
+
+func isPointWithinRectangle(p rl.Vector2, r rl.Rectangle) bool {
+	if p.X > r.X && p.X < (r.X+r.Width) &&
+		p.Y > r.Y && p.Y < (r.Y+r.Height) {
+		return true
+	}
+
+	return false
+}
+
+func isPointWithinFrustum(p rl.Vector2) bool {
+	camOffset := rl.Vector2{
+		X: float32(int(MainCamera.Position.X*MainCamera.Zoom - screenW/2)),
+		Y: float32(int(MainCamera.Position.Y*MainCamera.Zoom - screenH/2)),
+	}
+
+	cam := rl.Rectangle{
+		X:      camOffset.X - FrustumSafeMargin,
+		Y:      camOffset.Y - FrustumSafeMargin,
+		Width:  screenW + FrustumSafeMargin*2,
+		Height: screenH + FrustumSafeMargin*2,
+	}
+
+	return isPointWithinRectangle(p, cam)
 }

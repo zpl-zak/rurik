@@ -165,6 +165,11 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 	}
 }
 
+// AddObject adds object to the world
+func (w *World) AddObject(o *Object) {
+	w.Objects = append(w.Objects, o)
+}
+
 func (w *World) spawnObject(objectData *tiled.Object) {
 	objType, ok := ObjectTypes[objectData.Type]
 
@@ -286,6 +291,11 @@ func (w *World) DrawObjects() {
 
 	for _, o := range w.Objects {
 		if o.Visible {
+
+			if !isPointWithinFrustum(o.Position) {
+				continue
+			}
+
 			o.Draw(o)
 		}
 	}
@@ -298,4 +308,9 @@ func (w *World) DrawObjectUI() {
 			o.DrawUI(o)
 		}
 	}
+}
+
+// SetPosition sets the object's position
+func (o *Object) SetPosition(x, y float32) {
+	o.Position = rl.NewVector2(x, y)
 }

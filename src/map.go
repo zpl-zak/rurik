@@ -117,7 +117,10 @@ func DrawMap() {
 // DrawMapUI draw current map's UI elements
 func DrawMapUI() {
 	CurrentMap.world.DrawObjectUI()
+}
 
+// UpdateMapUI draws debug UI
+func UpdateMapUI() {
 	if DebugMode {
 		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
 		{
@@ -242,6 +245,12 @@ func (m *Map) DrawTilemap() {
 			sourceRect := rl.NewRectangle(tileX, tileY, tileW, tileH)
 			var rot float32
 
+			tilePos := rl.NewVector2(tileWorldX+tileW/2, tileWorldY+tileH/2)
+
+			if !isPointWithinFrustum(tilePos) {
+				continue
+			}
+
 			if tile.HorizontalFlip {
 				sourceRect.Width *= -1
 			}
@@ -257,7 +266,7 @@ func (m *Map) DrawTilemap() {
 
 			rl.DrawTexturePro(tilemapImage,
 				sourceRect,
-				rl.NewRectangle(tileWorldX+tileW/2, tileWorldY+tileH/2, tileW, tileH), rl.NewVector2(tileW/2, tileH/2), rot, SkyColor)
+				rl.NewRectangle(tilePos.X, tilePos.Y, tileW, tileH), rl.NewVector2(tileW/2, tileH/2), rot, SkyColor)
 		}
 	}
 }

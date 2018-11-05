@@ -94,13 +94,13 @@ func drawPlayer(p *Object) {
 	source := getSpriteRectangle(p)
 	dest := getSpriteOrigin(p)
 
-	rl.DrawTexturePro(p.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
-
 	if DebugMode {
 		c := getSpriteAABB(p)
 		rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
 		drawTextCentered(p.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 	}
+
+	rl.DrawTexturePro(p.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
 }
 
 func handlePlayerCollision(res *resolv.Collision, p, other *Object) {

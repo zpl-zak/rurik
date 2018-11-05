@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -18,9 +17,8 @@ const (
 )
 
 var (
-	demoMap         *Map
-	gameCamera      rl.Camera2D
-	frameRateString = "frametime: 0 ms (0 FPS)"
+	demoMap    *Map
+	gameCamera rl.Camera2D
 )
 
 func main() {
@@ -62,14 +60,9 @@ func main() {
 	var frameCounter float64
 	var frames int32
 
-	if LocalPlayer == nil {
-		log.Fatalln("Local player not defined!")
-		return
-	}
+	initGameProfilers()
 
-	if MainCamera == nil {
-		setupDefaultCamera()
-	}
+	//defer profile.Start(profile.ProfilePath("build")).Stop()
 
 	for !rl.WindowShouldClose() {
 		shouldRender := false
@@ -79,32 +72,55 @@ func main() {
 		unprocessedTime += passedTime
 		frameCounter += passedTime
 
-		if frameCounter > 1 {
-			totalTime := ((1000 * frameCounter) / (float64(frames)))
+		if LocalPlayer == nil {
+			log.Fatalln("Local player not defined!")
+			return
+		}
 
-			frameRateString = fmt.Sprintf("frametime: %.02f ms (%.02f FPS)", totalTime, 1000/totalTime)
+		if MainCamera == nil {
+			setupDefaultCamera()
+		}
+
+		if frameCounter > 1 {
+			updateProfiling(frameCounter, float64(frames))
+
 			frames = 0
 			frameCounter = 0
 		}
 
 		for unprocessedTime > float64(FrameTime) {
+			updateProfiler.StartInvocation()
 			UpdateEditor()
-			if DebugMode {
-				pushEditorElement(rootElement, frameRateString, nil)
-			}
+
+			musicProfiler.StartInvocation()
 			UpdateMusic()
+			musicProfiler.StopInvocation()
+
+			weatherProfiler.StartInvocation()
 			UpdateWeather()
+			weatherProfiler.StopInvocation()
 			UpdateMaps()
+
 			UpdateMapUI()
+
+			customProfiler.StartInvocation()
 			updateEssentials()
+			customProfiler.StopInvocation()
+
 			shouldRender = true
 
+			updateProfiler.StopInvocation()
 			unprocessedTime -= float64(FrameTime)
 		}
 
 		if shouldRender {
+			if DebugMode {
+				drawProfiling()
+			}
+
 			rl.BeginTextureMode(*screenTexture)
 			rl.BeginDrawing()
+			drawProfiler.StartInvocation()
 			{
 				rl.ClearBackground(rl.Black)
 				drawBackground()
@@ -116,7 +132,7 @@ func main() {
 				}
 				rl.EndMode2D()
 
-				DrawMapUI()
+				//DrawMapUI()
 
 				DrawEditor()
 
@@ -132,6 +148,7 @@ func main() {
 				rl.EndShaderMode() */
 
 			}
+			drawProfiler.StopInvocation()
 
 			rl.EndDrawing()
 			rl.EndTextureMode()
@@ -196,8 +213,11 @@ func updateEssentials() {
 	}
 
 	if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
+		MainCamera = nil
+		LocalPlayer = nil
 		demoMap = ReloadMap(demoMap)
 		SwitchMap(demoMap.mapName)
+		return
 	}
 
 	if DebugMode && rl.IsKeyPressed(rl.KeyF7) {

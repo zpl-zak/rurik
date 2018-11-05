@@ -291,8 +291,12 @@ func (w *World) DrawObjects() {
 
 	for _, o := range w.Objects {
 		if o.Visible {
+			rec := o.GetAABB(o)
+			orig := o.Position
+			orig.X += float32(rec.Width / 2.0)
+			orig.Y += float32(rec.Height / 2.0)
 
-			if !isPointWithinFrustum(o.Position) {
+			if !isPointWithinFrustum(orig) {
 				continue
 			}
 

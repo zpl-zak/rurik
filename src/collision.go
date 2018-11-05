@@ -44,14 +44,17 @@ func (o *Object) NewCollision() {
 
 // CheckForCollision performs collision detection and resolution
 func CheckForCollision(o *Object, deltaX, deltaY int32) (*resolv.Collision, bool) {
+	collisionProfiler.StartInvocation()
 	for _, c := range o.World.Objects {
 		col, ok := resolveContact(o, c, deltaX, deltaY)
 
 		if ok {
+			collisionProfiler.StopInvocation()
 			return col, true
 		}
 	}
 
+	collisionProfiler.StopInvocation()
 	return nil, false
 }
 

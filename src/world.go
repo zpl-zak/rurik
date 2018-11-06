@@ -285,9 +285,11 @@ func updateObject(o, orig *Object) {
 // DrawObjects draws all drawable objects on the screen
 // It sorts all objects by Y position
 func (w *World) DrawObjects() {
+	sortRenderProfiler.StartInvocation()
 	sort.Slice(w.Objects, func(i, j int) bool {
 		return w.Objects[i].Position.Y < w.Objects[j].Position.Y
 	})
+	sortRenderProfiler.StopInvocation()
 
 	for _, o := range w.Objects {
 		if o.Visible {

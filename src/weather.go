@@ -75,7 +75,7 @@ func UpdateWeather() {
 		if skyTime <= 0 {
 			nextSkyStage()
 		} else {
-			skyTime -= float64(rl.GetFrameTime()) * WeatherTimeScale
+			skyTime -= float64(FrameTime) * WeatherTimeScale
 		}
 
 		if skyTargetTime != 0 {

@@ -3,13 +3,14 @@ package main
 import "fmt"
 
 var (
-	updateProfiler    Profiler
-	collisionProfiler Profiler
-	animsProfiler     Profiler
-	musicProfiler     Profiler
-	weatherProfiler   Profiler
-	customProfiler    Profiler
-	drawProfiler      Profiler
+	updateProfiler     Profiler
+	collisionProfiler  Profiler
+	animsProfiler      Profiler
+	musicProfiler      Profiler
+	weatherProfiler    Profiler
+	customProfiler     Profiler
+	drawProfiler       Profiler
+	sortRenderProfiler Profiler
 
 	isProfilerCollapsed bool
 
@@ -25,6 +26,7 @@ func initGameProfilers() {
 	weatherProfiler = NewProfiler("weather")
 	customProfiler = NewProfiler("custom")
 	drawProfiler = NewProfiler("draw")
+	sortRenderProfiler = NewProfiler("sortRender")
 }
 
 func updateProfiling(frameCounter, frames float64) {
@@ -38,6 +40,7 @@ func updateProfiling(frameCounter, frames float64) {
 	totalMeasuredTime += weatherProfiler.GetTime(frames)
 	totalMeasuredTime += customProfiler.GetTime(frames)
 	totalMeasuredTime += drawProfiler.GetTime(frames)
+	totalMeasuredTime += sortRenderProfiler.GetTime(frames)
 
 	frameRateString = fmt.Sprintf("total time: %.02f ms (%.02f FPS)", totalTime, 1000/totalTime)
 	otherTimeString = fmt.Sprintf("measured time: %.02f ms", totalMeasuredTime)
@@ -56,6 +59,10 @@ func drawProfiling() {
 		pushEditorElement(profilerNode, musicProfiler.displayString, nil)
 		pushEditorElement(profilerNode, weatherProfiler.displayString, nil)
 		pushEditorElement(profilerNode, customProfiler.displayString, nil)
-		pushEditorElement(profilerNode, drawProfiler.displayString, nil)
+
+		renderNode := pushEditorElement(profilerNode, drawProfiler.displayString, &drawProfiler.isCollapsed)
+		{
+			pushEditorElement(renderNode, sortRenderProfiler.displayString, nil)
+		}
 	}
 }

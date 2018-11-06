@@ -55,17 +55,7 @@ func updateWait(o *Object, dt float32) {
 		o.Started = false
 		o.Remaining = 0
 
-		if o.Target != nil {
-			o.Target.Trigger(o.Target, o)
-		}
-
-		if o.Script != nil {
-			o.Script.Trigger(o.Script, o)
-		}
-
-		if o.Target == nil && o.Script == nil {
-			log.Printf("Timer %s has no target attached!\n", o.Name)
-		}
+		fireWait(o)
 
 		return
 	}
@@ -73,7 +63,25 @@ func updateWait(o *Object, dt float32) {
 	o.Remaining -= int(1000.0 * dt)
 }
 
+func fireWait(o *Object) {
+	if o.Target != nil {
+		o.Target.Trigger(o.Target, o)
+	}
+
+	if o.Script != nil {
+		o.Script.Trigger(o.Script, o)
+	}
+
+	if o.Target == nil && o.Script == nil {
+		log.Printf("Timer %s has no target attached!\n", o.Name)
+	}
+}
+
 func triggerWait(o, inst *Object) {
+	if o.Duration == 0 {
+		fireWait(o)
+		return
+	}
 	o.Remaining = o.Duration
 	o.Started = true
 }

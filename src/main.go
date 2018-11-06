@@ -23,7 +23,7 @@ var (
 
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
-	musicVol := flag.Int("musicvol", 100, "Music volume.")
+	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
 	playMapName := flag.String("map", "demo", "Map name to play.")
 	flag.Parse()
@@ -40,11 +40,7 @@ func main() {
 	LoadNextTrack()
 	defer shutdown()
 
-	if musicVol != nil {
-		SetMusicVolume(float32(*musicVol) / 100)
-	} else {
-		SetMusicVolume(1)
-	}
+	SetMusicVolume(float32(*musicVol) / 100)
 
 	InitCore()
 	demoMap = LoadMap(*playMapName)
@@ -134,7 +130,6 @@ func main() {
 				rl.EndMode2D()
 
 				DrawMapUI()
-
 				DrawEditor()
 
 				/* rl.BeginShaderMode(bloom)
@@ -147,11 +142,10 @@ func main() {
 				)
 
 				rl.EndShaderMode() */
-
 			}
 			drawProfiler.StopInvocation()
-
 			rl.EndDrawing()
+
 			rl.EndTextureMode()
 
 			rl.DrawTexturePro(screenTexture.Texture, rl.NewRectangle(0, 0, screenW, -screenH),

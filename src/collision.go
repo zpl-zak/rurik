@@ -43,7 +43,7 @@ func (o *Object) NewCollision() {
 }
 
 // CheckForCollision performs collision detection and resolution
-func CheckForCollision(o *Object, deltaX, deltaY int32) (*resolv.Collision, bool) {
+func CheckForCollision(o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
 	collisionProfiler.StartInvocation()
 	for _, c := range o.World.Objects {
 		col, ok := resolveContact(o, c, deltaX, deltaY)
@@ -55,27 +55,32 @@ func CheckForCollision(o *Object, deltaX, deltaY int32) (*resolv.Collision, bool
 	}
 
 	collisionProfiler.StopInvocation()
-	return nil, false
+	return resolv.Collision{}, false
 }
 
-func resolveContact(a, b *Object, deltaX, deltaY int32) (*resolv.Collision, bool) {
+var (
+	resolveFirst  resolv.Rectangle
+	resolveSecond resolv.Rectangle
+)
+
+func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
 
 	if !b.IsCollidable || a == b {
-		return nil, false
+		return resolv.Collision{}, false
 	}
 
-	first := rayRectangleInt32ToResolv(a.GetAABB(a))
-	second := rayRectangleInt32ToResolv(b.GetAABB(b))
+	rayRectangleInt32ToResolv(&resolveFirst, a.GetAABB(a))
+	rayRectangleInt32ToResolv(&resolveSecond, b.GetAABB(b))
 
-	try := resolv.Resolve(first, second, deltaX, deltaY)
+	try := resolv.Resolve(&resolveFirst, &resolveSecond, deltaX, deltaY)
 
 	if try.Colliding() {
 		if DebugMode {
 			b.isColliding = true
 		}
 
-		return &try, true
+		return try, true
 	}
 
-	return nil, false
+	return resolv.Collision{}, false
 }

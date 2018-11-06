@@ -5,7 +5,6 @@ import "fmt"
 var (
 	updateProfiler     Profiler
 	collisionProfiler  Profiler
-	animsProfiler      Profiler
 	musicProfiler      Profiler
 	weatherProfiler    Profiler
 	customProfiler     Profiler
@@ -20,7 +19,6 @@ var (
 
 func initGameProfilers() {
 	updateProfiler = NewProfiler("update")
-	animsProfiler = NewProfiler("anims")
 	collisionProfiler = NewProfiler("collision")
 	musicProfiler = NewProfiler("music")
 	weatherProfiler = NewProfiler("weather")
@@ -35,7 +33,6 @@ func updateProfiling(frameCounter, frames float64) {
 
 	totalMeasuredTime += updateProfiler.GetTime(frames)
 	totalMeasuredTime += collisionProfiler.GetTime(frames)
-	totalMeasuredTime += animsProfiler.GetTime(frames)
 	totalMeasuredTime += musicProfiler.GetTime(frames)
 	totalMeasuredTime += weatherProfiler.GetTime(frames)
 	totalMeasuredTime += customProfiler.GetTime(frames)
@@ -54,7 +51,6 @@ func drawProfiling() {
 		updateNode := pushEditorElement(profilerNode, updateProfiler.displayString, &updateProfiler.isCollapsed)
 		{
 			pushEditorElement(updateNode, collisionProfiler.displayString, nil)
-			pushEditorElement(updateNode, animsProfiler.displayString, nil)
 		}
 		pushEditorElement(profilerNode, musicProfiler.displayString, nil)
 		pushEditorElement(profilerNode, weatherProfiler.displayString, nil)

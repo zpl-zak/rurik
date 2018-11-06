@@ -123,17 +123,20 @@ func DrawMapUI() {
 func UpdateMapUI() {
 	if DebugMode {
 		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
-		{
+
+		if !mapNodeIsCollapsed {
 			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.mapName), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("no. of tilesets: %d", len(CurrentMap.tilesets)), nil)
 
 			tilesetsNode := pushEditorElement(mapNode, "tilesets", &tilesetsNodeIsCollapsed)
-			{
+
+			if !tilesetsNodeIsCollapsed {
 				i := 0
 				for _, v := range CurrentMap.tilesets {
 					tilesetNode := pushEditorElement(tilesetsNode, fmt.Sprintf("%d. %s", i, v.Name), &v.IsCollapsed)
 					i++
-					{
+
+					if !v.IsCollapsed {
 						pushEditorElement(tilesetNode, fmt.Sprintf("name: %s", v.Name), nil)
 						pushEditorElement(tilesetNode, fmt.Sprintf("image: %s", v.ImageInfo.Source), nil)
 						pushEditorElement(tilesetNode, fmt.Sprintf("width: %d", v.ImageInfo.Width), nil)
@@ -151,12 +154,14 @@ func UpdateMapUI() {
 
 func drawWorldUI(mapNode *editorElement) {
 	worldNode := pushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
-	{
+
+	if !worldNodeIsCollapsed {
 		pushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.world.Objects)), nil)
 		pushEditorElement(worldNode, fmt.Sprintf("global id cursor: %d", CurrentMap.world.GlobalIndex), nil)
 
 		objsNode := pushEditorElement(worldNode, "objects", &objectsNodeIsCollapsed)
-		{
+
+		if !objectsNodeIsCollapsed {
 			for i, v := range CurrentMap.world.Objects {
 				pushEditorElement(objsNode, fmt.Sprintf("%d. %s (%s)", i, v.Name, v.Class), nil)
 			}

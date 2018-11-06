@@ -28,11 +28,9 @@ func (o *Object) NewAnim() {
 	}
 
 	o.Update = func(o *Object, dt float32) {
-		animsProfiler.StartInvocation()
 		if o.animStarted {
 			o.Ase.Update(dt)
 		}
-		animsProfiler.StopInvocation()
 	}
 
 	o.GetAABB = getSpriteAABB

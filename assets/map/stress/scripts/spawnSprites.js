@@ -1,5 +1,5 @@
-for (var x = 0; x < 90; x++) {
-    for (var y = 0; y < 90; y++) {
+for (var x = 0; x < 165; x++) {
+    for (var y = 0; y < 165; y++) {
         var obj = CurrentWorld.NewObject(null)
         obj.FileName = "ball"
         obj.Name = y*20+x

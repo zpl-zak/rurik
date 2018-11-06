@@ -5,6 +5,7 @@ import (
 	"log"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"github.com/pkg/profile"
 )
 
 const (
@@ -59,7 +60,7 @@ func main() {
 
 	initGameProfilers()
 
-	//defer profile.Start(profile.ProfilePath("build")).Stop()
+	defer profile.Start(profile.ProfilePath("build")).Stop()
 
 	for !rl.WindowShouldClose() {
 		shouldRender := false
@@ -203,10 +204,6 @@ func drawBackground() {
 }
 
 func updateEssentials() {
-	if IsKeyPressed("exit") {
-		return
-	}
-
 	if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
 		MainCamera = nil
 		LocalPlayer = nil

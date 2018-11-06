@@ -32,7 +32,7 @@
   <object id="1" name="player" type="player" x="320" y="192">
    <point/>
   </object>
-  <object id="2" name="spawn_sprites" type="wait" x="96" y="-32">
+  <object id="2" name="spawn_sprites" type="wait" x="160" y="-32">
    <properties>
     <property name="autostart" value="1"/>
     <property name="file" value="spawnSprites.js"/>

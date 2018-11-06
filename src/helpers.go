@@ -14,8 +14,8 @@ const (
 	FrustumSafeMargin = 32.0
 )
 
-func rayRectangleInt32ToResolv(i rl.RectangleInt32) *resolv.Rectangle {
-	return &resolv.Rectangle{
+func rayRectangleInt32ToResolv(rec *resolv.Rectangle, i rl.RectangleInt32) {
+	*rec = resolv.Rectangle{
 		BasicShape: resolv.BasicShape{
 			X:           i.X,
 			Y:           i.Y,

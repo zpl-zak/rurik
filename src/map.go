@@ -109,9 +109,9 @@ func UpdateMaps() {
 
 // DrawMap draws the tilemap and all renderable objects
 func DrawMap() {
-	CurrentMap.DrawTilemap()
-
+	CurrentMap.DrawTilemap(false)
 	CurrentMap.world.DrawObjects()
+	CurrentMap.DrawTilemap(true) // render all overlays
 }
 
 // DrawMapUI draw current map's UI elements
@@ -211,12 +211,17 @@ func (m *Map) CreateObjects(w *World) {
 }
 
 // DrawTilemap renders the loaded map
-func (m *Map) DrawTilemap() {
+func (m *Map) DrawTilemap(renderOverlays bool) {
 	tileW := float32(m.tilemap.TileWidth)
 	tileH := float32(m.tilemap.TileHeight)
 
 	for _, layer := range m.tilemap.Layers {
 		if !layer.Visible {
+			continue
+		}
+
+		if (layer.Properties.GetString("isOverlay") == "1" && !renderOverlays) ||
+			layer.Properties.GetString("isOverlay") != "1" && renderOverlays {
 			continue
 		}
 

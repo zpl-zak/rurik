@@ -37,6 +37,7 @@ func main() {
 	InitInput()
 	rl.InitAudioDevice()
 	LoadPlaylist("tracklist.txt")
+	LoadNextTrack()
 	defer shutdown()
 
 	if musicVol != nil {
@@ -132,7 +133,7 @@ func main() {
 				}
 				rl.EndMode2D()
 
-				//DrawMapUI()
+				DrawMapUI()
 
 				DrawEditor()
 

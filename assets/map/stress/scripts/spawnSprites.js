@@ -7,7 +7,7 @@ for (var x = 0; x < 90; x++) {
         obj.AnimTag = "Base"
 
         obj.NewAnim()
-        obj.IsCollidable = false
+        obj.IsCollidable = true
 
         obj.SetPosition(x*32 + 16, y*32 + 8)
         obj.Trigger(obj, null)

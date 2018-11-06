@@ -48,11 +48,13 @@ func updateProfiling(frameCounter, frames float64) {
 
 func drawProfiling() {
 	profilerNode := pushEditorElement(rootElement, "profiler", &isProfilerCollapsed)
-	{
+
+	if !isProfilerCollapsed {
 		pushEditorElement(profilerNode, frameRateString, nil)
 		pushEditorElement(profilerNode, otherTimeString, nil)
 		updateNode := pushEditorElement(profilerNode, updateProfiler.displayString, &updateProfiler.isCollapsed)
-		{
+
+		if !updateProfiler.isCollapsed {
 			pushEditorElement(updateNode, collisionProfiler.displayString, nil)
 		}
 		pushEditorElement(profilerNode, musicProfiler.displayString, nil)
@@ -60,7 +62,8 @@ func drawProfiling() {
 		pushEditorElement(profilerNode, customProfiler.displayString, nil)
 
 		renderNode := pushEditorElement(profilerNode, drawProfiler.displayString, &drawProfiler.isCollapsed)
-		{
+
+		if !drawProfiler.isCollapsed {
 			pushEditorElement(renderNode, sortRenderProfiler.displayString, nil)
 		}
 	}

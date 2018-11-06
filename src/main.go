@@ -27,6 +27,7 @@ func main() {
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
 	playMapName := flag.String("map", "demo", "Map name to play.")
+	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	flag.Parse()
 
 	if DebugMode {
@@ -60,7 +61,9 @@ func main() {
 
 	initGameProfilers()
 
-	defer profile.Start(profile.ProfilePath("build")).Stop()
+	if *enableProfiler {
+		defer profile.Start(profile.ProfilePath("build")).Stop()
+	}
 
 	for !rl.WindowShouldClose() {
 		shouldRender := false

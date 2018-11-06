@@ -1,17 +1,27 @@
-for (var x = 0; x < 165; x++) {
-    for (var y = 0; y < 165; y++) {
+var f = null
+
+//LocalPlayer.IsCollidable = false
+
+for (var x = 0; x < 180; x++) {
+    for (var y = 0; y < 180; y++) {
         var obj = CurrentWorld.NewObject(null)
         obj.FileName = "ball"
         obj.Name = y*20+x
         obj.Class = "anim"
         obj.AnimTag = "Base"
+        obj.AutoStart = 1
+        
+        if (f != null)
+            setProperty(obj, "Proxy", f)
 
         obj.NewAnim()
-        obj.IsCollidable = true
-
+        obj.IsCollidable = false
+        
         obj.SetPosition(x*32 + 16, y*32 + 8)
-        obj.Trigger(obj, null)
-
+        
         CurrentWorld.AddObject(obj)
+
+        if (f == null)
+            f = obj
     }
 }

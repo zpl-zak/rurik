@@ -14,7 +14,6 @@ type anim struct {
 
 // NewAnim animated sprite
 func (o *Object) NewAnim() {
-	o.Ase = goaseprite.Load(fmt.Sprintf("assets/gfx/%s.json", o.FileName))
 	o.Texture = GetTexture(fmt.Sprintf("assets/gfx/%s.png", o.FileName))
 	o.IsCollidable = true
 
@@ -23,13 +22,28 @@ func (o *Object) NewAnim() {
 	}
 
 	o.Trigger = func(o, inst *Object) {
-		o.Ase.Play(o.AnimTag)
+		if o.Ase != nil {
+			o.Ase.Play(o.AnimTag)
+		}
 		o.animStarted = true
 	}
 
 	o.Update = func(o *Object, dt float32) {
-		if o.animStarted {
+		if o.animStarted && o.Proxy == nil {
 			o.Ase.Update(dt)
+		}
+	}
+
+	o.Finish = func(o *Object) {
+		if o.Proxy != nil {
+			o.Ase = o.Proxy.Ase
+		} else {
+			aseData := goaseprite.Load(fmt.Sprintf("assets/gfx/%s.json", o.FileName))
+			o.Ase = &aseData
+		}
+
+		if o.AutoStart {
+			o.Trigger(o, nil)
 		}
 	}
 
@@ -46,9 +60,5 @@ func (o *Object) NewAnim() {
 		}
 
 		rl.DrawTexturePro(o.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
-	}
-
-	if o.AutoStart {
-		o.Trigger(o, nil)
 	}
 }

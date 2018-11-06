@@ -87,7 +87,7 @@ func main() {
 		}
 
 		for unprocessedTime > float64(FrameTime) {
-			updateProfiler.StartInvocation()
+
 			UpdateEditor()
 
 			musicProfiler.StartInvocation()
@@ -97,7 +97,10 @@ func main() {
 			weatherProfiler.StartInvocation()
 			UpdateWeather()
 			weatherProfiler.StopInvocation()
+
+			updateProfiler.StartInvocation()
 			UpdateMaps()
+			updateProfiler.StopInvocation()
 
 			UpdateMapUI()
 
@@ -107,7 +110,6 @@ func main() {
 
 			shouldRender = true
 
-			updateProfiler.StopInvocation()
 			unprocessedTime -= float64(FrameTime)
 		}
 

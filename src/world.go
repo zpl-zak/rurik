@@ -47,9 +47,11 @@ type Object struct {
 	Meta          *tiled.Object
 	Depends       []*Object
 	Target        *Object
+	Proxy         *Object
+	ProxyName     string
 	FileName      string
 	Texture       rl.Texture2D
-	Ase           goaseprite.File
+	Ase           *goaseprite.File
 	LastTrigger   float32
 	AutoStart     bool
 	IsCollidable  bool
@@ -227,6 +229,14 @@ func (w *World) findTargets(o *Object) {
 
 	if target != "" {
 		o.Target, _ = w.FindObject(target)
+	}
+
+	if o.ProxyName == "" {
+		o.ProxyName = o.Meta.Properties.GetString("proxy")
+	}
+
+	if o.ProxyName != "" {
+		o.Proxy, _ = w.FindObject(o.ProxyName)
 	}
 }
 

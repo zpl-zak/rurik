@@ -8,7 +8,6 @@ import (
 )
 
 type area struct {
-	Proxy      *Object
 	Radius     int
 	isInCircle bool
 	Talk       *Object

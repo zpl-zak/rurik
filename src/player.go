@@ -15,7 +15,8 @@ type player struct {
 
 // NewPlayer player
 func (p *Object) NewPlayer() {
-	p.Ase = goaseprite.Load("assets/gfx/player.json")
+	aseData := goaseprite.Load("assets/gfx/player.json")
+	p.Ase = &aseData
 	p.Texture = GetTexture("assets/gfx/player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
 	p.Update = updatePlayer

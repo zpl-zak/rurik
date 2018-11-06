@@ -25,6 +25,9 @@ func initGameProfilers() {
 	customProfiler = NewProfiler("custom")
 	drawProfiler = NewProfiler("draw")
 	sortRenderProfiler = NewProfiler("sortRender")
+
+	frameRateString = "total time: 0 ms (0 FPS)"
+	otherTimeString = "measured time: 0 ms"
 }
 
 func updateProfiling(frameCounter, frames float64) {

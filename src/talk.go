@@ -1,10 +1,7 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"log"
 
 	"github.com/gen2brain/raylib-go/raylib"
 )
@@ -28,7 +25,7 @@ var (
 // NewTalk dialogue handler
 func (o *Object) NewTalk() {
 	if chatBanner == nil {
-		img := GetTexture("assets/gfx/chat_banner.png")
+		img := GetTexture("chat_banner.png")
 		chatBanner = &img
 	}
 
@@ -90,18 +87,8 @@ func (o *Object) NewTalk() {
 
 	o.Trigger = func(o, inst *Object) {
 		if o.Texts == nil {
-			data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/texts/%s", CurrentMap.mapName, o.FileName))
-
-			if err != nil {
-				log.Fatalf("Could not load texts for %s [%s]: %s\n", o.Name, o.FileName, err.Error())
-			}
-
-			err = json.Unmarshal(data, &o.Texts)
-
-			if err != nil {
-				log.Fatalf("Error loading text %s for %s: %s\n", o.FileName, o.Name, err.Error())
-				return
-			}
+			data := GetDialogue(o.FileName)
+			o.Texts = &data
 		}
 
 		o.currentText = o.Texts

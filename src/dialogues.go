@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -25,7 +23,7 @@ type Choice struct {
 
 func initText(t *Dialogue) {
 	if t.AvatarFile != "" {
-		t.Avatar = GetTexture(fmt.Sprintf("assets/gfx/%s", t.AvatarFile))
+		t.Avatar = GetTexture(t.AvatarFile)
 	}
 
 	if t.Next != nil {

@@ -5,7 +5,6 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	ry "github.com/gen2brain/raylib-go/raymath"
-	"github.com/solarlune/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
 )
 
@@ -15,9 +14,9 @@ type player struct {
 
 // NewPlayer player
 func (p *Object) NewPlayer() {
-	aseData := goaseprite.Load("assets/gfx/player.json")
+	aseData := GetAnimData("player")
 	p.Ase = &aseData
-	p.Texture = GetTexture("assets/gfx/player.png")
+	p.Texture = GetTexture("player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
 	p.Update = updatePlayer
 	p.Draw = drawPlayer

@@ -1,10 +1,7 @@
 package main
 
 import (
-	"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
-	goaseprite "github.com/solarlune/GoAseprite"
 )
 
 type anim struct {
@@ -14,7 +11,7 @@ type anim struct {
 
 // NewAnim animated sprite
 func (o *Object) NewAnim() {
-	o.Texture = GetTexture(fmt.Sprintf("assets/gfx/%s.png", o.FileName))
+	o.Texture = GetTexture(o.FileName + ".png")
 	o.IsCollidable = true
 
 	if o.AnimTag == "" {
@@ -38,7 +35,7 @@ func (o *Object) NewAnim() {
 		if o.Proxy != nil {
 			o.Ase = o.Proxy.Ase
 		} else {
-			aseData := goaseprite.Load(fmt.Sprintf("assets/gfx/%s.json", o.FileName))
+			aseData := GetAnimData(o.FileName)
 			o.Ase = &aseData
 		}
 

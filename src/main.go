@@ -186,7 +186,7 @@ func setupDefaultCamera() {
 }
 
 func drawBackground() {
-	bgImage := GetTexture("assets/gfx/bg.png")
+	bgImage := GetTexture("bg.png")
 
 	rows := int(screenW/bgImage.Width) + 1
 	cols := int(screenH/bgImage.Height) + 1

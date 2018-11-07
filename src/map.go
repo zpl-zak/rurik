@@ -199,7 +199,7 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 		return nil
 	}
 
-	loadedTileset.Image = GetTexture(fmt.Sprintf("assets/map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
+	loadedTileset.Image = GetTexture(fmt.Sprintf("../map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
 	loadedTileset.IsCollapsed = true
 
 	m.tilesets[tilesetName] = loadedTileset

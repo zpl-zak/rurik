@@ -1,3 +1,10 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-09 02:23:11
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-09 02:23:11
+ */
+
 package main
 
 import (
@@ -14,15 +21,6 @@ func initGameAPI(o *Object, vm *otto.Otto) {
 		fmt.Println(obj)
 
 		return otto.Value{}
-	})
-
-	vm.Set("findObject", func(call otto.FunctionCall) otto.Value {
-		arg, _ := call.Argument(0).ToString()
-		wv, _ := vm.Get("CurrentWorld")
-		w, _ := wv.Export()
-		obj, _ := w.(*World).FindObject(arg)
-		ret, _ := vm.ToValue(obj)
-		return ret
 	})
 
 	vm.Set("findObject", func(call otto.FunctionCall) otto.Value {

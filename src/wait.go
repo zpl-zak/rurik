@@ -1,3 +1,9 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-09 02:14:54
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-09 02:14:54
+ */
 package main
 
 import (
@@ -25,6 +31,7 @@ func (o *Object) NewWait() {
 	if scriptName != "" {
 		o.Script = o.World.NewObject(nil)
 		o.Script.Name = o.Name + "_script"
+		o.Script.Class = "script"
 
 		o.Script.FileName = scriptName
 		o.Script.NewScript()

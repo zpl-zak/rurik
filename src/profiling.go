@@ -1,15 +1,21 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-09 02:14:28
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-09 02:14:28
+ */
 package main
 
 import "fmt"
 
 var (
-	updateProfiler     Profiler
-	collisionProfiler  Profiler
-	musicProfiler      Profiler
-	weatherProfiler    Profiler
-	customProfiler     Profiler
-	drawProfiler       Profiler
-	sortRenderProfiler Profiler
+	updateProfiler     *Profiler
+	collisionProfiler  *Profiler
+	musicProfiler      *Profiler
+	weatherProfiler    *Profiler
+	customProfiler     *Profiler
+	drawProfiler       *Profiler
+	sortRenderProfiler *Profiler
 
 	isProfilerCollapsed bool
 
@@ -34,13 +40,9 @@ func updateProfiling(frameCounter, frames float64) {
 	totalTime := ((1000 * frameCounter) / (float64(frames)))
 	var totalMeasuredTime float64
 
-	totalMeasuredTime += updateProfiler.GetTime(frames)
-	totalMeasuredTime += collisionProfiler.GetTime(frames)
-	totalMeasuredTime += musicProfiler.GetTime(frames)
-	totalMeasuredTime += weatherProfiler.GetTime(frames)
-	totalMeasuredTime += customProfiler.GetTime(frames)
-	totalMeasuredTime += drawProfiler.GetTime(frames)
-	totalMeasuredTime += sortRenderProfiler.GetTime(frames)
+	for _, x := range profilers {
+		totalMeasuredTime += x.GetTime(frames)
+	}
 
 	frameRateString = fmt.Sprintf("total time: %.02f ms (%.02f FPS)", totalTime, 1000/totalTime)
 	otherTimeString = fmt.Sprintf("measured time: %.02f ms", totalMeasuredTime)

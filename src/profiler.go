@@ -1,9 +1,19 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-09 02:14:45
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-09 02:14:45
+ */
 package main
 
 import (
 	"fmt"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+)
+
+var (
+	profilers []*Profiler
 )
 
 // Profiler tracks the timing of particular operations.
@@ -18,12 +28,15 @@ type Profiler struct {
 }
 
 // NewProfiler returns a new profiler
-func NewProfiler(name string) Profiler {
-	return Profiler{
+func NewProfiler(name string) *Profiler {
+	prof := &Profiler{
 		profilerName:  name,
 		isCollapsed:   false,
 		displayString: name + ": 0 ms",
 	}
+
+	profilers = append(profilers, prof)
+	return prof
 }
 
 // StartInvocation start timing this block

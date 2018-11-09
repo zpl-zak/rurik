@@ -4,6 +4,7 @@
  * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
  * @Last Modified time: 2018-11-09 02:14:28
  */
+
 package main
 
 import "fmt"

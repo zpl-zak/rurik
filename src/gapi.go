@@ -49,7 +49,7 @@ func initGameAPI(o *Object, vm *otto.Otto) {
 		return otto.Value{}
 	})
 
-	vm.Set("CurrentWorld", o.World)
+	vm.Set("CurrentWorld", o.world)
 	vm.Set("CurrentMap", CurrentMap)
 	vm.Set("Self", o)
 	vm.Set("LocalPlayer", LocalPlayer)

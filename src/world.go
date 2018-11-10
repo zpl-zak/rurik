@@ -1,3 +1,10 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-09 17:34:10
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-09 17:34:10
+ */
+
 package main
 
 import (
@@ -36,7 +43,6 @@ type World struct {
 // Object is map object with logic and data
 type Object struct {
 	GID           int
-	World         *World
 	Name          string
 	Class         string
 	Visible       bool
@@ -60,6 +66,7 @@ type Object struct {
 
 	// Internal fields
 	WasUpdated bool
+	world      *World
 
 	// Callbacks
 	Finish          func(o *Object)
@@ -69,6 +76,8 @@ type Object struct {
 	Trigger         func(o, inst *Object)
 	HandleCollision func(res *resolv.Collision, o, other *Object)
 	GetAABB         func(o *Object) rl.RectangleInt32
+	Serialize       func(o *Object) interface{}
+	Deserialize     func(o *Object, data interface{})
 
 	// Specialized data
 	player
@@ -146,7 +155,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 
 	return &Object{
 		GID:           idx,
-		World:         w,
+		world:         w,
 		Name:          o.Name,
 		Class:         o.Type,
 		Visible:       true,
@@ -164,6 +173,8 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		DrawUI:          func(o *Object) {},
 		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
 		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
+		Serialize:       func(o *Object) interface{} { return nil },
+		Deserialize:     func(o *Object, data interface{}) {},
 	}
 }
 

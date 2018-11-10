@@ -64,7 +64,7 @@ func (o *Object) NewTalk() {
 				o.mouseDoublePressTime = 0
 			}
 
-			tgt, _ := o.World.FindObject(o.currentText.Target)
+			tgt, _ := o.world.FindObject(o.currentText.Target)
 
 			if len(o.currentText.Choices) > 0 {
 				o.currentText = o.currentText.Choices[o.selectedChoice].Next

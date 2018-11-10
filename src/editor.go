@@ -1,3 +1,10 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-09 02:36:36
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-09 02:36:36
+ */
+
 package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"

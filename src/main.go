@@ -221,6 +221,14 @@ func updateEssentials() {
 		LoadNextTrack()
 	}
 
+	if DebugMode && rl.IsKeyPressed(rl.KeyF2) {
+		saveSystem.SaveGame(0, "demo")
+	}
+
+	if DebugMode && rl.IsKeyPressed(rl.KeyF3) {
+		saveSystem.LoadGame(0)
+	}
+
 	if DebugMode {
 		wheel := rl.GetMouseWheelMove()
 		if wheel != 0 {

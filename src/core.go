@@ -14,7 +14,13 @@ var (
 	TimeScale = 1
 )
 
+const (
+	// GameVersion describes itself
+	GameVersion = "1.0.0"
+)
+
 // InitCore initializes the game engine
 func InitCore() {
 	initObjectTypes()
+	InitDatabase()
 }

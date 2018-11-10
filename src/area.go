@@ -16,7 +16,7 @@ type area struct {
 // NewArea trigger zone using various styles of execution
 func (o *Object) NewArea() {
 	o.Finish = func(o *Object) {
-		o.Proxy, _ = o.World.FindObject(o.Meta.Properties.GetString("proxy"))
+		o.Proxy, _ = o.world.FindObject(o.Meta.Properties.GetString("proxy"))
 		o.Radius, _ = strconv.Atoi(o.Meta.Properties.GetString("radius"))
 		o.Radius *= 2
 	}
@@ -56,12 +56,12 @@ func (o *Object) NewArea() {
 
 		if talkFile != "" {
 			if o.Talk == nil {
-				o.Talk = o.World.NewObject(nil)
+				o.Talk = o.world.NewObject(nil)
 				o.Talk.Name = o.Name + "_talk"
 
 				o.Talk.FileName = talkFile
 				o.Talk.NewTalk()
-				o.World.Objects = append(o.World.Objects, o.Talk)
+				o.world.Objects = append(o.world.Objects, o.Talk)
 			}
 
 			if !o.Talk.Started && (rl.GetTime()-o.Talk.LastTrigger) > 1 {

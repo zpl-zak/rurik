@@ -107,6 +107,12 @@ func SwitchMap(name string) {
 	}
 }
 
+// FlushMaps disposes all data
+func FlushMaps() {
+	CurrentMap = nil
+	Maps = make(map[string]*Map)
+}
+
 // UpdateMaps updates all maps' simulation regions (worlds)
 func UpdateMaps() {
 	for _, m := range Maps {

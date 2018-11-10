@@ -76,10 +76,10 @@ func (c *Object) NewCamera() {
 
 func finishCamera(c *Object) {
 	if c.Mode == CameraModeFollow {
-		c.Follow, _ = c.World.FindObject(c.Meta.Properties.GetString("follow"))
+		c.Follow, _ = c.world.FindObject(c.Meta.Properties.GetString("follow"))
 	} else if c.Mode == CameraModeLerp {
-		c.Start, _ = c.World.FindObject(c.Meta.Properties.GetString("start"))
-		c.End, _ = c.World.FindObject(c.Meta.Properties.GetString("end"))
+		c.Start, _ = c.world.FindObject(c.Meta.Properties.GetString("start"))
+		c.End, _ = c.world.FindObject(c.Meta.Properties.GetString("end"))
 	}
 }
 

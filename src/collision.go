@@ -51,7 +51,7 @@ func CheckForCollision(o *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		return resolv.Collision{}, false
 	}
 
-	for _, c := range o.World.Objects {
+	for _, c := range o.world.Objects {
 		col, ok := resolveContact(o, c, deltaX, deltaY)
 
 		if ok {

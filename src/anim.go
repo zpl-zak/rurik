@@ -1,3 +1,10 @@
+/*
+ * @Author: V4 Games
+ * @Date: 2018-11-14 02:25:59
+ * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-14 02:25:59
+ */
+
 package main
 
 import (

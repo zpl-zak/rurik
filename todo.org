@@ -2,7 +2,7 @@
 
 * Engine
 ** Renderer
-*** TODO Implement RTT & some Post-FX effects
+*** TODO Implement rtt & some Post-FX effects
 **** TODO 3-stage bloom
 **** TODO Water reflections
 *** TODO Weather effects
@@ -19,13 +19,13 @@
 *** TODO Broad-Phase kd-tree collision detection
 *** TODO Better serialization support
 ** Core
-*** TODO Savegame system
-**** TODO Serialization/De-serialization for all persistent objects
-**** WAIT Quest system
-**** TODO Figure out how to save scriptable sequences and load them, so that they won't re-trigger again or might go missing before even being triggered
+*** DONE Savegame system
+**** DONE Serialization/De-serialization for all persistent objects
+**** DONE Figure out how to save scriptable sequences and load them, so that they won't re-trigger again or might go missing before even being triggered
 *** TODO Quest system
 *** TODO Finalize entity system
 *** TODO Combat system
+*** TODO Inventory/Gear system
 ** AI
 *** TODO Implement basic A* pathfinding
 ** Networking

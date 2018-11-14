@@ -36,6 +36,7 @@ type Map struct {
 	tilesets map[string]*tilesetData
 	mapName  string
 	world    *World
+	weather  Weather
 }
 
 type tilesetImageData struct {
@@ -61,6 +62,12 @@ type tilesetData struct {
 func LoadMap(name string) *Map {
 	if Maps == nil {
 		Maps = make(map[string]*Map)
+	}
+
+	m, ok := Maps[name]
+
+	if ok {
+		return m
 	}
 
 	cmap := &Map{}
@@ -89,7 +96,9 @@ func LoadMap(name string) *Map {
 
 	cmap.CreateObjects(world)
 	world.postProcessObjects()
-	WeatherInit()
+
+	cmap.weather = Weather{}
+	cmap.weather.WeatherInit(cmap)
 
 	cmap.world = world
 
@@ -109,12 +118,29 @@ func SwitchMap(name string) {
 
 // FlushMaps disposes all data
 func FlushMaps() {
+	CurrentMap.world = nil
 	CurrentMap = nil
-	Maps = make(map[string]*Map)
+	Maps = nil
+	LocalPlayer = nil
+	MainCamera = nil
+}
+
+// InitMap initializes current map (useful for new game/areas)
+func InitMap() {
+	if CurrentMap != nil {
+		CurrentMap.world.InitObjects()
+	} else {
+		log.Fatalf("CurrentMap not set, can't initialize the map!\n")
+		return
+	}
 }
 
 // UpdateMaps updates all maps' simulation regions (worlds)
 func UpdateMaps() {
+	weatherProfiler.StartInvocation()
+	CurrentMap.weather.UpdateWeather()
+	weatherProfiler.StopInvocation()
+
 	for _, m := range Maps {
 		m.world.UpdateObjects()
 	}
@@ -125,6 +151,8 @@ func DrawMap() {
 	CurrentMap.DrawTilemap(false)
 	CurrentMap.world.DrawObjects()
 	CurrentMap.DrawTilemap(true) // render all overlays
+
+	CurrentMap.weather.DrawWeather()
 }
 
 // DrawMapUI draw current map's UI elements

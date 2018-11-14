@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 22:54:46
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-09 23:25:21
+ * @Last Modified time: 2018-11-10 17:17:41
  */
 
 package main
@@ -17,6 +17,16 @@ import (
 
 var (
 	saveSystem SaveSystem
+
+	// CanSave specifies if we're allowed to save at this point
+	CanSave Bits
+)
+
+const (
+	isInMenu Bits = 1 << iota
+	isSequenceHappening
+	isPlayerDead
+	isInDialogue
 )
 
 // SaveSystem manages game save states
@@ -28,7 +38,7 @@ type SaveSystem struct {
 // GameState describes the serializable save state
 type GameState struct {
 	SaveName string
-	Data     defaultSaveData `json:"data"`
+	SaveData defaultSaveData `json:"saveData"`
 }
 
 // InitSaveSystem initializes the game state system
@@ -59,11 +69,16 @@ func (s *SaveSystem) InitSaveSystem() {
 
 // SaveGame saves the game state
 func (s *SaveSystem) SaveGame(slotIndex int, stateName string) {
+	if CanSave != 0 {
+		log.Printf("Cannot save the game right now! Reason: %v\n", CanSave)
+		return
+	}
+
 	state := GameState{
 		SaveName: stateName,
 	}
 
-	state.Data = defaultSaveProvider(&state)
+	state.SaveData = defaultSaveProvider(&state)
 
 	s.States[slotIndex] = state
 
@@ -93,16 +108,19 @@ type defaultSaveData struct {
 }
 
 type defaultMapData struct {
-	MapName string              `json:"map"`
-	Objects []defaultObjectData `json:"objects"`
+	MapName     string              `json:"map"`
+	Objects     []defaultObjectData `json:"objects"`
+	WeatherData Weather             `json:"weather"`
 }
+
+type objectData interface{}
 
 type defaultObjectData struct {
 	Name     string
 	Position rl.Vector2
 	Movement rl.Vector2
 	Facing   rl.Vector2
-	Data     interface{} `json:"data"`
+	Custom   string `json:"custom"`
 }
 
 func defaultSaveProvider(state *GameState) defaultSaveData {
@@ -113,8 +131,9 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 
 	for _, v := range Maps {
 		mapData := defaultMapData{
-			MapName: v.mapName,
-			Objects: []defaultObjectData{},
+			MapName:     v.mapName,
+			Objects:     []defaultObjectData{},
+			WeatherData: v.weather,
 		}
 
 		for _, b := range v.world.Objects {
@@ -123,7 +142,7 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 				Position: b.Position,
 				Movement: b.Movement,
 				Facing:   b.Facing,
-				Data:     b.Serialize(b),
+				Custom:   b.Serialize(b),
 			}
 
 			mapData.Objects = append(mapData.Objects, obj)
@@ -136,20 +155,29 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 }
 
 func defaultLoadProvider(state *GameState) {
-	data := state.Data
+	data := state.SaveData
 	FlushMaps()
 	LoadMap(data.CurrentMap)
 
 	for _, mapData := range data.Maps {
 		m := LoadMap(mapData.MapName)
+		m.weather = mapData.WeatherData
 		world := mapData.Objects
 
 		for _, wo := range world {
 			o, _ := m.world.FindObject(wo.Name)
 
+			if o == nil {
+				log.Printf("Saved object %s couldn't be found!\n", wo.Name)
+				continue
+			}
+
 			o.Position = wo.Position
 			o.Movement = wo.Movement
 			o.Facing = wo.Facing
+			o.Deserialize(o, wo.Custom)
 		}
+
+		m.world.InitObjects()
 	}
 }

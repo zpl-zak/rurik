@@ -10,12 +10,21 @@ package main
 import (
 	"log"
 
+	"github.com/json-iterator/go"
 	"github.com/robertkrimen/otto"
 )
 
 type script struct {
-	Ctx    *otto.Otto
-	Source string
+	Ctx         *otto.Otto
+	WasExecuted bool
+	CanRepeat   bool
+	Source      string
+}
+
+type scriptData struct {
+	objectData
+	WasExecuted bool `json:"done"`
+	CanRepeat   bool `json:"rep"`
 }
 
 // NewScript sequence script
@@ -32,11 +41,31 @@ func (o *Object) NewScript() {
 	log.Printf("Loading script %s...\n", o.FileName)
 
 	o.Trigger = func(o, inst *Object) {
-		_, err := o.Ctx.Eval(o.Source)
+		if !o.WasExecuted || o.CanRepeat {
+			_, err := o.Ctx.Eval(o.Source)
 
-		if err != nil {
-			log.Fatalf("Script error detected at '%s':%s: \n\t%s!\n", o.Name, o.FileName, err.Error())
-			return
+			if err != nil {
+				log.Fatalf("Script error detected at '%s':%s: \n\t%s!\n", o.Name, o.FileName, err.Error())
+				return
+			}
 		}
+
+		o.WasExecuted = true
+	}
+
+	o.Serialize = func(o *Object) string {
+		val, _ := jsoniter.MarshalToString(&scriptData{
+			WasExecuted: o.WasExecuted,
+			CanRepeat:   o.CanRepeat,
+		})
+
+		return val
+	}
+
+	o.Deserialize = func(o *Object, v string) {
+		var dat scriptData
+		jsoniter.UnmarshalFromString(v, &dat)
+		o.WasExecuted = dat.WasExecuted
+		o.CanRepeat = dat.CanRepeat
 	}
 }

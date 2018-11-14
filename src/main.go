@@ -18,7 +18,6 @@ const (
 )
 
 var (
-	demoMap    *Map
 	gameCamera rl.Camera2D
 )
 
@@ -45,7 +44,8 @@ func main() {
 	SetMusicVolume(float32(*musicVol) / 100)
 
 	InitCore()
-	demoMap = LoadMap(*playMapName)
+	LoadMap(*playMapName)
+	InitMap()
 
 	screenTexture := GetRenderTarget()
 
@@ -97,10 +97,6 @@ func main() {
 			UpdateMusic()
 			musicProfiler.StopInvocation()
 
-			weatherProfiler.StartInvocation()
-			UpdateWeather()
-			weatherProfiler.StopInvocation()
-
 			updateProfiler.StartInvocation()
 			UpdateMaps()
 			updateProfiler.StopInvocation()
@@ -131,7 +127,6 @@ func main() {
 				rl.BeginMode2D(gameCamera)
 				{
 					DrawMap()
-					DrawWeather()
 				}
 				rl.EndMode2D()
 
@@ -210,10 +205,9 @@ func drawBackground() {
 
 func updateEssentials() {
 	if DebugMode && rl.IsKeyPressed(rl.KeyF5) {
-		MainCamera = nil
-		LocalPlayer = nil
-		demoMap = ReloadMap(demoMap)
-		SwitchMap(demoMap.mapName)
+		FlushMaps()
+		LoadMap("demo")
+		InitMap()
 		return
 	}
 

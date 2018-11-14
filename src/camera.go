@@ -7,6 +7,7 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/gen2brain/raylib-go/raymath"
+	"github.com/json-iterator/go"
 )
 
 const (
@@ -33,6 +34,18 @@ type camera struct {
 	First      bool
 }
 
+type cameraData struct {
+	Follow     string
+	Start      string
+	End        string
+	Speed      float32
+	Progress   float32
+	TargetZoom float32
+	ZoomSpeed  float32
+	Mode       int
+	First      bool
+}
+
 // NewCamera game camera
 func (c *Object) NewCamera() {
 	c.Update = updateCamera
@@ -40,6 +53,7 @@ func (c *Object) NewCamera() {
 	c.Zoom = 1
 	c.TargetZoom = c.Zoom
 	c.ZoomSpeed = 0.8
+	c.Visible = false
 	c.First = true
 	strMode := c.Meta.Properties.GetString("mode")
 	spd, _ := strconv.ParseFloat(c.Meta.Properties.GetString("speed"), 32)
@@ -48,6 +62,37 @@ func (c *Object) NewCamera() {
 
 	if spd == 0 {
 		spd = 1
+	}
+
+	c.Serialize = func(o *Object) string {
+		val, _ := jsoniter.MarshalToString(&cameraData{
+			Follow:     "",
+			Start:      "",
+			End:        "",
+			Speed:      o.Speed,
+			Progress:   o.Progress,
+			TargetZoom: o.TargetZoom,
+			ZoomSpeed:  o.ZoomSpeed,
+			Mode:       o.Mode,
+			First:      o.First,
+		})
+
+		return val
+	}
+
+	c.Deserialize = func(o *Object, v string) {
+		var dat cameraData
+		jsoniter.UnmarshalFromString(v, &dat)
+
+		/* o.Follow = dat.Follow
+		o.Start = dat.Start
+		o.End = dat.End */
+		o.Speed = dat.Speed
+		o.Progress = dat.Progress
+		o.TargetZoom = dat.TargetZoom
+		o.ZoomSpeed = dat.ZoomSpeed
+		o.Mode = dat.Mode
+		o.First = dat.First
 	}
 
 	c.Speed = float32(spd)
@@ -86,10 +131,16 @@ func finishCamera(c *Object) {
 func updateCamera(c *Object, dt float32) {
 	var dest rl.Vector2
 
+	CanSave = bitsSet(CanSave, isSequenceHappening)
+
 	if c.Mode == CameraModeFollow {
 		if c.Follow == nil {
 			log.Println("Camera object follows nil reference.")
 			return
+		}
+
+		if c.Follow == LocalPlayer {
+			CanSave = bitsClear(CanSave, isSequenceHappening)
 		}
 
 		dest = c.Follow.Position

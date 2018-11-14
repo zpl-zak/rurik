@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-09 17:34:10
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-11-10 17:11:13
  */
 
 package main
@@ -63,12 +63,15 @@ type Object struct {
 	IsCollidable  bool
 	CollisionType string
 	Started       bool
+	WasExecuted   bool
+	CanRepeat     bool
 
 	// Internal fields
 	WasUpdated bool
 	world      *World
 
 	// Callbacks
+	Init            func(o *Object)
 	Finish          func(o *Object)
 	Update          func(o *Object, dt float32)
 	Draw            func(o *Object)
@@ -76,8 +79,8 @@ type Object struct {
 	Trigger         func(o, inst *Object)
 	HandleCollision func(res *resolv.Collision, o, other *Object)
 	GetAABB         func(o *Object) rl.RectangleInt32
-	Serialize       func(o *Object) interface{}
-	Deserialize     func(o *Object, data interface{})
+	Serialize       func(o *Object) string
+	Deserialize     func(o *Object, data string)
 
 	// Specialized data
 	player
@@ -167,14 +170,15 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 
 		// Callbacks
 		Finish:          func(o *Object) {},
+		Init:            func(o *Object) {},
 		Update:          func(o *Object, dt float32) {},
 		Trigger:         func(o, inst *Object) {},
 		Draw:            func(o *Object) {},
 		DrawUI:          func(o *Object) {},
 		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
 		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
-		Serialize:       func(o *Object) interface{} { return nil },
-		Deserialize:     func(o *Object, data interface{}) {},
+		Serialize:       func(o *Object) string { return "{}" },
+		Deserialize:     func(o *Object, data string) {},
 	}
 }
 
@@ -280,6 +284,13 @@ func (w *World) UpdateObjects() {
 
 	for _, o := range w.Objects {
 		updateObject(o, o)
+	}
+}
+
+// InitObjects initializes all objects
+func (w *World) InitObjects() {
+	for _, o := range w.Objects {
+		o.Init(o)
 	}
 }
 

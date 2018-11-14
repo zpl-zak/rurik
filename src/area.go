@@ -58,8 +58,10 @@ func (o *Object) NewArea() {
 			if o.Talk == nil {
 				o.Talk = o.world.NewObject(nil)
 				o.Talk.Name = o.Name + "_talk"
+				o.Talk.Class = "talk"
 
 				o.Talk.FileName = talkFile
+				o.Talk.CanRepeat = true
 				o.Talk.NewTalk()
 				o.world.Objects = append(o.world.Objects, o.Talk)
 			}

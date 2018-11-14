@@ -39,8 +39,10 @@ func (o *Object) NewWait() {
 		o.world.Objects = append(o.world.Objects, o.Script)
 	}
 
-	if o.AutoStart {
-		o.Trigger(o, nil)
+	o.Init = func(o *Object) {
+		if o.AutoStart {
+			o.Trigger(o, nil)
+		}
 	}
 
 	o.Draw = func(o *Object) {

@@ -14,55 +14,58 @@ var (
 	// WeatherTimeScale specifies time cycle scale
 	WeatherTimeScale float64
 
-	useTimeCycle    bool
-	skyStageName    string
-	skyTime         float64
-	skyTargetTime   float64
-	skyStageIndex   int
-	skyStages       []weatherStage
-	skyLastColor    rl.Vector3
-	skyCurrentColor rl.Vector3
-	skyTargetColor  rl.Vector3
-
 	weatherIsCollapsed = true
 )
 
 type weatherStage struct {
-	name     string
-	color    rl.Vector3
-	duration float64
+	Name     string
+	Color    rl.Vector3
+	Duration float64
 }
 
-// WeatherInit sets up the mood by initializing sky color tint and other properties
-func WeatherInit() {
+// Weather represents the map time and weather
+type Weather struct {
+	UseTimeCycle    bool
+	SkyStageName    string
+	SkyTime         float64
+	SkyTargetTime   float64
+	SkyStageIndex   int
+	SkyStages       []weatherStage
+	SkyLastColor    rl.Vector3
+	SkyCurrentColor rl.Vector3
+	SkyTargetColor  rl.Vector3
+}
+
+// WeatherInit sets up the mood by initializing Sky color tint and other properties
+func (w *Weather) WeatherInit(cmap *Map) {
 	var err error
-	skyCurrentColor, err = getColorFromHex(CurrentMap.tilemap.Properties.GetString("skyColor"))
+	w.SkyCurrentColor, err = getColorFromHex(cmap.tilemap.Properties.GetString("skyColor"))
 
 	if err != nil {
 		SkyColor = rl.White
 	} else {
-		SkyColor = vec3ToColor(skyCurrentColor)
+		SkyColor = vec3ToColor(w.SkyCurrentColor)
 	}
 
-	skyStages = []weatherStage{}
+	w.SkyStages = []weatherStage{}
 
-	appendSkyStage("skyRiseColor", "riseDuration")
-	appendSkyStage("skyDayColor", "dayDuration")
-	appendSkyStage("skyDawnColor", "dawnDuration")
-	appendSkyStage("skyNightColor", "nightDuration")
+	w.appendSkyStage(cmap, "skyRiseColor", "riseDuration")
+	w.appendSkyStage(cmap, "skyDayColor", "dayDuration")
+	w.appendSkyStage(cmap, "skyDawnColor", "dawnDuration")
+	w.appendSkyStage(cmap, "skyNightColor", "nightDuration")
 
-	if len(skyStages) > 0 {
-		skyLastColor = skyCurrentColor
-		skyStageName = skyStages[0].name
-		skyTargetColor = skyStages[0].color
-		skyTime = skyStages[0].duration
-		skyTargetTime = skyTime
-		SkyColor = vec3ToColor(skyCurrentColor)
-		skyStageIndex = 0
+	if len(w.SkyStages) > 0 {
+		w.SkyLastColor = w.SkyCurrentColor
+		w.SkyStageName = w.SkyStages[0].Name
+		w.SkyTargetColor = w.SkyStages[0].Color
+		w.SkyTime = w.SkyStages[0].Duration
+		w.SkyTargetTime = w.SkyTime
+		SkyColor = vec3ToColor(w.SkyCurrentColor)
+		w.SkyStageIndex = 0
 
 		if err != nil {
-			skyCurrentColor = skyTargetColor
-			nextSkyStage()
+			w.SkyCurrentColor = w.SkyTargetColor
+			w.nextSkyStage()
 		}
 	}
 
@@ -70,64 +73,64 @@ func WeatherInit() {
 }
 
 // UpdateWeather updates the time cycle and weather effects
-func UpdateWeather() {
-	if useTimeCycle {
-		if skyTime <= 0 {
-			nextSkyStage()
+func (w *Weather) UpdateWeather() {
+	if w.UseTimeCycle {
+		if w.SkyTime <= 0 {
+			w.nextSkyStage()
 		} else {
-			skyTime -= float64(FrameTime) * WeatherTimeScale
+			w.SkyTime -= float64(FrameTime) * WeatherTimeScale
 		}
 
-		if skyTargetTime != 0 {
-			skyCurrentColor = lerpColor(skyLastColor, skyTargetColor, 1-skyTime/skyTargetTime)
+		if w.SkyTargetTime != 0 {
+			w.SkyCurrentColor = lerpColor(w.SkyLastColor, w.SkyTargetColor, 1-w.SkyTime/w.SkyTargetTime)
 		} else {
-			skyCurrentColor = skyTargetColor
+			w.SkyCurrentColor = w.SkyTargetColor
 		}
 
-		SkyColor = vec3ToColor(skyCurrentColor)
+		SkyColor = vec3ToColor(w.SkyCurrentColor)
 	}
 
 	if DebugMode {
 		weatherElement := pushEditorElement(rootElement, "weather", &weatherIsCollapsed)
-		pushEditorElement(weatherElement, fmt.Sprintf("Sky: %s (%d)", skyStageName, skyStageIndex), nil)
-		pushEditorElement(weatherElement, fmt.Sprintf("Sky time: %d/%d", int(skyTargetTime-skyTime), int(skyTargetTime)), nil)
+		pushEditorElement(weatherElement, fmt.Sprintf("sky: %s (%d)", w.SkyStageName, w.SkyStageIndex), nil)
+		pushEditorElement(weatherElement, fmt.Sprintf("sky time: %d/%d", int(w.SkyTargetTime-w.SkyTime), int(w.SkyTargetTime)), nil)
 	}
 }
 
 // DrawWeather draws weather effects
-func DrawWeather() {
+func (w *Weather) DrawWeather() {
 
 }
 
-func nextSkyStage() {
-	skyStageIndex++
+func (w *Weather) nextSkyStage() {
+	w.SkyStageIndex++
 
-	if skyStageIndex >= len(skyStages) {
-		skyStageIndex = 0
+	if w.SkyStageIndex >= len(w.SkyStages) {
+		w.SkyStageIndex = 0
 	}
 
-	stage := skyStages[skyStageIndex]
-	skyStageName = stage.name
-	skyTime = stage.duration
-	skyTargetTime = skyTime
-	skyTargetColor = stage.color
-	skyLastColor = skyCurrentColor
+	stage := w.SkyStages[w.SkyStageIndex]
+	w.SkyStageName = stage.Name
+	w.SkyTime = stage.Duration
+	w.SkyTargetTime = w.SkyTime
+	w.SkyTargetColor = stage.Color
+	w.SkyLastColor = w.SkyCurrentColor
 }
 
-func appendSkyStage(skyName, stageName string) {
-	color, err := getColorFromHex(CurrentMap.tilemap.Properties.GetString(skyName))
+func (w *Weather) appendSkyStage(cmap *Map, SkyName, stageName string) {
+	color, err := getColorFromHex(cmap.tilemap.Properties.GetString(SkyName))
 
 	if err == nil {
-		useTimeCycle = true
+		w.UseTimeCycle = true
 	} else {
 		return
 	}
 
-	duration, _ := strconv.ParseFloat(CurrentMap.tilemap.Properties.GetString(stageName), 10)
+	duration, _ := strconv.ParseFloat(cmap.tilemap.Properties.GetString(stageName), 10)
 
-	skyStages = append(skyStages, weatherStage{
-		name:     skyName,
-		color:    color,
-		duration: duration * 60,
+	w.SkyStages = append(w.SkyStages, weatherStage{
+		Name:     SkyName,
+		Color:    color,
+		Duration: duration * 60,
 	})
 }

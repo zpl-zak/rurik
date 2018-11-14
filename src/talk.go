@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gen2brain/raylib-go/raylib"
+	jsoniter "github.com/json-iterator/go"
 )
 
 const (
@@ -18,6 +19,12 @@ type talk struct {
 	mouseDoublePressTime int32
 }
 
+type talkData struct {
+	objectData
+	WasExecuted bool `json:"done"`
+	CanRepeat   bool `json:"rep"`
+}
+
 var (
 	chatBanner *rl.Texture2D
 )
@@ -29,10 +36,28 @@ func (o *Object) NewTalk() {
 		chatBanner = &img
 	}
 
+	o.Serialize = func(o *Object) string {
+		val, _ := jsoniter.MarshalToString(&scriptData{
+			WasExecuted: o.WasExecuted,
+			CanRepeat:   o.CanRepeat,
+		})
+
+		return val
+	}
+
+	o.Deserialize = func(o *Object, v string) {
+		var dat talkData
+		jsoniter.UnmarshalFromString(v, &dat)
+		o.WasExecuted = dat.WasExecuted
+		o.CanRepeat = dat.CanRepeat
+	}
+
 	o.Update = func(o *Object, dt float32) {
 		if !o.Started {
 			return
 		}
+
+		CanSave = bitsSet(CanSave, isInDialogue)
 
 		if o.mouseDoublePressTime > 0 {
 			o.mouseDoublePressTime -= int32(1000 * dt)
@@ -74,6 +99,8 @@ func (o *Object) NewTalk() {
 
 			if o.currentText == nil {
 				o.Started = false
+				CanSave = bitsClear(CanSave, isInDialogue)
+				o.WasExecuted = true
 				LocalPlayer.Locked = o.wasPrevLocked
 			}
 
@@ -86,6 +113,10 @@ func (o *Object) NewTalk() {
 	}
 
 	o.Trigger = func(o, inst *Object) {
+		if o.WasExecuted && !o.CanRepeat {
+			return
+		}
+
 		if o.Texts == nil {
 			data := GetDialogue(o.FileName)
 			o.Texts = &data
@@ -188,7 +219,9 @@ func (o *Object) NewTalk() {
 		}
 	}
 
-	if o.AutoStart {
-		o.Trigger(o, nil)
+	o.Init = func(o *Object) {
+		if o.AutoStart {
+			o.Trigger(o, nil)
+		}
 	}
 }

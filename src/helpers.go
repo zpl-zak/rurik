@@ -14,6 +14,14 @@ const (
 	FrustumSafeMargin = 32.0
 )
 
+// Bits represent bitflags
+type Bits uint64
+
+func bitsSet(b, flag Bits) Bits    { return b | flag }
+func bitsClear(b, flag Bits) Bits  { return b &^ flag }
+func bitsToggle(b, flag Bits) Bits { return b ^ flag }
+func bitsHas(b, flag Bits) bool    { return b&flag != 0 }
+
 func rayRectangleInt32ToResolv(rec *resolv.Rectangle, i rl.RectangleInt32) {
 	*rec = resolv.Rectangle{
 		BasicShape: resolv.BasicShape{

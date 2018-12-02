@@ -9,6 +9,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -25,7 +26,8 @@ const (
 )
 
 var (
-	gameCamera rl.Camera2D
+	gameCamera    rl.Camera2D
+	dynobjCounter int
 )
 
 func main() {
@@ -228,6 +230,20 @@ func updateEssentials() {
 
 	if DebugMode && rl.IsKeyPressed(rl.KeyF3) {
 		saveSystem.LoadGame(0)
+	}
+
+	if DebugMode && rl.IsKeyPressed(rl.KeyF9) {
+		if CurrentMap != nil {
+			w := CurrentMap.world
+			newObject := w.NewObject(nil)
+			newObject.Name = fmt.Sprintf("dynobj:%d", dynobjCounter)
+			newObject.Class = "target"
+			newObject.NewTarget()
+			newObject.Position = LocalPlayer.Position
+			w.AddObject(newObject)
+
+			dynobjCounter++
+		}
 	}
 
 	if DebugMode {

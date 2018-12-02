@@ -22,7 +22,7 @@ import (
 
 var (
 	// ObjectTypes contains all definitions of objects in the game
-	ObjectTypes map[string]func(w *World, objectData *tiled.Object) *Object
+	ObjectTypes map[string]func(w *World, objectData *tiled.Object, savegameData *defaultObjectData) *Object
 
 	// Worlds are all the worlds loaded within the game
 	Worlds []*World
@@ -99,7 +99,7 @@ func (w *World) flushObjects() {
 }
 
 func initObjectTypes() {
-	ObjectTypes = make(map[string]func(w *World, objectData *tiled.Object) *Object)
+	ObjectTypes = make(map[string]func(w *World, objectData *tiled.Object, savegameData *defaultObjectData) *Object)
 
 	objTypes = map[string]string{
 		"player": "Player",
@@ -114,10 +114,18 @@ func initObjectTypes() {
 	}
 
 	for k := range objTypes {
-		ObjectTypes[k] = func(w *World, o *tiled.Object) *Object {
+		ObjectTypes[k] = func(w *World, o *tiled.Object, savegameData *defaultObjectData) *Object {
 			inst := w.NewObject(o)
 
-			class := objTypes[o.Type]
+			className := "Unknown"
+
+			if o != nil {
+				className = o.Type
+			} else if savegameData != nil {
+				className = savegameData.Type
+			}
+
+			class := objTypes[className]
 			methodName := fmt.Sprintf("New%s", class)
 
 			method := reflect.ValueOf(inst).MethodByName(methodName)
@@ -184,7 +192,18 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 
 // AddObject adds object to the world
 func (w *World) AddObject(o *Object) {
-	w.Objects = append(w.Objects, o)
+	if o == nil {
+		return
+	}
+
+	duplicateObject, _ := w.FindObject(o.Name)
+
+	if duplicateObject == nil {
+		w.Objects = append(w.Objects, o)
+	} else {
+		log.Printf("You can't add duplicate object to the world! Object name: %s\n", o.Name)
+		return
+	}
 }
 
 func (w *World) spawnObject(objectData *tiled.Object) {
@@ -195,7 +214,7 @@ func (w *World) spawnObject(objectData *tiled.Object) {
 		return
 	}
 
-	obj := objType(w, objectData)
+	obj := objType(w, objectData, nil)
 
 	if obj == nil {
 		log.Printf("Object creation failed!\n")

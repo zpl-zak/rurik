@@ -116,7 +116,8 @@ type defaultMapData struct {
 type objectData interface{}
 
 type defaultObjectData struct {
-	Name     string
+	Name     string `json:"objectName"`
+	Type     string `json:"class"`
 	Position rl.Vector2
 	Movement rl.Vector2
 	Facing   rl.Vector2
@@ -139,6 +140,7 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 		for _, b := range v.world.Objects {
 			obj := defaultObjectData{
 				Name:     b.Name,
+				Type:     b.Class,
 				Position: b.Position,
 				Movement: b.Movement,
 				Facing:   b.Facing,
@@ -168,8 +170,16 @@ func defaultLoadProvider(state *GameState) {
 			o, _ := m.world.FindObject(wo.Name)
 
 			if o == nil {
-				log.Printf("Saved object %s couldn't be found!\n", wo.Name)
-				continue
+				objType, ok := ObjectTypes[wo.Type]
+
+				if !ok {
+					continue
+				}
+
+				o = objType(m.world, nil, &wo)
+				o.Name = wo.Name
+				o.Class = wo.Type
+				m.world.AddObject(o)
 			}
 
 			o.Position = wo.Position

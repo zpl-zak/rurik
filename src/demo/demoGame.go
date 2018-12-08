@@ -23,6 +23,7 @@ var (
 	dynobjCounter int
 	playMapName   string
 	gameCamera    rl.Camera2D
+	bloom         rl.Shader
 )
 
 type demoGameMode struct{}
@@ -35,6 +36,7 @@ func (g *demoGameMode) Init() {
 	core.InitMap()
 
 	gameCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
+	bloom = rl.LoadShader("", "assets/shaders/bloom.fs")
 }
 
 func (g *demoGameMode) Draw() {
@@ -45,6 +47,19 @@ func (g *demoGameMode) Draw() {
 		core.DrawMap()
 	}
 	rl.EndMode2D()
+
+	rl.BeginShaderMode(bloom)
+
+	target := system.GetRenderTarget()
+
+	rl.DrawTextureRec(
+		target.Texture,
+		rl.NewRectangle(0, 0, float32(target.Texture.Width), float32(-target.Texture.Height)),
+		rl.Vector2{},
+		rl.White,
+	)
+
+	rl.EndShaderMode()
 
 	core.DrawMapUI()
 }
@@ -139,7 +154,6 @@ func main() {
 
 	demoGame := &demoGameMode{}
 
-	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
 	core.SetMusicVolume(float32(*musicVol) / 100)
 	core.WeatherTimeScale = *weatherTimeScale
 

@@ -130,17 +130,6 @@ func Run(newGameMode GameMode) {
 				CurrentGameMode.Draw()
 
 				DrawEditor()
-
-				/* rl.BeginShaderMode(bloom)
-
-				rl.DrawTextureRec(
-					screenTexture.Texture,
-					rl.NewRectangle(0, 0, float32(screenTexture.Texture.Width), float32(-screenTexture.Texture.Height)),
-					rl.Vector2{},
-					rl.White,
-				)
-
-				rl.EndShaderMode() */
 			}
 			drawProfiler.StopInvocation()
 			rl.EndDrawing()

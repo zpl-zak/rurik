@@ -9,27 +9,39 @@ import (
 	"madaraszd.net/zaklaus/rurik/src/core"
 )
 
+const (
+	screenW = 640
+	screenH = 480
+
+	// Apply 2x upscaling
+	windowW = screenW * 2
+	windowH = screenH * 2
+)
+
+var (
+	dynobjCounter int
+	playMapName   string
+	gameCamera    rl.Camera2D
+)
+
 type demoGameMode struct {
 	core.GameMode
-
-	gameCamera  rl.Camera2D
-	PlayMapName string
 }
 
 func (g *demoGameMode) Init() {
 	core.LoadPlaylist("tracklist.txt")
 	core.LoadNextTrack()
 
-	core.LoadMap(g.PlayMapName)
+	core.LoadMap(playMapName)
 	core.InitMap()
 
-	g.gameCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
+	gameCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 }
 
 func (g *demoGameMode) Draw() {
 	drawBackground()
 
-	rl.BeginMode2D(g.gameCamera)
+	rl.BeginMode2D(gameCamera)
 	{
 		core.DrawMap()
 	}
@@ -76,9 +88,10 @@ func (g *demoGameMode) Update() {
 			core.MainCamera.SetCameraZoom(core.MainCamera.Zoom + float32(wheel)*0.05)
 		}
 	}
-	g.gameCamera.Zoom = core.MainCamera.Zoom
 
-	g.gameCamera.Offset = rl.Vector2{
+	gameCamera.Zoom = core.MainCamera.Zoom
+
+	gameCamera.Offset = rl.Vector2{
 		X: float32(int(-core.MainCamera.Position.X*core.MainCamera.Zoom + screenW/2)),
 		Y: float32(int(-core.MainCamera.Position.Y*core.MainCamera.Zoom + screenH/2)),
 	}
@@ -107,24 +120,11 @@ func drawBackground() {
 	}
 }
 
-const (
-	screenW = 640
-	screenH = 480
-
-	// Apply 2x upscaling
-	windowW = screenW * 2
-	windowH = screenH * 2
-)
-
-var (
-	dynobjCounter int
-)
-
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	playMapName := flag.String("map", "demo", "Map name to play.")
+	playMapName = *flag.String("map", "demo", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	flag.Parse()
 
@@ -134,11 +134,8 @@ func main() {
 
 	core.InitCore("Demo game | Rurik Engine", windowW, windowH, screenW, screenH)
 
-	demoGame := demoGameMode{
-		PlayMapName: *playMapName,
-	}
+	demoGame := demoGameMode{}
 	demoGame.Init()
-	core.CurrentGameMode = &demoGame
 
 	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
 	core.SetMusicVolume(float32(*musicVol) / 100)
@@ -148,7 +145,7 @@ func main() {
 		defer profile.Start(profile.ProfilePath("build")).Stop()
 	}
 
-	core.Run()
+	core.Run(&demoGame)
 }
 
 func (g *demoGameMode) Shutdown() {

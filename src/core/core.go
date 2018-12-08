@@ -49,7 +49,10 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 }
 
 // Run executes the main game loop
-func Run() {
+func Run(newGameMode GameMode) {
+	CurrentGameMode = newGameMode
+	CurrentGameMode.Init()
+
 	lastTime := float64(rl.GetTime())
 	var unprocessedTime float64
 	var frameCounter float64
@@ -159,16 +162,11 @@ func shutdown() {
 }
 
 func setupDefaultCamera() {
-	defCam := CurrentMap.World.NewObject(nil)
-
-	defCam.Name = "main_camera"
-	defCam.Class = "cam"
-	defCam.Position = rl.Vector2{}
-
-	defCam.NewCamera()
+	defCam := CurrentMap.World.NewObjectPro("main_camera", "cam")
+	defCam.Position = LocalPlayer.Position
 	defCam.Mode = CameraModeFollow
 	defCam.Follow = LocalPlayer
 	defCam.Visible = false
 
-	CurrentMap.World.Objects = append(CurrentMap.World.Objects, defCam)
+	CurrentMap.World.AddObject(defCam)
 }

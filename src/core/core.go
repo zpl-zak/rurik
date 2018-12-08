@@ -99,9 +99,11 @@ func Run(newGameMode GameMode) {
 			UpdateMusic()
 			musicProfiler.StopInvocation()
 
-			updateProfiler.StartInvocation()
-			UpdateMaps()
-			updateProfiler.StopInvocation()
+			if !CurrentGameMode.IgnoreUpdate() {
+				updateProfiler.StartInvocation()
+				UpdateMaps()
+				updateProfiler.StopInvocation()
+			}
 
 			UpdateMapUI()
 

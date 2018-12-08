@@ -34,7 +34,7 @@ func InitGameProfilers() {
 	collisionProfiler = system.NewProfiler("collision")
 	musicProfiler = system.NewProfiler("music")
 	weatherProfiler = system.NewProfiler("weather")
-	gameModeProfiler = system.NewProfiler("custom")
+	gameModeProfiler = system.NewProfiler("gameMode")
 	drawProfiler = system.NewProfiler("draw")
 	sortRenderProfiler = system.NewProfiler("sortRender")
 

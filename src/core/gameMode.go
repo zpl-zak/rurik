@@ -6,4 +6,5 @@ type GameMode interface {
 	Shutdown()
 	Update()
 	Draw()
+	IgnoreUpdate() bool
 }

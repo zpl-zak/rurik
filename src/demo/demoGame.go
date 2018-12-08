@@ -49,6 +49,10 @@ func (g *demoGameMode) Draw() {
 	core.DrawMapUI()
 }
 
+func (g *demoGameMode) IgnoreUpdate() bool {
+	return false
+}
+
 func (g *demoGameMode) Update() {
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
 		core.FlushMaps()

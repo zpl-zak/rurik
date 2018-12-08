@@ -22,7 +22,7 @@ var (
 	Shuffle     bool
 	trackNames  []string
 	tracks      map[string]rl.Music
-	track       rl.Music
+	track       *rl.Music
 	trackIndex  int
 	musicVolume float32
 )
@@ -74,26 +74,34 @@ func LoadNextTrack() {
 		st = tr
 	}
 
-	track = st
+	track = &st
 
-	rl.StopMusicStream(track)
-	rl.PlayMusicStream(track)
-	rl.SetMusicVolume(track, musicVolume)
+	rl.StopMusicStream(*track)
+	rl.PlayMusicStream(*track)
+	rl.SetMusicVolume(*track, musicVolume)
 }
 
 // SetMusicVolume sets the music volume
 func SetMusicVolume(vol float32) {
 	musicVolume = vol
 
-	if rl.IsMusicPlaying(track) {
-		rl.SetMusicVolume(track, musicVolume)
+	if track == nil {
+		return
+	}
+
+	if rl.IsMusicPlaying(*track) {
+		rl.SetMusicVolume(*track, musicVolume)
 	}
 }
 
 // UpdateMusic checks for music playback and updates the tracklist
 func UpdateMusic() {
-	if rl.IsMusicPlaying(track) {
-		rl.UpdateMusicStream(track)
+	if track == nil {
+		return
+	}
+
+	if rl.IsMusicPlaying(*track) {
+		rl.UpdateMusicStream(*track)
 		return
 	}
 
@@ -102,5 +110,9 @@ func UpdateMusic() {
 
 // PauseMusic pauses the music stream
 func PauseMusic() {
-	rl.PauseMusicStream(track)
+	if track == nil {
+		return
+	}
+
+	rl.PauseMusicStream(*track)
 }

@@ -24,9 +24,7 @@ var (
 	gameCamera    rl.Camera2D
 )
 
-type demoGameMode struct {
-	core.GameMode
-}
+type demoGameMode struct{}
 
 func (g *demoGameMode) Init() {
 	core.LoadPlaylist("tracklist.txt")
@@ -134,8 +132,7 @@ func main() {
 
 	core.InitCore("Demo game | Rurik Engine", windowW, windowH, screenW, screenH)
 
-	demoGame := demoGameMode{}
-	demoGame.Init()
+	demoGame := &demoGameMode{}
 
 	//bloom := rl.LoadShader("", "assets/shaders/bloom.fs")
 	core.SetMusicVolume(float32(*musicVol) / 100)
@@ -145,7 +142,7 @@ func main() {
 		defer profile.Start(profile.ProfilePath("build")).Stop()
 	}
 
-	core.Run(&demoGame)
+	core.Run(demoGame)
 }
 
 func (g *demoGameMode) Shutdown() {

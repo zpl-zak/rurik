@@ -9,7 +9,7 @@
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${workspaceRoot}\\src",
+            "program": "${workspaceRoot}\\src\\demo",
             "env": {},
             "args": ["-musicvol=10", "-wtimescale=100"],
             "cwd": "${workspaceRoot}",

@@ -12,7 +12,6 @@ import (
 
 	"github.com/gen2brain/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
-	"madaraszd.net/zaklaus/rurik/src/modules"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -21,8 +20,8 @@ const (
 )
 
 type talk struct {
-	Texts                *modules.Dialogue
-	currentText          *modules.Dialogue
+	Texts                *Dialogue
+	currentText          *Dialogue
 	selectedChoice       int
 	wasPrevLocked        bool
 	mouseDoublePressTime int32
@@ -127,13 +126,13 @@ func (o *Object) NewTalk() {
 		}
 
 		if o.Texts == nil {
-			data := modules.GetDialogue(o.FileName)
+			data := GetDialogue(o.FileName)
 			o.Texts = data
 		}
 
 		o.currentText = o.Texts
 
-		modules.InitText(o.currentText)
+		InitText(o.currentText)
 
 		o.Started = true
 		o.wasPrevLocked = LocalPlayer.Locked

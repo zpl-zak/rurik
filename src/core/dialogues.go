@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-11-14 02:27:04
  */
 
-package modules
+package core
 
 import (
 	"encoding/json"

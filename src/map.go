@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-08 16:05:27
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-08 16:06:19
+ * @Last Modified time: 2018-12-08 20:47:00
  */
 
 package main
@@ -251,7 +251,11 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 func (m *Map) CreateObjects(w *World) {
 	for _, objectGroup := range m.tilemap.ObjectGroups {
 		for _, object := range objectGroup.Objects {
-			w.spawnObject(object)
+			obj := w.spawnObject(object)
+
+			if obj != nil {
+				w.AddObject(obj)
+			}
 		}
 	}
 }

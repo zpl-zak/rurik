@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 02:14:54
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-09 02:20:39
+ * @Last Modified time: 2018-12-08 21:00:40
  */
 
 package main
@@ -30,13 +30,9 @@ func (o *Object) NewWait() {
 	scriptName := o.Meta.Properties.GetString("file")
 
 	if scriptName != "" {
-		o.Script = o.world.NewObject(nil)
-		o.Script.Name = o.Name + "_script"
-		o.Script.Class = "script"
-
+		o.Script = o.world.NewObjectPro(o.Name+"_script", "script")
 		o.Script.FileName = scriptName
-		o.Script.NewScript()
-		o.world.Objects = append(o.world.Objects, o.Script)
+		o.world.AddObject(o.Script)
 	}
 
 	o.Init = func(o *Object) {

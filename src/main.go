@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:27:34
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:27:34
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-08 20:57:01
  */
 
 package main
@@ -235,10 +235,8 @@ func updateEssentials() {
 	if DebugMode && rl.IsKeyPressed(rl.KeyF9) {
 		if CurrentMap != nil {
 			w := CurrentMap.world
-			newObject := w.NewObject(nil)
-			newObject.Name = fmt.Sprintf("dynobj:%d", dynobjCounter)
-			newObject.Class = "target"
-			newObject.NewTarget()
+			name := fmt.Sprintf("dynobj:%d", dynobjCounter)
+			newObject := w.NewObjectPro(name, "target")
 			newObject.Position = LocalPlayer.Position
 			w.AddObject(newObject)
 

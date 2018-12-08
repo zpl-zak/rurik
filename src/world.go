@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-10 17:11:13
+ * @Last Modified time: 2018-12-08 20:58:25
  */
 
 package main
@@ -190,6 +190,18 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 	}
 }
 
+// NewObjectPro creates a new object by providing its class dynamically.
+func (w *World) NewObjectPro(name, class string) *Object {
+	objectData := tiled.Object{
+		Name: name,
+		Type: class,
+	}
+
+	obj := w.spawnObject(&objectData)
+
+	return obj
+}
+
 // AddObject adds object to the world
 func (w *World) AddObject(o *Object) {
 	if o == nil {
@@ -206,19 +218,19 @@ func (w *World) AddObject(o *Object) {
 	}
 }
 
-func (w *World) spawnObject(objectData *tiled.Object) {
+func (w *World) spawnObject(objectData *tiled.Object) *Object {
 	objType, ok := ObjectTypes[objectData.Type]
 
 	if !ok {
 		log.Printf("Object type: %s not found!\n", objectData.Type)
-		return
+		return nil
 	}
 
 	obj := objType(w, objectData, nil)
 
 	if obj == nil {
 		log.Printf("Object creation failed!\n")
-		return
+		return nil
 	}
 
 	obj.Position = rl.NewVector2(float32(objectData.X), float32(objectData.Y))
@@ -228,7 +240,7 @@ func (w *World) spawnObject(objectData *tiled.Object) {
 		obj.IsCollidable = obj.CollisionType != "none"
 	}
 
-	w.Objects = append(w.Objects, obj)
+	return obj
 }
 
 func (w *World) postProcessObjects() {

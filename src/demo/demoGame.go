@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	jsoniter "github.com/json-iterator/go"
 	"github.com/pkg/profile"
 	"madaraszd.net/zaklaus/rurik/src/core"
 	"madaraszd.net/zaklaus/rurik/src/system"
@@ -166,4 +167,24 @@ func main() {
 
 func (g *demoGameMode) Shutdown() {
 
+}
+
+func (g *demoGameMode) Serialize() string {
+	data := demoGameSaveData{
+		ObjectCounter: dynobjCounter,
+	}
+
+	ret, _ := jsoniter.MarshalToString(data)
+	return ret
+}
+
+func (g *demoGameMode) Deserialize(data string) {
+	var saveData demoGameSaveData
+	jsoniter.UnmarshalFromString(data, &saveData)
+
+	dynobjCounter = saveData.ObjectCounter
+}
+
+type demoGameSaveData struct {
+	ObjectCounter int
 }

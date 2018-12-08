@@ -8,11 +8,11 @@
 package core
 
 import (
-	"encoding/json"
 	"fmt"
 	"log"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	jsoniter "github.com/json-iterator/go"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -65,7 +65,7 @@ func GetDialogue(name string) *Dialogue {
 	}
 
 	data := system.GetFile(fmt.Sprintf("texts/%s", name))
-	err := json.Unmarshal(data, &dia)
+	err := jsoniter.Unmarshal(data, &dia)
 
 	if err != nil {
 		log.Printf("Dialogue '%s' is broken!\n", name)

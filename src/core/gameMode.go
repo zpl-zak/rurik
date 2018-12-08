@@ -7,4 +7,6 @@ type GameMode interface {
 	Update()
 	Draw()
 	IgnoreUpdate() bool
+	Serialize() string
+	Deserialize(data string)
 }

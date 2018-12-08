@@ -104,8 +104,9 @@ type saveData interface{}
 
 type defaultSaveData struct {
 	saveData
-	CurrentMap string           `json:"active"`
-	Maps       []defaultMapData `json:"maps"`
+	CurrentMap   string           `json:"active"`
+	Maps         []defaultMapData `json:"maps"`
+	GameModeData string           `json:"gameMode"`
 }
 
 type defaultMapData struct {
@@ -127,8 +128,9 @@ type defaultObjectData struct {
 
 func defaultSaveProvider(state *GameState) defaultSaveData {
 	save := defaultSaveData{
-		CurrentMap: CurrentMap.mapName,
-		Maps:       []defaultMapData{},
+		CurrentMap:   CurrentMap.mapName,
+		Maps:         []defaultMapData{},
+		GameModeData: CurrentGameMode.Serialize(),
 	}
 
 	for _, v := range Maps {
@@ -161,6 +163,7 @@ func defaultLoadProvider(state *GameState) {
 	data := state.SaveData
 	FlushMaps()
 	LoadMap(data.CurrentMap)
+	CurrentGameMode.Deserialize(data.GameModeData)
 
 	for _, mapData := range data.Maps {
 		m := LoadMap(mapData.MapName)

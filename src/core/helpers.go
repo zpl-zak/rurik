@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-11-14 02:27:16
  */
 
-package main
+package core
 
 import (
 	"fmt"
@@ -154,15 +154,15 @@ func isPointWithinFrustum(p rl.Vector2) bool {
 	}
 
 	camOffset := rl.Vector2{
-		X: float32(int(MainCamera.Position.X - screenW/2/MainCamera.Zoom)),
-		Y: float32(int(MainCamera.Position.Y - screenH/2/MainCamera.Zoom)),
+		X: float32(int(MainCamera.Position.X - float32(ScreenWidth)/2/MainCamera.Zoom)),
+		Y: float32(int(MainCamera.Position.Y - float32(ScreenHeight)/2/MainCamera.Zoom)),
 	}
 
 	cam := rl.Rectangle{
 		X:      camOffset.X - FrustumSafeMargin,
 		Y:      camOffset.Y - FrustumSafeMargin,
-		Width:  screenW/MainCamera.Zoom + FrustumSafeMargin*2,
-		Height: screenH/MainCamera.Zoom + FrustumSafeMargin*2,
+		Width:  float32(ScreenWidth)/MainCamera.Zoom + FrustumSafeMargin*2,
+		Height: float32(ScreenHeight)/MainCamera.Zoom + FrustumSafeMargin*2,
 	}
 
 	return isPointWithinRectangle(p, cam)

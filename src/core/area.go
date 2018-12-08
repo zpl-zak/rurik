@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-12-08 21:02:24
  */
 
-package main
+package core
 
 import (
 	"strconv"

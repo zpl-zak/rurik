@@ -2,10 +2,10 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 02:14:54
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-08 21:00:40
+ * @Last Modified time: 2018-12-08 21:05:12
  */
 
-package main
+package core
 
 import (
 	"fmt"
@@ -26,14 +26,6 @@ func (o *Object) NewWait() {
 	o.Duration, _ = strconv.Atoi(o.Meta.Properties.GetString("duration"))
 	o.Trigger = triggerWait
 	o.Update = updateWait
-
-	scriptName := o.Meta.Properties.GetString("file")
-
-	if scriptName != "" {
-		o.Script = o.world.NewObjectPro(o.Name+"_script", "script")
-		o.Script.FileName = scriptName
-		o.world.AddObject(o.Script)
-	}
 
 	o.Init = func(o *Object) {
 		if o.AutoStart {
@@ -84,6 +76,14 @@ func fireWait(o *Object) {
 }
 
 func triggerWait(o, inst *Object) {
+	scriptName := o.Meta.Properties.GetString("file")
+
+	if scriptName != "" {
+		o.Script = o.world.NewObjectPro(o.Name+"_script", "script")
+		o.Script.FileName = scriptName
+		o.world.AddObject(o.Script)
+	}
+
 	if o.Duration == 0 {
 		fireWait(o)
 		return

@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-12-08 20:47:00
  */
 
-package main
+package core
 
 import (
 	"encoding/xml"
@@ -35,8 +35,8 @@ type Map struct {
 	tilemap  *tiled.Map
 	tilesets map[string]*tilesetData
 	mapName  string
-	world    *World
-	weather  Weather
+	World    *World
+	Weather  Weather
 }
 
 type tilesetImageData struct {
@@ -97,10 +97,10 @@ func LoadMap(name string) *Map {
 	cmap.CreateObjects(world)
 	world.postProcessObjects()
 
-	cmap.weather = Weather{}
-	cmap.weather.WeatherInit(cmap)
+	cmap.Weather = Weather{}
+	cmap.Weather.WeatherInit(cmap)
 
-	cmap.world = world
+	cmap.World = world
 
 	Maps[name] = cmap
 
@@ -118,7 +118,7 @@ func SwitchMap(name string) {
 
 // FlushMaps disposes all data
 func FlushMaps() {
-	CurrentMap.world = nil
+	CurrentMap.World = nil
 	CurrentMap = nil
 	Maps = nil
 	LocalPlayer = nil
@@ -128,7 +128,7 @@ func FlushMaps() {
 // InitMap initializes current map (useful for new game/areas)
 func InitMap() {
 	if CurrentMap != nil {
-		CurrentMap.world.InitObjects()
+		CurrentMap.World.InitObjects()
 	} else {
 		log.Fatalf("CurrentMap not set, can't initialize the map!\n")
 		return
@@ -138,26 +138,26 @@ func InitMap() {
 // UpdateMaps updates all maps' simulation regions (worlds)
 func UpdateMaps() {
 	weatherProfiler.StartInvocation()
-	CurrentMap.weather.UpdateWeather()
+	CurrentMap.Weather.UpdateWeather()
 	weatherProfiler.StopInvocation()
 
 	for _, m := range Maps {
-		m.world.UpdateObjects()
+		m.World.UpdateObjects()
 	}
 }
 
 // DrawMap draws the tilemap and all renderable objects
 func DrawMap() {
 	CurrentMap.DrawTilemap(false)
-	CurrentMap.world.DrawObjects()
+	CurrentMap.World.DrawObjects()
 	CurrentMap.DrawTilemap(true) // render all overlays
 
-	CurrentMap.weather.DrawWeather()
+	CurrentMap.Weather.DrawWeather()
 }
 
 // DrawMapUI draw current map's UI elements
 func DrawMapUI() {
-	CurrentMap.world.DrawObjectUI()
+	CurrentMap.World.DrawObjectUI()
 }
 
 // UpdateMapUI draws debug UI
@@ -197,13 +197,13 @@ func drawWorldUI(mapNode *editorElement) {
 	worldNode := pushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
 
 	if !worldNodeIsCollapsed {
-		pushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.world.Objects)), nil)
-		pushEditorElement(worldNode, fmt.Sprintf("global id cursor: %d", CurrentMap.world.GlobalIndex), nil)
+		pushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.World.Objects)), nil)
+		pushEditorElement(worldNode, fmt.Sprintf("global id cursor: %d", CurrentMap.World.GlobalIndex), nil)
 
 		objsNode := pushEditorElement(worldNode, "objects", &objectsNodeIsCollapsed)
 
 		if !objectsNodeIsCollapsed {
-			for i, v := range CurrentMap.world.Objects {
+			for i, v := range CurrentMap.World.Objects {
 				pushEditorElement(objsNode, fmt.Sprintf("%d. %s (%s)", i, v.Name, v.Class), nil)
 			}
 		}
@@ -213,7 +213,7 @@ func drawWorldUI(mapNode *editorElement) {
 // ReloadMap reloads map data
 // Useful during development due to runtime asset hot-reloading capability.
 func ReloadMap(oldMap *Map) *Map {
-	oldMap.world.flushObjects()
+	oldMap.World.flushObjects()
 	return LoadMap(oldMap.mapName)
 }
 

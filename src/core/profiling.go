@@ -1,11 +1,11 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-09 02:14:28
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-09 02:14:28
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-08 21:30:08
  */
 
-package main
+package core
 
 import "fmt"
 
@@ -14,7 +14,7 @@ var (
 	collisionProfiler  *Profiler
 	musicProfiler      *Profiler
 	weatherProfiler    *Profiler
-	customProfiler     *Profiler
+	gameModeProfiler   *Profiler
 	drawProfiler       *Profiler
 	sortRenderProfiler *Profiler
 
@@ -24,12 +24,13 @@ var (
 	otherTimeString = ""
 )
 
-func initGameProfilers() {
+// InitGameProfilers initializes all game profilers used within the engine
+func InitGameProfilers() {
 	updateProfiler = NewProfiler("update")
 	collisionProfiler = NewProfiler("collision")
 	musicProfiler = NewProfiler("music")
 	weatherProfiler = NewProfiler("weather")
-	customProfiler = NewProfiler("custom")
+	gameModeProfiler = NewProfiler("custom")
 	drawProfiler = NewProfiler("draw")
 	sortRenderProfiler = NewProfiler("sortRender")
 
@@ -62,7 +63,7 @@ func drawProfiling() {
 		}
 		pushEditorElement(profilerNode, musicProfiler.displayString, nil)
 		pushEditorElement(profilerNode, weatherProfiler.displayString, nil)
-		pushEditorElement(profilerNode, customProfiler.displayString, nil)
+		pushEditorElement(profilerNode, gameModeProfiler.displayString, nil)
 
 		renderNode := pushEditorElement(profilerNode, drawProfiler.displayString, &drawProfiler.isCollapsed)
 

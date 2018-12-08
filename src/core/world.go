@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-12-08 20:58:25
  */
 
-package main
+package core
 
 import (
 	"fmt"

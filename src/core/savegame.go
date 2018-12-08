@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-11-10 17:17:41
  */
 
-package main
+package core
 
 import (
 	"io/ioutil"
@@ -16,7 +16,8 @@ import (
 )
 
 var (
-	saveSystem SaveSystem
+	// CurrentSaveSystem is the primary save system to be used
+	CurrentSaveSystem SaveSystem
 
 	// CanSave specifies if we're allowed to save at this point
 	CanSave Bits
@@ -134,10 +135,10 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 		mapData := defaultMapData{
 			MapName:     v.mapName,
 			Objects:     []defaultObjectData{},
-			WeatherData: v.weather,
+			WeatherData: v.Weather,
 		}
 
-		for _, b := range v.world.Objects {
+		for _, b := range v.World.Objects {
 			obj := defaultObjectData{
 				Name:     b.Name,
 				Type:     b.Class,
@@ -163,11 +164,11 @@ func defaultLoadProvider(state *GameState) {
 
 	for _, mapData := range data.Maps {
 		m := LoadMap(mapData.MapName)
-		m.weather = mapData.WeatherData
+		m.Weather = mapData.WeatherData
 		world := mapData.Objects
 
 		for _, wo := range world {
-			o, _ := m.world.FindObject(wo.Name)
+			o, _ := m.World.FindObject(wo.Name)
 
 			if o == nil {
 				objType, ok := ObjectTypes[wo.Type]
@@ -176,10 +177,10 @@ func defaultLoadProvider(state *GameState) {
 					continue
 				}
 
-				o = objType(m.world, nil, &wo)
+				o = objType(m.World, nil, &wo)
 				o.Name = wo.Name
 				o.Class = wo.Type
-				m.world.AddObject(o)
+				m.World.AddObject(o)
 			}
 
 			o.Position = wo.Position
@@ -188,6 +189,6 @@ func defaultLoadProvider(state *GameState) {
 			o.Deserialize(o, wo.Custom)
 		}
 
-		m.world.InitObjects()
+		m.World.InitObjects()
 	}
 }

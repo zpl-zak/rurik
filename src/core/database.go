@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-11-09 22:55:14
  */
 
-package main
+package core
 
 import (
 	"log"
@@ -15,12 +15,12 @@ import (
 
 // InitDatabase prepares the database connection
 func InitDatabase() {
-	saveSystem.InitSaveSystem()
+	CurrentSaveSystem.InitSaveSystem()
 }
 
 // ShutdownDatabase disposes all database data and closes all connections
 func ShutdownDatabase() {
-	saveSystem.ShutdownSaveSystem()
+	CurrentSaveSystem.ShutdownSaveSystem()
 }
 
 func openDatabase(dbName string) *storm.DB {

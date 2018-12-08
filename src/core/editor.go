@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-11-09 02:36:36
  */
 
-package main
+package core
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 

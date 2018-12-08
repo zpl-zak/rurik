@@ -12,6 +12,8 @@ import (
 
 	"github.com/gen2brain/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
+	"madaraszd.net/zaklaus/rurik/src/modules"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 const (
@@ -19,8 +21,8 @@ const (
 )
 
 type talk struct {
-	Texts                *Dialogue
-	currentText          *Dialogue
+	Texts                *modules.Dialogue
+	currentText          *modules.Dialogue
 	selectedChoice       int
 	wasPrevLocked        bool
 	mouseDoublePressTime int32
@@ -39,7 +41,7 @@ var (
 // NewTalk dialogue handler
 func (o *Object) NewTalk() {
 	if chatBanner == nil {
-		img := GetTexture("chat_banner.png")
+		img := system.GetTexture("chat_banner.png")
 		chatBanner = &img
 	}
 
@@ -73,7 +75,7 @@ func (o *Object) NewTalk() {
 		}
 
 		if len(o.currentText.Choices) > 0 {
-			if IsKeyPressed("up") {
+			if system.IsKeyPressed("up") {
 				o.selectedChoice--
 
 				if o.selectedChoice < 0 {
@@ -81,7 +83,7 @@ func (o *Object) NewTalk() {
 				}
 			}
 
-			if IsKeyPressed("down") {
+			if system.IsKeyPressed("down") {
 				o.selectedChoice++
 
 				if o.selectedChoice >= len(o.currentText.Choices) {
@@ -90,7 +92,7 @@ func (o *Object) NewTalk() {
 			}
 		}
 
-		if IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
+		if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
 
 			if o.mouseDoublePressTime > 0 {
 				o.mouseDoublePressTime = 0
@@ -125,13 +127,13 @@ func (o *Object) NewTalk() {
 		}
 
 		if o.Texts == nil {
-			data := GetDialogue(o.FileName)
-			o.Texts = &data
+			data := modules.GetDialogue(o.FileName)
+			o.Texts = data
 		}
 
 		o.currentText = o.Texts
 
-		initText(o.currentText)
+		modules.InitText(o.currentText)
 
 		o.Started = true
 		o.wasPrevLocked = LocalPlayer.Locked
@@ -145,8 +147,8 @@ func (o *Object) NewTalk() {
 
 		var height int32 = 120
 		var width int32 = 640
-		start := ScreenHeight - height
-		offsetX := (ScreenWidth - width) / 2
+		start := system.ScreenHeight - height
+		offsetX := (system.ScreenWidth - width) / 2
 
 		rl.DrawRectangle(int32(offsetX), start, width, height, rl.Black)
 		rl.DrawTexture(*chatBanner, int32(offsetX), start, rl.White)

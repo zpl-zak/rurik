@@ -12,6 +12,7 @@ import (
 	"strconv"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 var (
@@ -85,7 +86,7 @@ func (w *Weather) UpdateWeather() {
 		if w.SkyTime <= 0 {
 			w.nextSkyStage()
 		} else {
-			w.SkyTime -= float64(FrameTime) * WeatherTimeScale
+			w.SkyTime -= float64(system.FrameTime) * WeatherTimeScale
 		}
 
 		if w.SkyTargetTime != 0 {

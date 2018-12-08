@@ -5,10 +5,19 @@
  * @Last Modified time: 2018-11-14 02:27:04
  */
 
-package core
+package modules
 
 import (
+	"encoding/json"
+	"fmt"
+	"log"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"madaraszd.net/zaklaus/rurik/src/system"
+)
+
+var (
+	dialogues = make(map[string]Dialogue)
 )
 
 // Dialogue defines connversation flow
@@ -28,20 +37,41 @@ type Choice struct {
 	Next *Dialogue `json:"next"`
 }
 
-func initText(t *Dialogue) {
+// InitText initializes the dialogue's text
+func InitText(t *Dialogue) {
 	if t.AvatarFile != "" {
-		t.Avatar = GetTexture(t.AvatarFile)
+		t.Avatar = system.GetTexture(t.AvatarFile)
 	}
 
 	if t.Next != nil {
-		initText(t.Next)
+		InitText(t.Next)
 	}
 
 	if t.Choices != nil {
 		for _, ch := range t.Choices {
 			if ch.Next != nil {
-				initText(ch.Next)
+				InitText(ch.Next)
 			}
 		}
 	}
+}
+
+// GetDialogue retrieves texts for a dialogue
+func GetDialogue(name string) *Dialogue {
+	dia, ok := dialogues[name]
+
+	if ok {
+		return &dia
+	}
+
+	data := system.GetFile(fmt.Sprintf("texts/%s", name))
+	err := json.Unmarshal(data, &dia)
+
+	if err != nil {
+		log.Printf("Dialogue '%s' is broken!\n", name)
+		return &Dialogue{}
+	}
+
+	dialogues[name] = dia
+	return &dia
 }

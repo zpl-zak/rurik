@@ -18,6 +18,7 @@ import (
 	"github.com/lafriks/go-tiled"
 	goaseprite "github.com/solarlune/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 var (
@@ -341,7 +342,7 @@ func updateObject(o, orig *Object) {
 		}
 	}
 
-	o.Update(o, FrameTime*float32(TimeScale))
+	o.Update(o, system.FrameTime*float32(TimeScale))
 	o.WasUpdated = true
 }
 

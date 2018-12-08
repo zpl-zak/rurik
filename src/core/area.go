@@ -12,6 +12,7 @@ import (
 
 	"github.com/gen2brain/raylib-go/raylib"
 	"github.com/gen2brain/raylib-go/raymath"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 type area struct {
@@ -34,7 +35,7 @@ func (o *Object) NewArea() {
 		if vd < float32(o.Radius) {
 			o.isInCircle = true
 
-			if IsKeyPressed("use") {
+			if system.IsKeyPressed("use") {
 				o.Trigger(o, LocalPlayer)
 			}
 		} else {

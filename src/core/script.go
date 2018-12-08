@@ -12,6 +12,7 @@ import (
 
 	"github.com/json-iterator/go"
 	"github.com/robertkrimen/otto"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 type script struct {
@@ -34,7 +35,13 @@ func (o *Object) NewScript() {
 			o.FileName = o.Meta.Properties.GetString("file")
 		}
 
-		o.Source = GetScript(o.FileName)
+		data := system.GetFile("scripts/" + o.FileName)
+
+		if data == nil {
+			return
+		}
+
+		o.Source = string(data)
 
 		o.Ctx = otto.New()
 		initGameAPI(o, o.Ctx)

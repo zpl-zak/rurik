@@ -10,6 +10,7 @@ import (
 	"log"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 var (
@@ -39,9 +40,9 @@ const (
 
 // InitCore initializes the game engine
 func InitCore(name string, windowW, windowH, screenW, screenH int32) {
-	InitRenderer(name, windowW, windowH)
-	ScreenTexture = CreateRenderTarget(screenW, screenH)
-	InitInput()
+	system.InitRenderer(name, windowW, windowH)
+	ScreenTexture = system.CreateRenderTarget(screenW, screenH)
+	system.InitInput()
 	rl.InitAudioDevice()
 
 	initObjectTypes()
@@ -90,7 +91,7 @@ func Run(newGameMode GameMode) {
 			frameCounter = 0
 		}
 
-		for unprocessedTime > float64(FrameTime) {
+		for unprocessedTime > float64(system.FrameTime) {
 
 			UpdateEditor()
 
@@ -110,7 +111,7 @@ func Run(newGameMode GameMode) {
 
 			shouldRender = true
 
-			unprocessedTime -= float64(FrameTime)
+			unprocessedTime -= float64(system.FrameTime)
 		}
 
 		if shouldRender {
@@ -144,8 +145,8 @@ func Run(newGameMode GameMode) {
 
 			rl.EndTextureMode()
 
-			rl.DrawTexturePro(screenTexture.Texture, rl.NewRectangle(0, 0, float32(ScreenWidth), -float32(ScreenHeight)),
-				rl.NewRectangle(0, 0, float32(WindowWidth), float32(WindowHeight)), rl.NewVector2(0, 0), 0, rl.White)
+			rl.DrawTexturePro(ScreenTexture.Texture, rl.NewRectangle(0, 0, float32(system.ScreenWidth), -float32(system.ScreenHeight)),
+				rl.NewRectangle(0, 0, float32(system.WindowWidth), float32(system.WindowHeight)), rl.NewVector2(0, 0), 0, rl.White)
 
 			frames++
 		} else {

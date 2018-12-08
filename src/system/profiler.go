@@ -5,7 +5,7 @@
  * @Last Modified time: 2018-11-09 02:14:45
  */
 
-package core
+package system
 
 import (
 	"fmt"
@@ -14,58 +14,59 @@ import (
 )
 
 var (
-	profilers []*Profiler
+	// Profilers consists of list of all profilers
+	Profilers []*Profiler
 )
 
 // Profiler tracks the timing of particular operations.
 type Profiler struct {
-	profilerName    string
-	startTime       float64
-	passedTime      float64
-	invocationCount int32
-	displayString   string
+	ProfilerName    string
+	StartTime       float64
+	PassedTime      float64
+	InvocationCount int32
+	DisplayString   string
 
-	isCollapsed bool
+	IsCollapsed bool
 }
 
 // NewProfiler returns a new profiler
 func NewProfiler(name string) *Profiler {
 	prof := &Profiler{
-		profilerName:  name,
-		isCollapsed:   false,
-		displayString: name + ": 0 ms",
+		ProfilerName:  name,
+		IsCollapsed:   false,
+		DisplayString: name + ": 0 ms",
 	}
 
-	profilers = append(profilers, prof)
+	Profilers = append(Profilers, prof)
 	return prof
 }
 
 // StartInvocation start timing this block
 func (p *Profiler) StartInvocation() {
-	p.startTime = float64(rl.GetTime())
+	p.StartTime = float64(rl.GetTime())
 }
 
 // StopInvocation stops timing this block
 func (p *Profiler) StopInvocation() {
-	p.passedTime += float64(rl.GetTime()) - p.startTime
-	p.startTime = 0
-	p.invocationCount++
+	p.PassedTime += float64(rl.GetTime()) - p.StartTime
+	p.StartTime = 0
+	p.InvocationCount++
 }
 
 // GetTime returns the passed time and resets the profiler
 func (p *Profiler) GetTime(divisor float64) (result float64) {
 	if divisor == 0 {
-		divisor = float64(p.invocationCount)
+		divisor = float64(p.InvocationCount)
 	}
 
-	if p.passedTime == 0 && divisor == 0 {
+	if p.PassedTime == 0 && divisor == 0 {
 		result = 0
 	} else {
-		result = p.passedTime / float64(divisor) * 1000
+		result = p.PassedTime / float64(divisor) * 1000
 	}
 
-	p.displayString = fmt.Sprintf("%s: %.02f ms", p.profilerName, result)
-	p.passedTime = 0
-	p.invocationCount = 0
+	p.DisplayString = fmt.Sprintf("%s: %.02f ms", p.ProfilerName, result)
+	p.PassedTime = 0
+	p.InvocationCount = 0
 	return
 }

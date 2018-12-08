@@ -7,7 +7,9 @@
 
 package core
 
-import rl "github.com/gen2brain/raylib-go/raylib"
+import (
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 var (
 	rootIsCollapsed = false

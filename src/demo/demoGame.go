@@ -7,6 +7,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/pkg/profile"
 	"madaraszd.net/zaklaus/rurik/src/core"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 const (
@@ -96,7 +97,7 @@ func (g *demoGameMode) Update() {
 }
 
 func drawBackground() {
-	bgImage := core.GetTexture("bg.png")
+	bgImage := system.GetTexture("bg.png")
 
 	rows := int(screenW/bgImage.Width) + 1
 	cols := int(screenH/bgImage.Height) + 1

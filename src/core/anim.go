@@ -9,6 +9,7 @@ package core
 
 import (
 	rl "github.com/gen2brain/raylib-go/raylib"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 type anim struct {
@@ -18,7 +19,7 @@ type anim struct {
 
 // NewAnim animated sprite
 func (o *Object) NewAnim() {
-	o.Texture = GetTexture(o.FileName + ".png")
+	o.Texture = system.GetTexture(o.FileName + ".png")
 	o.IsCollidable = true
 
 	if o.AnimTag == "" {
@@ -42,7 +43,7 @@ func (o *Object) NewAnim() {
 		if o.Proxy != nil {
 			o.Ase = o.Proxy.Ase
 		} else {
-			aseData := GetAnimData(o.FileName)
+			aseData := system.GetAnimData(o.FileName)
 			o.Ase = &aseData
 		}
 

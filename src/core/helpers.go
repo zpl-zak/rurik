@@ -14,6 +14,7 @@ import (
 	"github.com/gen2brain/raylib-go/raymath"
 	colorful "github.com/lucasb-eyer/go-colorful"
 	"github.com/solarlune/resolv/resolv"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 const (
@@ -101,8 +102,8 @@ func isMouseInRectangle(x, y, x2, y2 int32) bool {
 
 	mo := rl.GetMousePosition()
 	m := [2]int32{
-		int32(mo.X) / ScaleRatio,
-		int32(mo.Y) / ScaleRatio,
+		int32(mo.X) / system.ScaleRatio,
+		int32(mo.Y) / system.ScaleRatio,
 	}
 
 	if m[0] > x && m[0] < x2 &&
@@ -154,15 +155,15 @@ func isPointWithinFrustum(p rl.Vector2) bool {
 	}
 
 	camOffset := rl.Vector2{
-		X: float32(int(MainCamera.Position.X - float32(ScreenWidth)/2/MainCamera.Zoom)),
-		Y: float32(int(MainCamera.Position.Y - float32(ScreenHeight)/2/MainCamera.Zoom)),
+		X: float32(int(MainCamera.Position.X - float32(system.ScreenWidth)/2/MainCamera.Zoom)),
+		Y: float32(int(MainCamera.Position.Y - float32(system.ScreenHeight)/2/MainCamera.Zoom)),
 	}
 
 	cam := rl.Rectangle{
 		X:      camOffset.X - FrustumSafeMargin,
 		Y:      camOffset.Y - FrustumSafeMargin,
-		Width:  float32(ScreenWidth)/MainCamera.Zoom + FrustumSafeMargin*2,
-		Height: float32(ScreenHeight)/MainCamera.Zoom + FrustumSafeMargin*2,
+		Width:  float32(system.ScreenWidth)/MainCamera.Zoom + FrustumSafeMargin*2,
+		Height: float32(system.ScreenHeight)/MainCamera.Zoom + FrustumSafeMargin*2,
 	}
 
 	return isPointWithinRectangle(p, cam)

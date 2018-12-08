@@ -13,6 +13,7 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 	ry "github.com/gen2brain/raylib-go/raymath"
 	"github.com/solarlune/resolv/resolv"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 type player struct {
@@ -21,9 +22,9 @@ type player struct {
 
 // NewPlayer player
 func (p *Object) NewPlayer() {
-	aseData := GetAnimData("player")
+	aseData := system.GetAnimData("player")
 	p.Ase = &aseData
-	p.Texture = GetTexture("player.png")
+	p.Texture = system.GetTexture("player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
 	p.Update = updatePlayer
 	p.Draw = drawPlayer
@@ -46,8 +47,8 @@ func updatePlayer(p *Object, dt float32) {
 	p.Movement.Y = 0
 
 	if !p.Locked {
-		p.Movement.X = GetAxis("horizontal")
-		p.Movement.Y = GetAxis("vertical")
+		p.Movement.X = system.GetAxis("horizontal")
+		p.Movement.Y = system.GetAxis("vertical")
 	}
 
 	var tag string

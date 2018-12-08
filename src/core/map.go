@@ -15,6 +15,7 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	tiled "github.com/lafriks/go-tiled"
+	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 var (
@@ -92,6 +93,7 @@ func LoadMap(name string) *Map {
 
 	if CurrentMap == nil {
 		CurrentMap = cmap
+		system.MapName = name
 	}
 
 	cmap.CreateObjects(world)
@@ -113,6 +115,7 @@ func SwitchMap(name string) {
 
 	if ok {
 		CurrentMap = m
+		system.MapName = name
 	}
 }
 
@@ -240,7 +243,7 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 		return nil
 	}
 
-	loadedTileset.Image = GetTexture(fmt.Sprintf("../map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
+	loadedTileset.Image = system.GetTexture(fmt.Sprintf("../map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
 	loadedTileset.IsCollapsed = true
 
 	m.tilesets[tilesetName] = loadedTileset

@@ -2,12 +2,13 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:53
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-08 21:39:44
+ * @Last Modified time: 2018-12-09 00:35:19
  */
 
 package core // madaraszd.net/zaklaus/rurik
 import (
 	"log"
+	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
@@ -31,6 +32,9 @@ var (
 
 	// ScreenTexture represents the render target
 	ScreenTexture *rl.RenderTexture2D
+
+	// IsRunning tells us whether the game is still running
+	IsRunning = true
 )
 
 const (
@@ -47,6 +51,11 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 
 	initObjectTypes()
 	InitDatabase()
+}
+
+// CloseGame exits the game gracefully
+func CloseGame() {
+	IsRunning = false
 }
 
 // Run executes the main game loop
@@ -67,7 +76,11 @@ func Run(newGameMode GameMode) {
 		return
 	}
 
-	for !rl.WindowShouldClose() {
+	for IsRunning {
+		if rl.WindowShouldClose() {
+			IsRunning = false
+		}
+
 		shouldRender := false
 		startTime := float64(rl.GetTime())
 		passedTime := startTime - lastTime
@@ -147,10 +160,11 @@ func Run(newGameMode GameMode) {
 }
 
 func shutdown() {
-	if rl.IsWindowReady() {
-		CurrentGameMode.Shutdown()
-		rl.CloseWindow()
-	}
+	log.Println("Shutting down the engine...")
+	CurrentGameMode.Shutdown()
+	rl.CloseWindow()
+	rl.CloseAudioDevice()
+	os.Exit(0)
 }
 
 func setupDefaultCamera() {

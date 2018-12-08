@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-09 02:23:11
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-09 02:23:11
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-09 00:27:20
  */
 
 package core
@@ -11,7 +11,6 @@ import (
 	"fmt"
 	"reflect"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/robertkrimen/otto"
 )
 
@@ -45,7 +44,7 @@ func initGameAPI(o *Object, vm *otto.Otto) {
 	})
 
 	vm.Set("exitGame", func(call otto.FunctionCall) otto.Value {
-		rl.CloseWindow()
+		CloseGame()
 		return otto.Value{}
 	})
 

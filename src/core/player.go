@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-10 03:45:14
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-10 03:45:14
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-09 01:57:56
  */
 
 package core
@@ -16,9 +16,9 @@ import (
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
-type player struct {
-	Locked bool
-}
+const ()
+
+type player struct{}
 
 // NewPlayer player
 func (p *Object) NewPlayer() {
@@ -46,7 +46,7 @@ func updatePlayer(p *Object, dt float32) {
 	p.Movement.X = 0
 	p.Movement.Y = 0
 
-	if !p.Locked {
+	if CanSave == 0 || bitsHas(CanSave, isInChallenge) {
 		p.Movement.X = system.GetAxis("horizontal")
 		p.Movement.Y = system.GetAxis("vertical")
 	}

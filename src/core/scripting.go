@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 02:23:11
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:11:26
+ * @Last Modified time: 2018-12-09 01:58:45
  */
 
 package core
@@ -29,8 +29,7 @@ func initDefaultEvents() {
 
 	RegisterEvent("followPlayer", func(in string) string {
 		type followPlayerData struct {
-			Speed        float32
-			LockControls bool
+			Speed float32
 		}
 
 		var data followPlayerData
@@ -40,7 +39,6 @@ func initDefaultEvents() {
 			MainCamera.Speed = data.Speed
 		}
 
-		LocalPlayer.Locked = data.LockControls
 		MainCamera.Mode = CameraModeFollow
 		MainCamera.Follow = LocalPlayer
 
@@ -49,9 +47,10 @@ func initDefaultEvents() {
 
 	RegisterEvent("cameraInterpolate", func(in string) string {
 		type cameraInterpolateData struct {
-			Speed float32
-			Start string
-			End   string
+			Speed   float32
+			Start   string
+			End     string
+			Instant bool
 		}
 
 		var data cameraInterpolateData
@@ -61,7 +60,10 @@ func initDefaultEvents() {
 			MainCamera.Speed = data.Speed
 		}
 
-		LocalPlayer.Locked = true
+		if data.Instant {
+			MainCamera.First = true
+		}
+
 		MainCamera.Mode = CameraModeLerp
 		MainCamera.Start, _ = CurrentMap.World.FindObject(data.Start)
 		MainCamera.End, _ = CurrentMap.World.FindObject(data.End)

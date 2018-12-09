@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 22:54:46
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:46:40
+ * @Last Modified time: 2018-12-09 01:56:31
  */
 
 package core
@@ -28,6 +28,7 @@ const (
 	isSequenceHappening
 	isPlayerDead
 	isInDialogue
+	isInChallenge
 )
 
 // SaveSystem manages game save states

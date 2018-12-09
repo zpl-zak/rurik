@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:28:00
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:28:00
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-09 01:59:42
  */
 
 package core
@@ -23,7 +23,6 @@ type talk struct {
 	Texts                *Dialogue
 	currentText          *Dialogue
 	selectedChoice       int
-	wasPrevLocked        bool
 	mouseDoublePressTime int32
 }
 
@@ -109,7 +108,6 @@ func (o *Object) NewTalk() {
 				o.Started = false
 				CanSave = bitsClear(CanSave, isInDialogue)
 				o.WasExecuted = true
-				LocalPlayer.Locked = o.wasPrevLocked
 			}
 
 			if tgt != nil {
@@ -135,8 +133,6 @@ func (o *Object) NewTalk() {
 		InitText(o.currentText)
 
 		o.Started = true
-		o.wasPrevLocked = LocalPlayer.Locked
-		LocalPlayer.Locked = true
 	}
 
 	o.DrawUI = func(o *Object) {

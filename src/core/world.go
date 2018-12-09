@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-08 20:58:25
+ * @Last Modified time: 2018-12-09 01:36:02
  */
 
 package core
@@ -217,6 +217,18 @@ func (w *World) AddObject(o *Object) {
 		log.Printf("You can't add duplicate object to the world! Object name: %s\n", o.Name)
 		return
 	}
+}
+
+// FinalizeObject fully initializes the object and adds it to the world
+func (w *World) FinalizeObject(o *Object) {
+	if o == nil {
+		return
+	}
+
+	w.AddObject(o)
+	w.resolveObjectDependencies(o)
+	w.findTargets(o)
+	o.Finish(o)
 }
 
 func (w *World) spawnObject(objectData *tiled.Object) *Object {

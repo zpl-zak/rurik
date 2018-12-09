@@ -4,22 +4,18 @@ var f = null
 
 for (var x = 0; x < 180; x++) {
     for (var y = 0; y < 180; y++) {
-        var obj = CurrentWorld.NewObject(null)
+        var obj = CurrentWorld.NewObjectPro(y*180+x, "anim")
         obj.FileName = "ball"
-        obj.Name = y*20+x
-        obj.Class = "anim"
         obj.AnimTag = "Base"
         obj.AutoStart = 1
         
         if (f != null)
             setProperty(obj, "Proxy", f)
 
-        obj.NewAnim()
         obj.IsCollidable = false
-        
         obj.SetPosition(x*32 + 16, y*32 + 8)
         
-        CurrentWorld.AddObject(obj)
+        CurrentWorld.FinalizeObject(obj)
 
         if (f == null)
             f = obj

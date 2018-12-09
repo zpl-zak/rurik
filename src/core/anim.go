@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:25:59
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:25:59
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-09 01:33:03
  */
 
 package core
@@ -19,12 +19,7 @@ type anim struct {
 
 // NewAnim animated sprite
 func (o *Object) NewAnim() {
-	o.Texture = system.GetTexture(o.FileName + ".png")
 	o.IsCollidable = true
-
-	if o.AnimTag == "" {
-		o.AnimTag = o.Meta.Properties.GetString("tag")
-	}
 
 	o.Trigger = func(o, inst *Object) {
 		if o.Ase != nil {
@@ -40,9 +35,15 @@ func (o *Object) NewAnim() {
 	}
 
 	o.Finish = func(o *Object) {
+		o.Texture = system.GetTexture(o.FileName + ".png")
+
 		if o.Proxy != nil {
 			o.Ase = o.Proxy.Ase
 		} else {
+			if o.AnimTag == "" {
+				o.AnimTag = o.Meta.Properties.GetString("tag")
+			}
+
 			aseData := system.GetAnimData(o.FileName)
 			o.Ase = &aseData
 		}
@@ -55,6 +56,10 @@ func (o *Object) NewAnim() {
 	o.GetAABB = getSpriteAABB
 
 	o.Draw = func(o *Object) {
+		if o.Ase == nil {
+			return
+		}
+
 		source := getSpriteRectangle(o)
 		dest := getSpriteOrigin(o)
 

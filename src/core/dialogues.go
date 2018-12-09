@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:27:04
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:27:04
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-09 00:52:57
  */
 
 package core
@@ -64,7 +64,7 @@ func GetDialogue(name string) *Dialogue {
 		return &dia
 	}
 
-	data := system.GetFile(fmt.Sprintf("texts/%s", name))
+	data := system.GetFile(fmt.Sprintf("texts/%s", name), false)
 	err := jsoniter.Unmarshal(data, &dia)
 
 	if err != nil {

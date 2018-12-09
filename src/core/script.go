@@ -35,7 +35,7 @@ func (o *Object) NewScript() {
 			o.FileName = o.Meta.Properties.GetString("file")
 		}
 
-		data := system.GetFile("scripts/" + o.FileName)
+		data := system.GetFile("scripts/"+o.FileName, true)
 
 		if data == nil {
 			return

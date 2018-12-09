@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:21
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:26:21
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-09 00:54:07
  */
 
 package system
@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/solarlune/GoAseprite"
@@ -58,7 +59,13 @@ func GetAnimData(animPath string) goaseprite.File {
 }
 
 // GetFile retrieves a file from a disk
-func GetFile(path string) []byte {
+func GetFile(path string, checkGlobalDir bool) []byte {
+	if checkGlobalDir {
+		if _, err := os.Stat(fmt.Sprintf("assets/%s", path)); !os.IsNotExist(err) {
+			return GetRootFile(path)
+		}
+	}
+
 	return GetRootFile(fmt.Sprintf("map/%s/%s", MapName, path))
 }
 

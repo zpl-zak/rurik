@@ -1,6 +1,4 @@
-var cam = MainCamera
-
-cam.SetCameraMode("lerp")
-setProperty(cam, "Start", findObject("camera_start"))
-setProperty(cam, "End", findObject("camera_end"))
-LocalPlayer.Locked = true
+invoke("cameraInterpolate", JSON.stringify({
+    start: "camera_start",
+    end: "camera_end"
+}))

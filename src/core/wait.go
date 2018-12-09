@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 02:14:54
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-08 21:05:12
+ * @Last Modified time: 2018-12-09 01:47:25
  */
 
 package core
@@ -81,7 +81,8 @@ func triggerWait(o, inst *Object) {
 	if scriptName != "" {
 		o.Script = o.world.NewObjectPro(o.Name+"_script", "script")
 		o.Script.FileName = scriptName
-		o.world.AddObject(o.Script)
+		o.Script.IsPersistent = false
+		o.world.FinalizeObject(o.Script)
 	}
 
 	if o.Duration == 0 {

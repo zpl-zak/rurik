@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 22:54:46
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-10 17:17:41
+ * @Last Modified time: 2018-12-09 01:46:40
  */
 
 package core
@@ -141,6 +141,10 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 		}
 
 		for _, b := range v.World.Objects {
+			if !b.IsPersistent {
+				continue
+			}
+
 			obj := defaultObjectData{
 				Name:     b.Name,
 				Type:     b.Class,

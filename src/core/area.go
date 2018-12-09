@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:11
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-08 21:02:24
+ * @Last Modified time: 2018-12-09 01:45:58
  */
 
 package core
@@ -66,8 +66,9 @@ func (o *Object) NewArea() {
 			if o.Talk == nil {
 				o.Talk = o.world.NewObjectPro(o.Name+"_talk", "talk")
 				o.Talk.FileName = talkFile
+				o.Talk.IsPersistent = false
 				o.Talk.CanRepeat = true
-				o.world.AddObject(o.Talk)
+				o.world.FinalizeObject(o.Talk)
 			}
 
 			if !o.Talk.Started && (rl.GetTime()-o.Talk.LastTrigger) > 1 {

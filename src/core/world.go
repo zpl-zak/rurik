@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:36:02
+ * @Last Modified time: 2018-12-09 01:43:53
  */
 
 package core
@@ -66,6 +66,7 @@ type Object struct {
 	Started       bool
 	WasExecuted   bool
 	CanRepeat     bool
+	IsPersistent  bool
 
 	// Internal fields
 	WasUpdated bool
@@ -176,6 +177,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		CollisionType: o.Properties.GetString("colType"),
 		AutoStart:     o.Properties.GetString("autostart") == "1",
 		FileName:      o.Properties.GetString("file"),
+		IsPersistent:  true,
 
 		// Callbacks
 		Finish:          func(o *Object) {},

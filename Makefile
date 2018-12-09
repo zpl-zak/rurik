@@ -12,3 +12,5 @@ clean:
 
 play:
 	./play.sh
+
+bt: all play

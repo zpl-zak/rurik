@@ -179,15 +179,12 @@ func defaultLoadProvider(state *GameState) {
 			o, _ := m.World.FindObject(wo.Name)
 
 			if o == nil {
-				objType, ok := ObjectTypes[wo.Type]
+				o = m.World.NewObjectPro(wo.Name, wo.Type)
 
-				if !ok {
+				if o == nil {
 					continue
 				}
 
-				o = objType(m.World, nil, &wo)
-				o.Name = wo.Name
-				o.Class = wo.Type
 				m.World.AddObject(o)
 			}
 

@@ -22,9 +22,6 @@ import (
 )
 
 var (
-	// ObjectTypes contains all definitions of objects in the game
-	ObjectTypes map[string]func(w *World, objectData *tiled.Object, savegameData *defaultObjectData) *Object
-
 	// Worlds are all the worlds loaded within the game
 	Worlds []*World
 
@@ -101,8 +98,6 @@ func (w *World) flushObjects() {
 }
 
 func initObjectTypes() {
-	ObjectTypes = make(map[string]func(w *World, objectData *tiled.Object, savegameData *defaultObjectData) *Object)
-
 	objTypes = map[string]string{
 		"player": "Player",
 		"col":    "Collision",
@@ -114,34 +109,33 @@ func initObjectTypes() {
 		"anim":   "Anim",
 		"area":   "Area",
 	}
+}
 
-	for k := range objTypes {
-		ObjectTypes[k] = func(w *World, o *tiled.Object, savegameData *defaultObjectData) *Object {
-			inst := w.NewObject(o)
+// BuildObject builds already-prepared object
+func BuildObject(w *World, o *tiled.Object, savegameData *defaultObjectData) (*Object, error) {
+	inst := w.NewObject(o)
 
-			className := "Unknown"
+	className := "Unknown"
 
-			if o != nil {
-				className = o.Type
-			} else if savegameData != nil {
-				className = savegameData.Type
-			}
-
-			class := objTypes[className]
-			methodName := fmt.Sprintf("New%s", class)
-
-			method := reflect.ValueOf(inst).MethodByName(methodName)
-
-			if !method.IsValid() {
-				log.Fatalf("Object type creation of '%s' not found!\n", class)
-				return nil
-			}
-
-			method.Call([]reflect.Value{})
-
-			return inst
-		}
+	if o != nil {
+		className = o.Type
+	} else if savegameData != nil {
+		className = savegameData.Type
 	}
+
+	class := objTypes[className]
+	methodName := fmt.Sprintf("New%s", class)
+
+	method := reflect.ValueOf(inst).MethodByName(methodName)
+
+	if !method.IsValid() {
+		log.Fatalf("Object type creation of '%s' not found!\n", class)
+		return nil, fmt.Errorf("object type is undefined")
+	}
+
+	method.Call([]reflect.Value{})
+
+	return inst, nil
 }
 
 // GetObjectsOfType returns all objects of a given type
@@ -234,17 +228,10 @@ func (w *World) FinalizeObject(o *Object) {
 }
 
 func (w *World) spawnObject(objectData *tiled.Object) *Object {
-	objType, ok := ObjectTypes[objectData.Type]
+	obj, err := BuildObject(w, objectData, nil)
 
-	if !ok {
-		log.Printf("Object type: %s not found!\n", objectData.Type)
-		return nil
-	}
-
-	obj := objType(w, objectData, nil)
-
-	if obj == nil {
-		log.Printf("Object creation failed!\n")
+	if err != nil {
+		log.Printf("Object creation failed: %s!\n", err.Error())
 		return nil
 	}
 
@@ -254,6 +241,8 @@ func (w *World) spawnObject(objectData *tiled.Object) *Object {
 	if obj.CollisionType != "" {
 		obj.IsCollidable = obj.CollisionType != "none"
 	}
+
+	fmt.Printf("Creating object: %s [%s].\n", obj.Name, obj.Class)
 
 	return obj
 }

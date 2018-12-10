@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-12-10 03:31:58
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 17:26:25
+ * @Last Modified time: 2018-12-10 17:45:39
  */
 
 package core
@@ -72,14 +72,9 @@ func (o *Object) NewTile() {
 			{
 				b := rl.Vector2{X: dest.X, Y: dest.Y}
 				e := rl.Vector2{X: float32(c.X), Y: float32(c.Y)}
-				rl.DrawLineEx(
-					b,
-					e,
-					1,
-					rl.Yellow,
-				)
-				rl.DrawCircle(int32(b.X), int32(b.Y), 3, rl.Green)
-				rl.DrawCircle(int32(e.X), int32(e.Y), 3, rl.Red)
+				rl.DrawCircle(int32(b.X), int32(b.Y), 2, rl.Green)
+				rl.DrawCircle(int32(e.X), int32(e.Y), 2, rl.Red)
+				rl.DrawLineEx(b, e, 1, rl.Yellow)
 			}
 			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}

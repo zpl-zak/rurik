@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-12-10 03:31:58
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:51:42
+ * @Last Modified time: 2018-12-10 15:20:37
  */
 
 package core
@@ -29,7 +29,7 @@ func (o *Object) NewTile() {
 		o.Width = int32(o.Meta.Width)
 		o.Height = int32(o.Meta.Height)
 		o.Ase = nil
-		//o.DebugVisible = false
+		o.DebugVisible = false
 
 		o.HorizontalFlip = rawGID&tileHorizontalFlipMask != 0
 		o.VerticalFlip = rawGID&tileVerticalFlipMask != 0
@@ -55,7 +55,7 @@ func (o *Object) NewTile() {
 
 	o.Draw = func(o *Object) {
 		source, tex := CurrentMap.GetTileDataFromID(o.TileID - 1)
-		dest := rl.NewRectangle(o.Position.X, o.Position.Y, float32(o.Width), float32(o.Height))
+		dest := rl.NewRectangle(o.Position.X+float32(o.Width)/2, o.Position.Y-float32(o.Height)/2, float32(o.Width), float32(o.Height))
 
 		if DebugMode && o.DebugVisible {
 			c := o.GetAABB(o)
@@ -78,6 +78,6 @@ func (o *Object) NewTile() {
 			rot = 90
 		}
 
-		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: 0, Y: float32(o.Height)}, rot+o.Rotation, SkyColor)
+		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: float32(o.Width) / 2, Y: float32(o.Height) / 2}, rot+o.Rotation, SkyColor)
 	}
 }

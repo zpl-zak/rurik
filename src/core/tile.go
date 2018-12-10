@@ -2,12 +2,14 @@
  * @Author: V4 Games
  * @Date: 2018-12-10 03:31:58
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 15:20:37
+ * @Last Modified time: 2018-12-10 17:23:18
  */
 
 package core
 
 import (
+	"math"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -39,9 +41,16 @@ func (o *Object) NewTile() {
 	}
 
 	o.GetAABB = func(o *Object) rl.RectangleInt32 {
+		centerX := float64(o.Width) / 2
+		centerY := -float64(o.Height) / 2
+		cosR := math.Cos(float64(o.Rotation) / (180 / math.Pi))
+		sinR := math.Sin(float64(o.Rotation) / (180 / math.Pi))
+		rotCenterX := int32(centerX*cosR - centerY*sinR)
+		rotCenterY := int32(centerX*sinR + centerY*cosR)
+
 		return rl.RectangleInt32{
-			X:      int32(o.Position.X),
-			Y:      int32(o.Position.Y) - int32(o.Height),
+			X:      int32(o.Position.X) + rotCenterX - int32(centerX),
+			Y:      int32(o.Position.Y) + rotCenterY + int32(centerY),
 			Width:  o.Width,
 			Height: o.Height,
 		}
@@ -55,11 +64,23 @@ func (o *Object) NewTile() {
 
 	o.Draw = func(o *Object) {
 		source, tex := CurrentMap.GetTileDataFromID(o.TileID - 1)
-		dest := rl.NewRectangle(o.Position.X+float32(o.Width)/2, o.Position.Y-float32(o.Height)/2, float32(o.Width), float32(o.Height))
+		dest := rl.NewRectangle(o.Position.X, o.Position.Y, float32(o.Width), float32(o.Height))
 
 		if DebugMode && o.DebugVisible {
 			c := o.GetAABB(o)
 			rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
+			{
+				b := rl.Vector2{X: dest.X, Y: dest.Y}
+				e := rl.Vector2{X: float32(c.X), Y: float32(c.Y)}
+				rl.DrawLineEx(
+					b,
+					e,
+					1,
+					rl.Yellow,
+				)
+				rl.DrawCircle(int32(b.X), int32(b.Y), 3, rl.Green)
+				rl.DrawCircle(int32(e.X), int32(e.Y), 3, rl.Red)
+			}
 			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
 
@@ -78,6 +99,6 @@ func (o *Object) NewTile() {
 			rot = 90
 		}
 
-		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: float32(o.Width) / 2, Y: float32(o.Height) / 2}, rot+o.Rotation, SkyColor)
+		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: 0, Y: float32(o.Height)}, rot+o.Rotation, SkyColor)
 	}
 }

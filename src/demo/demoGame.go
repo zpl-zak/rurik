@@ -78,7 +78,7 @@ func (g *demoGameMode) IgnoreUpdate() bool {
 func (g *demoGameMode) Update() {
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
 		core.FlushMaps()
-		core.LoadMap("demo")
+		core.LoadMap(playMapName)
 		core.InitMap()
 		return
 	}

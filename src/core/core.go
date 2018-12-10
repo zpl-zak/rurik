@@ -9,6 +9,7 @@ package core // madaraszd.net/zaklaus/rurik
 import (
 	"log"
 	"os"
+	"runtime/pprof"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
@@ -60,7 +61,7 @@ func CloseGame() {
 }
 
 // Run executes the main game loop
-func Run(newGameMode GameMode) {
+func Run(newGameMode GameMode, enableProfiler bool) {
 	CurrentGameMode = newGameMode
 	CurrentGameMode.Init()
 
@@ -75,6 +76,14 @@ func Run(newGameMode GameMode) {
 	if CurrentGameMode == nil {
 		log.Fatalf("No GameMode has been set!\n")
 		return
+	}
+
+	var cpuProfiler *os.File
+
+	if enableProfiler {
+		cpuProfiler, _ = os.Create("build/cpu.pprof")
+
+		pprof.StartCPUProfile(cpuProfiler)
 	}
 
 	for IsRunning {
@@ -157,6 +166,11 @@ func Run(newGameMode GameMode) {
 		} else {
 			//time.Sleep(time.Millisecond)
 		}
+	}
+
+	if enableProfiler {
+		pprof.StopCPUProfile()
+		cpuProfiler.Close()
 	}
 }
 

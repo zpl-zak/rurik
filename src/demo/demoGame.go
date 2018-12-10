@@ -6,7 +6,6 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
-	"github.com/pkg/profile"
 	"madaraszd.net/zaklaus/rurik/src/core"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
@@ -32,6 +31,13 @@ type demoGameMode struct{}
 func (g *demoGameMode) Init() {
 	core.LoadPlaylist("tracklist.txt")
 	core.LoadNextTrack()
+
+	// test class
+	err := core.RegisterObjectType("demo_testclass", "TestClass", NewTestClass)
+
+	if err != nil {
+		fmt.Printf("Custom type registration has failed: %s", err.Error())
+	}
 
 	core.LoadMap(playMapName)
 	core.InitMap()
@@ -128,7 +134,7 @@ func drawBackground() {
 	for i := 0; i < cols; i++ {
 		for j := 0; j < rows; j++ {
 			rl.DrawTexturePro(
-				bgImage,
+				*bgImage,
 				src,
 				rl.NewRectangle(float32(j)*tileW, float32(i)*tileH, tileW, tileH),
 				rl.Vector2{},
@@ -143,7 +149,7 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	playMapName = *flag.String("map", "demo", "Map name to play.")
+	playMapName = *flag.String("map", "test", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	flag.Parse()
 
@@ -158,11 +164,7 @@ func main() {
 	core.SetMusicVolume(float32(*musicVol) / 100)
 	core.WeatherTimeScale = *weatherTimeScale
 
-	if *enableProfiler {
-		defer profile.Start(profile.ProfilePath("build")).Stop()
-	}
-
-	core.Run(demoGame)
+	core.Run(demoGame, *enableProfiler)
 }
 
 func (g *demoGameMode) Shutdown() {

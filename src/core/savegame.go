@@ -166,6 +166,7 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 
 func defaultLoadProvider(state *GameState) {
 	data := state.SaveData
+	CanSave = 0
 	FlushMaps()
 	LoadMap(data.CurrentMap)
 	CurrentGameMode.Deserialize(data.GameModeData)

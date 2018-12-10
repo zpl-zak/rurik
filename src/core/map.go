@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-08 16:05:27
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-08 20:47:00
+ * @Last Modified time: 2018-12-10 04:36:05
  */
 
 package core
@@ -12,6 +12,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"path"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 	tiled "github.com/lafriks/go-tiled"
@@ -29,6 +30,14 @@ var (
 	worldNodeIsCollapsed    = false
 	tilesetsNodeIsCollapsed = true
 	objectsNodeIsCollapsed  = true
+)
+
+const (
+	tileHorizontalFlipMask = 0x80000000
+	tileVerticalFlipMask   = 0x40000000
+	tileDiagonalFlipMask   = 0x20000000
+	tileFlip               = tileHorizontalFlipMask | tileVerticalFlipMask | tileDiagonalFlipMask
+	tileGIDMask            = 0x0fffffff
 )
 
 // Map defines the environment and simulation region (world)
@@ -55,7 +64,7 @@ type tilesetData struct {
 	TileCount    int32            `xml:"tilecount,attr"`
 	Columns      int32            `xml:"columns,attr"`
 	ImageInfo    tilesetImageData `xml:"image"`
-	Image        rl.Texture2D
+	Image        *rl.Texture2D
 	IsCollapsed  bool
 }
 
@@ -76,13 +85,13 @@ func LoadMap(name string) *Map {
 	cmap.tilesets = make(map[string]*tilesetData)
 	cmap.tilemap, err = tiled.LoadFromFile(fmt.Sprintf("assets/map/%s/%s.tmx", name, name))
 
-	if cmap.tilemap.Properties == nil {
-		cmap.tilemap.Properties = &tiled.Properties{}
+	if err != nil {
+		log.Fatalf("Map %s could not be loaded: %s\n", name, err.Error())
+		return nil
 	}
 
-	if err != nil {
-		log.Fatalf("Map %s could not be loaded!\n", name)
-		return nil
+	if cmap.tilemap.Properties == nil {
+		cmap.tilemap.Properties = &tiled.Properties{}
 	}
 
 	cmap.mapName = name
@@ -221,13 +230,15 @@ func ReloadMap(oldMap *Map) *Map {
 }
 
 func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
+	tilesetName = path.Base(tilesetName)
+
 	val, ok := m.tilesets[tilesetName]
 
 	if ok {
 		return val
 	}
 
-	data, err := ioutil.ReadFile(fmt.Sprintf("assets/map/%s/%s", m.mapName, tilesetName))
+	data, err := ioutil.ReadFile(fmt.Sprintf("assets/tilesets/%s", tilesetName))
 
 	if err != nil {
 		log.Fatalf("Tileset data %s could not be loaded!\n", tilesetName)
@@ -243,7 +254,7 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 		return nil
 	}
 
-	loadedTileset.Image = system.GetTexture(fmt.Sprintf("../map/%s/%s", m.mapName, loadedTileset.ImageInfo.Source))
+	loadedTileset.Image = system.GetTexture(fmt.Sprintf("../tilesets/%s", loadedTileset.ImageInfo.Source))
 	loadedTileset.IsCollapsed = true
 
 	m.tilesets[tilesetName] = loadedTileset
@@ -293,14 +304,10 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 			}
 
 			tilemapImage := tilesetData.Image
-			tileRow := int(tilemapImage.Width) / int(tileW)
 
-			tileWorldX, tileWorldY := m.GetPositionFromID(uint32(tileIndex), tileW, tileH)
+			tileWorldX, tileWorldY := m.GetWorldPositionFromID(uint32(tileIndex), tileW, tileH)
 
-			tileX := float32(id%tileRow) * tileW
-			tileY := float32(id/tileRow) * tileH
-
-			sourceRect := rl.NewRectangle(tileX, tileY, tileW, tileH)
+			sourceRect, _ := m.GetTileDataFromID(id)
 			var rot float32
 
 			tilePos := rl.NewVector2(tileWorldX+tileW/2, tileWorldY+tileH/2)
@@ -322,17 +329,39 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 				rot = 90
 			}
 
-			rl.DrawTexturePro(tilemapImage,
+			rl.DrawTexturePro(*tilemapImage,
 				sourceRect,
 				rl.NewRectangle(tilePos.X, tilePos.Y, tileW, tileH), rl.NewVector2(tileW/2, tileH/2), rot, SkyColor)
 		}
 	}
 }
 
-// GetPositionFromID returns XY world position based on tile ID
-func (m *Map) GetPositionFromID(index uint32, tileW, tileH float32) (float32, float32) {
+// GetWorldPositionFromID returns XY world position based on tile ID
+func (m *Map) GetWorldPositionFromID(index uint32, tileW, tileH float32) (float32, float32) {
 	tileWorldX := float32(index%uint32(m.tilemap.Width)) * tileW
 	tileWorldY := float32(index/uint32(m.tilemap.Width)) * tileH
 
 	return tileWorldX, tileWorldY
+}
+
+// GetTileDataFromID retrieves tile source rectangle and source image based on the tile ID
+func (m *Map) GetTileDataFromID(tileID int) (rl.Rectangle, *rl.Texture2D) {
+	var tilesetID int
+
+	for i, v := range m.tilemap.Tilesets {
+		if uint32(tileID) >= v.FirstGID {
+			tilesetID = i
+		} else {
+			break
+		}
+	}
+
+	tilesetInfo := m.tilemap.Tilesets[tilesetID]
+	tileset := m.loadTilesetData(tilesetInfo.Source)
+	tileRow := int(tileset.ImageInfo.Width) / int(tileset.TileWidth)
+
+	tileX := float32(tileID%tileRow) * float32(tileset.TileWidth)
+	tileY := float32(tileID/tileRow) * float32(tileset.TileHeight)
+
+	return rl.NewRectangle(tileX, tileY, float32(tileset.TileWidth), float32(tileset.TileHeight)), tileset.Image
 }

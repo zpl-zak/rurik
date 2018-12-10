@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:25:59
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:33:03
+ * @Last Modified time: 2018-12-10 03:38:35
  */
 
 package core
@@ -69,6 +69,6 @@ func (o *Object) NewAnim() {
 			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
 
-		rl.DrawTexturePro(o.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
+		rl.DrawTexturePro(*o.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
 	}
 }

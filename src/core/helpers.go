@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:27:16
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:31:13
+ * @Last Modified time: 2018-12-10 04:48:02
  */
 
 package core
@@ -116,7 +116,12 @@ func isMouseInRectangle(x, y, x2, y2 int32) bool {
 
 func getSpriteAABB(o *Object) rl.RectangleInt32 {
 	if o.Ase == nil {
-		return rl.RectangleInt32{}
+		return rl.RectangleInt32{
+			X:      int32(o.Position.X),
+			Y:      int32(o.Position.Y - 32),
+			Width:  32,
+			Height: 32,
+		}
 	}
 
 	return rl.RectangleInt32{

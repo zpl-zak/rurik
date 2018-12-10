@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:43:53
+ * @Last Modified time: 2018-12-10 03:37:30
  */
 
 package core
@@ -27,6 +27,7 @@ var (
 
 	objTypes   map[string]string
 	worldIndex int
+	objCtors   = make(map[string]func(o *Object))
 )
 
 // World represents the simulation region of the current map
@@ -54,7 +55,7 @@ type Object struct {
 	Proxy         *Object
 	ProxyName     string
 	FileName      string
-	Texture       rl.Texture2D
+	Texture       *rl.Texture2D
 	Ase           *goaseprite.File
 	LastTrigger   float32
 	AutoStart     bool
@@ -90,6 +91,7 @@ type Object struct {
 	talk
 	anim
 	area
+	tile
 }
 
 func (w *World) flushObjects() {
@@ -108,12 +110,32 @@ func initObjectTypes() {
 		"talk":   "Talk",
 		"anim":   "Anim",
 		"area":   "Area",
+		"tile":   "Tile",
 	}
+}
+
+// RegisterObjectType adds a new object type
+func RegisterObjectType(class, methodName string, ctor func(o *Object)) error {
+	_, ok := objCtors[class]
+
+	if ok {
+		return fmt.Errorf("can't register already existing class '%s'", class)
+	}
+
+	objCtors[class] = ctor
+
+	return nil
 }
 
 // BuildObject builds already-prepared object
 func BuildObject(w *World, o *tiled.Object, savegameData *defaultObjectData) (*Object, error) {
 	inst := w.NewObject(o)
+
+	if inst.Name == "" && inst.Class == "" {
+		inst.Name = fmt.Sprintf("tile_%d", inst.GID)
+		inst.Class = "tile"
+		o.Type = "tile"
+	}
 
 	className := "Unknown"
 
@@ -123,14 +145,26 @@ func BuildObject(w *World, o *tiled.Object, savegameData *defaultObjectData) (*O
 		className = savegameData.Type
 	}
 
-	class := objTypes[className]
+	class, ok := objTypes[className]
+
+	if !ok {
+		// custom type check
+		ctor, ctorOk := objCtors[className]
+
+		if !ctorOk {
+			return nil, fmt.Errorf("class %s is undefined", class)
+		}
+
+		ctor(inst)
+		return inst, nil
+	}
+
 	methodName := fmt.Sprintf("New%s", class)
 
 	method := reflect.ValueOf(inst).MethodByName(methodName)
 
 	if !method.IsValid() {
-		log.Fatalf("Object type creation of '%s' not found!\n", class)
-		return nil, fmt.Errorf("object type is undefined")
+		return nil, fmt.Errorf("internal error")
 	}
 
 	method.Call([]reflect.Value{})

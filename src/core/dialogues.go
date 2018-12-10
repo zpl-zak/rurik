@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:27:04
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 00:52:57
+ * @Last Modified time: 2018-12-10 03:38:51
  */
 
 package core
@@ -23,7 +23,7 @@ var (
 // Dialogue defines connversation flow
 type Dialogue struct {
 	Name       string `json:"name"`
-	Avatar     rl.Texture2D
+	Avatar     *rl.Texture2D
 	AvatarFile string    `json:"avatar"`
 	Text       string    `json:"text"`
 	Choices    []*Choice `json:"choices"`

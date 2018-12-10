@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-10 03:45:14
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:57:56
+ * @Last Modified time: 2018-12-10 03:39:27
  */
 
 package core
@@ -108,7 +108,7 @@ func drawPlayer(p *Object) {
 		drawTextCentered(p.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 	}
 
-	rl.DrawTexturePro(p.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
+	rl.DrawTexturePro(*p.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
 }
 
 func handlePlayerCollision(res *resolv.Collision, p, other *Object) {

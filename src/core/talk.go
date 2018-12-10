@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:28:00
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:59:42
+ * @Last Modified time: 2018-12-10 03:39:34
  */
 
 package core
@@ -40,7 +40,7 @@ var (
 func (o *Object) NewTalk() {
 	if chatBanner == nil {
 		img := system.GetTexture("chat_banner.png")
-		chatBanner = &img
+		chatBanner = img
 	}
 
 	o.Serialize = func(o *Object) string {
@@ -153,7 +153,7 @@ func (o *Object) NewTalk() {
 		// Scale W: 34, 35
 		if ot.AvatarFile != "" {
 			rl.DrawTexturePro(
-				ot.Avatar,
+				*ot.Avatar,
 				rl.NewRectangle(0, 0, float32(ot.Avatar.Width), float32(ot.Avatar.Height)),
 				rl.NewRectangle(float32(offsetX)+5, float32(start)+5, 32, 32),
 				rl.Vector2{},

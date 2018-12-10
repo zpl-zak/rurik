@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:21
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 00:54:07
+ * @Last Modified time: 2018-12-10 03:38:10
  */
 
 package system
@@ -27,20 +27,20 @@ var (
 )
 
 // GetTexture retrieves a cached texture from disk
-func GetTexture(texturePath string) rl.Texture2D {
+func GetTexture(texturePath string) *rl.Texture2D {
 	texturePath = fmt.Sprintf("assets/gfx/%s", texturePath)
 
 	tx, ok := textures[texturePath]
 
 	if ok {
-		return tx
+		return &tx
 	}
 
 	tx = rl.LoadTexture(texturePath)
 
 	textures[texturePath] = tx
 
-	return tx
+	return &tx
 }
 
 // GetAnimData retrieves a cached Aseprite anim data from a disk

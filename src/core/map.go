@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-08 16:05:27
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 04:36:05
+ * @Last Modified time: 2018-12-10 14:02:52
  */
 
 package core
@@ -15,7 +15,7 @@ import (
 	"path"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
-	tiled "github.com/lafriks/go-tiled"
+	tiled "github.com/zaklaus/go-tiled"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 

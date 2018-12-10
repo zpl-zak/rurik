@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 02:14:54
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:47:25
+ * @Last Modified time: 2018-12-10 14:23:29
  */
 
 package core
@@ -34,7 +34,7 @@ func (o *Object) NewWait() {
 	}
 
 	o.Draw = func(o *Object) {
-		if !DebugMode {
+		if !DebugMode || !o.DebugVisible {
 			return
 		}
 

@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:28:08
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:28:08
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-10 14:23:42
  */
 
 package core
@@ -14,7 +14,7 @@ import (
 // NewTarget dummy target point
 func (o *Object) NewTarget() {
 	o.Draw = func(o *Object) {
-		if !DebugMode {
+		if !DebugMode || !o.DebugVisible {
 			return
 		}
 

@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-10 03:45:14
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 03:39:27
+ * @Last Modified time: 2018-12-10 14:24:48
  */
 
 package core
@@ -102,7 +102,7 @@ func drawPlayer(p *Object) {
 	source := getSpriteRectangle(p)
 	dest := getSpriteOrigin(p)
 
-	if DebugMode {
+	if DebugMode && p.DebugVisible {
 		c := getSpriteAABB(p)
 		rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
 		drawTextCentered(p.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)

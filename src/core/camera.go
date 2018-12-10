@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:32
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:54:24
+ * @Last Modified time: 2018-12-10 14:23:14
  */
 
 package core
@@ -60,7 +60,7 @@ func (c *Object) NewCamera() {
 	c.Zoom = 1
 	c.TargetZoom = c.Zoom
 	c.ZoomSpeed = 0.8
-	c.Visible = false
+	c.DebugVisible = false
 	c.First = true
 	strMode := c.Meta.Properties.GetString("mode")
 	spd, _ := strconv.ParseFloat(c.Meta.Properties.GetString("speed"), 32)
@@ -107,7 +107,7 @@ func (c *Object) NewCamera() {
 	MainCamera = c
 
 	c.Draw = func(o *Object) {
-		if !DebugMode {
+		if !DebugMode || !o.DebugVisible {
 			return
 		}
 

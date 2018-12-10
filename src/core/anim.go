@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:25:59
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 03:38:35
+ * @Last Modified time: 2018-12-10 14:25:38
  */
 
 package core
@@ -63,12 +63,12 @@ func (o *Object) NewAnim() {
 		source := getSpriteRectangle(o)
 		dest := getSpriteOrigin(o)
 
-		if DebugMode {
+		if DebugMode && o.DebugVisible {
 			c := getSpriteAABB(o)
 			rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
 			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
 
-		rl.DrawTexturePro(*o.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
+		rl.DrawTexturePro(*o.Texture, source, dest, rl.Vector2{}, o.Rotation, SkyColor)
 	}
 }

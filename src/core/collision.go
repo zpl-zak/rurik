@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:45
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-14 02:26:45
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-10 14:23:03
  */
 
 package core
@@ -22,7 +22,7 @@ func (o *Object) NewCollision() {
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 
 	o.Draw = func(o *Object) {
-		if !DebugMode {
+		if !DebugMode || !o.DebugVisible {
 			return
 		}
 

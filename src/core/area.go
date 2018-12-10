@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:11
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 01:58:25
+ * @Last Modified time: 2018-12-10 14:25:04
  */
 
 package core
@@ -44,7 +44,7 @@ func (o *Object) NewArea() {
 	}
 
 	o.Draw = func(o *Object) {
-		if DebugMode {
+		if DebugMode && o.DebugVisible {
 			pos := getAreaOrigin(o)
 			col := rl.NewColor(0, 255, 255, 32)
 			if o.isInCircle {

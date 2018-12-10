@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 03:37:30
+ * @Last Modified time: 2018-12-10 14:30:35
  */
 
 package core
@@ -15,9 +15,9 @@ import (
 	"strings"
 
 	"github.com/gen2brain/raylib-go/raylib"
-	"github.com/lafriks/go-tiled"
 	goaseprite "github.com/solarlune/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
+	"github.com/zaklaus/go-tiled"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -45,8 +45,10 @@ type Object struct {
 	Name          string
 	Class         string
 	Visible       bool
+	DebugVisible  bool
 	Position      rl.Vector2
 	Movement      rl.Vector2
+	Rotation      float32
 	Facing        rl.Vector2
 	Size          []int32
 	Meta          *tiled.Object
@@ -200,8 +202,10 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Name:          o.Name,
 		Class:         o.Type,
 		Visible:       true,
+		DebugVisible:  DefaultDebugShowAll,
 		Meta:          o,
 		Depends:       []*Object{},
+		Rotation:      float32(o.Rotation),
 		CollisionType: o.Properties.GetString("colType"),
 		AutoStart:     o.Properties.GetString("autostart") == "1",
 		FileName:      o.Properties.GetString("file"),

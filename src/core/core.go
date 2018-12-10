@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:53
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-09 00:54:45
+ * @Last Modified time: 2018-12-10 14:26:48
  */
 
 package core // madaraszd.net/zaklaus/rurik
@@ -41,6 +41,9 @@ var (
 const (
 	// GameVersion describes itself
 	GameVersion = "1.0.0"
+
+	// DefaultDebugShowAll shows all visible debug elements
+	DefaultDebugShowAll = true
 )
 
 // InitCore initializes the game engine

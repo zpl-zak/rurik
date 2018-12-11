@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-12-10 21:58:20
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 22:52:47
+ * @Last Modified time: 2018-12-11 03:19:43
  */
 
 package system
@@ -51,8 +51,8 @@ func NewProgramFromCode(vsCode, fsCode string) Program {
 	}
 }
 
-// BlitToRenderTarget renders the current render target to an output
-func (prog *Program) BlitToRenderTarget(source, target *rl.RenderTexture2D) {
+// RenderToTexture renders the current render target to an output
+func (prog *Program) RenderToTexture(source, target *rl.RenderTexture2D) {
 	prog.UpdateDefaultUniforms()
 	rl.BeginTextureMode(*target)
 	rl.BeginShaderMode(prog.Shader)

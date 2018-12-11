@@ -30,7 +30,7 @@ func newBloom() *bloomProg {
 }
 
 func (b *bloomProg) Apply() {
-	b.ExtractColors.BlitToRenderTarget(core.WorldTexture, b.TresholdTexture)
+	b.ExtractColors.RenderToTexture(core.WorldTexture, b.TresholdTexture)
 
 	var hor int32 = 1
 	maxIter := 10
@@ -39,7 +39,7 @@ func (b *bloomProg) Apply() {
 	for i := 0; i < maxIter; i++ {
 		b.BlurImage.SetShaderValuei("horizontal", []int32{hor}, 1)
 
-		b.BlurImage.BlitToRenderTarget(srcTex, b.BlurTexture[hor])
+		b.BlurImage.RenderToTexture(srcTex, b.BlurTexture[hor])
 		srcTex = b.BlurTexture[hor]
 		hor = 1 - hor
 	}

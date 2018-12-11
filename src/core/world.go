@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 22:12:15
+ * @Last Modified time: 2018-12-11 11:03:20
  */
 
 package core
@@ -391,12 +391,14 @@ func updateObject(o, orig *Object) {
 // It sorts all objects by Y position
 func (w *World) DrawObjects() {
 	sortRenderProfiler.StartInvocation()
-	sort.Slice(w.Objects, func(i, j int) bool {
-		return w.Objects[i].Position.Y < w.Objects[j].Position.Y
+	drawObjects := make([]*Object, len(w.Objects))
+	copy(drawObjects, w.Objects)
+	sort.Slice(drawObjects, func(i, j int) bool {
+		return drawObjects[i].Position.Y < drawObjects[j].Position.Y
 	})
 	sortRenderProfiler.StopInvocation()
 
-	for _, o := range w.Objects {
+	for _, o := range drawObjects {
 		if o.Visible {
 			rec := o.GetAABB(o)
 			orig := o.Position

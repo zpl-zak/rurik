@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 02:37:03
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-11 02:46:34
+ * @Last Modified time: 2018-12-11 03:47:32
  */
 
 package system
@@ -29,6 +29,8 @@ var (
 
 	// FrameTime is the target update time
 	FrameTime float32 = 1 / 60.0
+
+	nullTarget RenderTarget
 )
 
 // RenderTarget describes our render texture
@@ -55,10 +57,19 @@ func CreateRenderTarget(screenW, screenH int32) *rl.RenderTexture2D {
 
 // CopyToRenderTarget copies one target to another
 func CopyToRenderTarget(source, dest *rl.RenderTexture2D) {
+	if nullTarget == nil {
+		nullTarget = CreateRenderTarget(ScreenWidth, ScreenHeight)
+	}
+
+	inp := source
+	if source == nil {
+		inp = nullTarget
+	}
+
 	rl.BeginTextureMode(*dest)
 	rl.DrawTexturePro(
-		source.Texture,
-		rl.NewRectangle(0, 0, float32(source.Texture.Width), float32(source.Texture.Height)),
+		inp.Texture,
+		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(inp.Texture.Height)),
 		rl.NewRectangle(0, 0, float32(dest.Texture.Width), float32(dest.Texture.Height)),
 		rl.NewVector2(0, 0),
 		0,

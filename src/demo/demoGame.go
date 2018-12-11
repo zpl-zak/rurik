@@ -23,7 +23,8 @@ var (
 	dynobjCounter int
 	playMapName   string
 	gameCamera    rl.Camera2D
-	bloom         system.ShaderPipeline
+	bloom         *bloomProg
+	shadertoy     *shadertoyProg
 )
 
 type demoGameMode struct{}
@@ -49,6 +50,7 @@ func (g *demoGameMode) Init() {
 
 func initShaders() {
 	bloom = newBloom()
+	shadertoy = newShadertoy()
 }
 
 func (g *demoGameMode) Draw() {
@@ -63,10 +65,26 @@ func (g *demoGameMode) Draw() {
 
 func (g *demoGameMode) DrawUI() {
 	core.DrawMapUI()
+
+	// draw small animated picture
+	{
+		rl.DrawRectangle(screenW-105, 5, 100, 100, rl.Blue)
+		rl.DrawTexturePro(
+			shadertoy.RenderTexture.Texture,
+			rl.NewRectangle(0, 0,
+				float32(shadertoy.RenderTexture.Texture.Width),
+				float32(shadertoy.RenderTexture.Texture.Height)),
+			rl.NewRectangle(screenW-102, 8, 94, 94),
+			rl.Vector2{},
+			0,
+			rl.White,
+		)
+	}
 }
 
 func (g *demoGameMode) PostDraw() {
 	bloom.Apply()
+	shadertoy.Apply()
 }
 
 func (g *demoGameMode) IgnoreUpdate() bool {

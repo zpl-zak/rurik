@@ -23,8 +23,6 @@ var (
 	dynobjCounter int
 	playMapName   string
 	gameCamera    rl.Camera2D
-	someShaders   []system.Program
-	sobelTexture  *rl.RenderTexture2D
 	bloom         system.ShaderPipeline
 )
 
@@ -50,27 +48,7 @@ func (g *demoGameMode) Init() {
 }
 
 func initShaders() {
-	someShaders = []system.Program{}
-	sobelTexture = system.CreateRenderTarget(screenW, screenH)
 	bloom = newBloom()
-
-	/*
-		bloom := system.NewProgram("", "assets/shaders/bloom.fs")
-		bloom.SetShaderValue("size", []float32{screenW, screenH}, 2)
-		bloom.SetShaderValue("samples", []float32{7.0}, 1)
-		bloom.SetShaderValue("quality", []float32{1.25}, 1)
-		someShaders = append(someShaders, bloom)
-	*/
-	sobel := system.NewProgram("", "assets/shaders/sobel.fs")
-	sobel.SetShaderValue("resolution", []float32{screenW, screenH}, 2)
-	someShaders = append(someShaders, sobel)
-
-	/* 	predator := system.NewProgram("", "assets/shaders/predator.fs")
-	   	someShaders = append(someShaders, predator)
-
-	   	blur := system.NewProgram("", "assets/shaders/blur.fs")
-	   	blur.SetShaderValue("size", []float32{screenW, screenH}, 2)
-	   	someShaders = append(someShaders, blur) */
 }
 
 func (g *demoGameMode) Draw() {

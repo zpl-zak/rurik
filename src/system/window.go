@@ -1,8 +1,8 @@
 /*
  * @Author: V4 Games
  * @Date: 2018-11-09 02:37:03
- * @Last Modified by:   Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-11-09 02:37:03
+ * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
+ * @Last Modified time: 2018-12-11 02:46:34
  */
 
 package system
@@ -30,6 +30,9 @@ var (
 	// FrameTime is the target update time
 	FrameTime float32 = 1 / 60.0
 )
+
+// RenderTarget describes our render texture
+type RenderTarget *rl.RenderTexture2D
 
 // InitRenderer initializes the renderer and creates the window
 func InitRenderer(title string, winW, winH int32) {

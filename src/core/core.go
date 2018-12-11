@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:53
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:26:48
+ * @Last Modified time: 2018-12-11 02:42:51
  */
 
 package core // madaraszd.net/zaklaus/rurik
@@ -31,14 +31,6 @@ var (
 	// CurrentGameMode is our main gameplay rules descriptor
 	CurrentGameMode GameMode
 
-	// ScreenTexture represents the render target used by the game world
-	ScreenTexture *rl.RenderTexture2D
-
-	// UITexture represents the render target used by the interface
-	UITexture *rl.RenderTexture2D
-
-	finalRenderTexture *rl.RenderTexture2D
-
 	// IsRunning tells us whether the game is still running
 	IsRunning = true
 )
@@ -58,7 +50,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.ScreenHeight = screenH
 	system.ScaleRatio = system.WindowWidth / system.ScreenWidth
 
-	ScreenTexture = system.CreateRenderTarget(screenW, screenH)
+	WorldTexture = system.CreateRenderTarget(screenW, screenH)
 	UITexture = system.CreateRenderTarget(screenW, screenH)
 	finalRenderTexture = system.CreateRenderTarget(screenW, screenH)
 	system.InitInput()
@@ -162,47 +154,7 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 				drawProfiling()
 			}
 
-			rl.BeginDrawing()
-
-			// Render the game world
-			rl.BeginTextureMode(*ScreenTexture)
-			drawProfiler.StartInvocation()
-			{
-				rl.ClearBackground(rl.Black)
-
-				CurrentGameMode.Draw()
-			}
-			drawProfiler.StopInvocation()
-			rl.EndTextureMode()
-
-			// Render all UI elements
-			rl.BeginTextureMode(*UITexture)
-			rl.ClearBackground(rl.Blank)
-			CurrentGameMode.DrawUI()
-			DrawEditor()
-			rl.EndTextureMode()
-
-			// Render all post-fx elements
-			CurrentGameMode.PostDraw()
-
-			// Blend results into one final texture
-			rl.BeginTextureMode(*finalRenderTexture)
-			rl.BeginBlendMode(rl.BlendAlpha)
-			rl.DrawTexture(ScreenTexture.Texture, 0, 0, rl.White)
-			rl.DrawTexture(UITexture.Texture, 0, 0, rl.White)
-			rl.EndBlendMode()
-			rl.EndTextureMode()
-			rl.EndDrawing()
-
-			// output final render texture onto the screen
-			rl.DrawTexturePro(
-				finalRenderTexture.Texture,
-				rl.NewRectangle(0, 0, float32(system.ScreenWidth), float32(system.ScreenHeight)),
-				rl.NewRectangle(0, 0, float32(system.WindowWidth), float32(system.WindowHeight)),
-				rl.NewVector2(0, 0),
-				0,
-				rl.White,
-			)
+			renderGame()
 
 			frames++
 		} else {

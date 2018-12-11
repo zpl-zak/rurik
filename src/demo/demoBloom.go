@@ -33,21 +33,14 @@ func (b *bloomProg) Apply() {
 	b.ExtractColors.BlitToRenderTarget(core.WorldTexture, b.TresholdTexture)
 
 	var hor int32 = 1
-	first := true
-	maxIter := 15
+	maxIter := 10
+	srcTex := b.TresholdTexture
 
 	for i := 0; i < maxIter; i++ {
-		var srcTex system.RenderTarget
 		b.BlurImage.SetShaderValuei("horizontal", []int32{hor}, 1)
 
-		if first {
-			srcTex = b.TresholdTexture
-			first = false
-		} else {
-			srcTex = b.BlurTexture[1-hor]
-		}
-
 		b.BlurImage.BlitToRenderTarget(srcTex, b.BlurTexture[hor])
+		srcTex = b.BlurTexture[hor]
 		hor = 1 - hor
 	}
 

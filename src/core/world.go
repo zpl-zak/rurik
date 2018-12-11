@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-11 11:03:20
+ * @Last Modified time: 2018-12-11 11:53:22
  */
 
 package core
@@ -137,6 +137,10 @@ func BuildObject(w *World, o *tiled.Object, savegameData *defaultObjectData) (*O
 		inst.Name = fmt.Sprintf("tile_%d", inst.GID)
 		inst.Class = "tile"
 		o.Type = "tile"
+	}
+
+	if inst.Class == "col" && inst.Name == "" {
+		inst.Name = fmt.Sprintf("col_%d", inst.GID)
 	}
 
 	className := "Unknown"
@@ -405,7 +409,7 @@ func (w *World) DrawObjects() {
 			orig.X += float32(rec.Width / 2.0)
 			orig.Y += float32(rec.Height / 2.0)
 
-			if !isPointWithinFrustum(orig) {
+			if !isPointWithinFrustum(orig) && cullingEnabled {
 				continue
 			}
 

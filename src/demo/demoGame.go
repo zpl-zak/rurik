@@ -25,6 +25,7 @@ var (
 	gameCamera    rl.Camera2D
 	bloom         *bloomProg
 	shadertoy     *shadertoyProg
+	minimap       *minimapProg
 )
 
 type demoGameMode struct{}
@@ -51,6 +52,7 @@ func (g *demoGameMode) Init() {
 func initShaders() {
 	bloom = newBloom()
 	shadertoy = newShadertoy()
+	minimap = newMinimap()
 }
 
 func (g *demoGameMode) Draw() {
@@ -58,7 +60,7 @@ func (g *demoGameMode) Draw() {
 
 	rl.BeginMode2D(gameCamera)
 	{
-		core.DrawMap()
+		core.DrawMap(true)
 	}
 	rl.EndMode2D()
 }
@@ -70,10 +72,10 @@ func (g *demoGameMode) DrawUI() {
 	{
 		rl.DrawRectangle(screenW-105, 5, 100, 100, rl.Blue)
 		rl.DrawTexturePro(
-			shadertoy.RenderTexture.Texture,
+			minimap.RenderTexture.Texture,
 			rl.NewRectangle(0, 0,
-				float32(shadertoy.RenderTexture.Texture.Width),
-				float32(shadertoy.RenderTexture.Texture.Height)),
+				float32(minimap.RenderTexture.Texture.Width),
+				float32(minimap.RenderTexture.Texture.Height)),
 			rl.NewRectangle(screenW-102, 8, 94, 94),
 			rl.Vector2{},
 			0,
@@ -85,6 +87,7 @@ func (g *demoGameMode) DrawUI() {
 func (g *demoGameMode) PostDraw() {
 	bloom.Apply()
 	shadertoy.Apply()
+	minimap.Apply()
 }
 
 func (g *demoGameMode) IgnoreUpdate() bool {
@@ -165,7 +168,7 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	playMapName = *flag.String("map", "test", "Map name to play.")
+	playMapName = *flag.String("map", "demo", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	flag.Parse()
 

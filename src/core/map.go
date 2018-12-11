@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-08 16:05:27
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 21:19:37
+ * @Last Modified time: 2018-12-11 11:53:02
  */
 
 package core
@@ -14,8 +14,8 @@ import (
 	"log"
 	"path"
 
-	rl "github.com/zaklaus/raylib-go/raylib"
 	tiled "github.com/zaklaus/go-tiled"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -30,6 +30,7 @@ var (
 	worldNodeIsCollapsed    = false
 	tilesetsNodeIsCollapsed = true
 	objectsNodeIsCollapsed  = true
+	cullingEnabled          = true
 )
 
 const (
@@ -159,7 +160,9 @@ func UpdateMaps() {
 }
 
 // DrawMap draws the tilemap and all renderable objects
-func DrawMap() {
+func DrawMap(usesCulling bool) {
+	cullingEnabled = usesCulling
+
 	CurrentMap.DrawTilemap(false)
 	CurrentMap.World.DrawObjects()
 	CurrentMap.DrawTilemap(true) // render all overlays
@@ -312,7 +315,7 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 
 			tilePos := rl.NewVector2(tileWorldX+tileW/2, tileWorldY+tileH/2)
 
-			if !isPointWithinFrustum(tilePos) {
+			if !isPointWithinFrustum(tilePos) && cullingEnabled {
 				continue
 			}
 

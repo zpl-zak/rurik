@@ -2,14 +2,14 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:45
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:23:03
+ * @Last Modified time: 2018-12-11 11:34:02
  */
 
 package core
 
 import (
-	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/solarlune/resolv/resolv"
+	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 type collision struct {

@@ -11,7 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/json-iterator/go"
 )
 

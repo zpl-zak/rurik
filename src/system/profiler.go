@@ -10,7 +10,7 @@ package system
 import (
 	"fmt"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 var (

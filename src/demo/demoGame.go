@@ -4,8 +4,8 @@ import (
 	"flag"
 	"fmt"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/core"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
@@ -23,7 +23,9 @@ var (
 	dynobjCounter int
 	playMapName   string
 	gameCamera    rl.Camera2D
-	bloom         rl.Shader
+	someShaders   []system.Program
+	sobelTexture  *rl.RenderTexture2D
+	bloom         system.ShaderPipeline
 )
 
 type demoGameMode struct{}
@@ -33,7 +35,7 @@ func (g *demoGameMode) Init() {
 	core.LoadNextTrack()
 
 	// test class
-	err := core.RegisterObjectType("demo_testclass", "TestClass", NewTestClass)
+	err := core.RegisterClass("demo_testclass", "TestClass", NewTestClass)
 
 	if err != nil {
 		fmt.Printf("Custom type registration has failed: %s", err.Error())
@@ -43,7 +45,32 @@ func (g *demoGameMode) Init() {
 	core.InitMap()
 
 	gameCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
-	bloom = rl.LoadShader("", "assets/shaders/bloom.fs")
+
+	initShaders()
+}
+
+func initShaders() {
+	someShaders = []system.Program{}
+	sobelTexture = system.CreateRenderTarget(screenW, screenH)
+	bloom = newBloom()
+
+	/*
+		bloom := system.NewProgram("", "assets/shaders/bloom.fs")
+		bloom.SetShaderValue("size", []float32{screenW, screenH}, 2)
+		bloom.SetShaderValue("samples", []float32{7.0}, 1)
+		bloom.SetShaderValue("quality", []float32{1.25}, 1)
+		someShaders = append(someShaders, bloom)
+	*/
+	sobel := system.NewProgram("", "assets/shaders/sobel.fs")
+	sobel.SetShaderValue("resolution", []float32{screenW, screenH}, 2)
+	someShaders = append(someShaders, sobel)
+
+	/* 	predator := system.NewProgram("", "assets/shaders/predator.fs")
+	   	someShaders = append(someShaders, predator)
+
+	   	blur := system.NewProgram("", "assets/shaders/blur.fs")
+	   	blur.SetShaderValue("size", []float32{screenW, screenH}, 2)
+	   	someShaders = append(someShaders, blur) */
 }
 
 func (g *demoGameMode) Draw() {
@@ -54,21 +81,14 @@ func (g *demoGameMode) Draw() {
 		core.DrawMap()
 	}
 	rl.EndMode2D()
+}
 
-	rl.BeginShaderMode(bloom)
-
-	target := system.GetRenderTarget()
-
-	rl.DrawTextureRec(
-		target.Texture,
-		rl.NewRectangle(0, 0, float32(target.Texture.Width), float32(-target.Texture.Height)),
-		rl.Vector2{},
-		rl.White,
-	)
-
-	rl.EndShaderMode()
-
+func (g *demoGameMode) DrawUI() {
 	core.DrawMapUI()
+}
+
+func (g *demoGameMode) PostDraw() {
+	bloom.Apply()
 }
 
 func (g *demoGameMode) IgnoreUpdate() bool {

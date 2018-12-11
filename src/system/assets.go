@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:21
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 03:38:10
+ * @Last Modified time: 2018-12-10 22:13:34
  */
 
 package system
@@ -13,8 +13,8 @@ import (
 	"log"
 	"os"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
 	"github.com/solarlune/GoAseprite"
+	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 var (

@@ -11,7 +11,7 @@ import (
 	"os"
 	"runtime/pprof"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -31,8 +31,13 @@ var (
 	// CurrentGameMode is our main gameplay rules descriptor
 	CurrentGameMode GameMode
 
-	// ScreenTexture represents the render target
+	// ScreenTexture represents the render target used by the game world
 	ScreenTexture *rl.RenderTexture2D
+
+	// UITexture represents the render target used by the interface
+	UITexture *rl.RenderTexture2D
+
+	finalRenderTexture *rl.RenderTexture2D
 
 	// IsRunning tells us whether the game is still running
 	IsRunning = true
@@ -49,7 +54,13 @@ const (
 // InitCore initializes the game engine
 func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.InitRenderer(name, windowW, windowH)
+	system.ScreenWidth = screenW
+	system.ScreenHeight = screenH
+	system.ScaleRatio = system.WindowWidth / system.ScreenWidth
+
 	ScreenTexture = system.CreateRenderTarget(screenW, screenH)
+	UITexture = system.CreateRenderTarget(screenW, screenH)
+	finalRenderTexture = system.CreateRenderTarget(screenW, screenH)
 	system.InitInput()
 	rl.InitAudioDevice()
 
@@ -87,6 +98,10 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		cpuProfiler, _ = os.Create("build/cpu.pprof")
 
 		pprof.StartCPUProfile(cpuProfiler)
+	}
+
+	if DebugMode {
+		rl.SetTraceLog(rl.LogError | rl.LogWarning | rl.LogInfo)
 	}
 
 	for IsRunning {
@@ -147,23 +162,47 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 				drawProfiling()
 			}
 
-			rl.BeginTextureMode(*ScreenTexture)
 			rl.BeginDrawing()
+
+			// Render the game world
+			rl.BeginTextureMode(*ScreenTexture)
 			drawProfiler.StartInvocation()
 			{
 				rl.ClearBackground(rl.Black)
 
 				CurrentGameMode.Draw()
-
-				DrawEditor()
 			}
 			drawProfiler.StopInvocation()
-			rl.EndDrawing()
-
 			rl.EndTextureMode()
 
-			rl.DrawTexturePro(ScreenTexture.Texture, rl.NewRectangle(0, 0, float32(system.ScreenWidth), -float32(system.ScreenHeight)),
-				rl.NewRectangle(0, 0, float32(system.WindowWidth), float32(system.WindowHeight)), rl.NewVector2(0, 0), 0, rl.White)
+			// Render all UI elements
+			rl.BeginTextureMode(*UITexture)
+			rl.ClearBackground(rl.Blank)
+			CurrentGameMode.DrawUI()
+			DrawEditor()
+			rl.EndTextureMode()
+
+			// Render all post-fx elements
+			CurrentGameMode.PostDraw()
+
+			// Blend results into one final texture
+			rl.BeginTextureMode(*finalRenderTexture)
+			rl.BeginBlendMode(rl.BlendAlpha)
+			rl.DrawTexture(ScreenTexture.Texture, 0, 0, rl.White)
+			rl.DrawTexture(UITexture.Texture, 0, 0, rl.White)
+			rl.EndBlendMode()
+			rl.EndTextureMode()
+			rl.EndDrawing()
+
+			// output final render texture onto the screen
+			rl.DrawTexturePro(
+				finalRenderTexture.Texture,
+				rl.NewRectangle(0, 0, float32(system.ScreenWidth), float32(system.ScreenHeight)),
+				rl.NewRectangle(0, 0, float32(system.WindowWidth), float32(system.WindowHeight)),
+				rl.NewVector2(0, 0),
+				0,
+				rl.White,
+			)
 
 			frames++
 		} else {

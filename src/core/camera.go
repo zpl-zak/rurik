@@ -12,8 +12,8 @@ import (
 	"log"
 	"strconv"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gen2brain/raylib-go/raymath"
+	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/raylib-go/raymath"
 	"github.com/json-iterator/go"
 )
 

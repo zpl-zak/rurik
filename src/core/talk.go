@@ -10,7 +10,7 @@ package core
 import (
 	"fmt"
 
-	"github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )

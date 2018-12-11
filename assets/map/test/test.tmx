@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="23">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="20" height="12" tilewidth="32" tileheight="32" infinite="0" nextlayerid="3" nextobjectid="25">
  <tileset firstgid="1" source="../../tilesets/Street.tsx"/>
  <tileset firstgid="65" source="../../tilesets/TestSet.tsx"/>
  <layer id="1" name="Tile Layer 1" width="20" height="12">
@@ -35,5 +35,7 @@
   <object id="20" gid="7" x="196.25" y="251.75" width="32" height="32"/>
   <object id="21" gid="7" x="221.75" y="249.75" width="32" height="32"/>
   <object id="22" gid="7" x="352" y="256" width="32" height="32"/>
+  <object id="23" gid="14" x="256" y="96" width="32" height="32"/>
+  <object id="24" gid="15" x="288" y="96" width="32" height="32"/>
  </objectgroup>
 </map>

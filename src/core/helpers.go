@@ -10,8 +10,8 @@ package core
 import (
 	"fmt"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
-	"github.com/gen2brain/raylib-go/raymath"
+	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/raylib-go/raymath"
 	colorful "github.com/lucasb-eyer/go-colorful"
 	"github.com/solarlune/resolv/resolv"
 	"madaraszd.net/zaklaus/rurik/src/system"

@@ -8,12 +8,10 @@
 package system
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 var (
-	screenTexture rl.RenderTexture2D
-
 	//ScreenWidth render target width
 	ScreenWidth int32
 
@@ -46,17 +44,22 @@ func InitRenderer(title string, winW, winH int32) {
 
 // CreateRenderTarget generates a render target used by the game
 func CreateRenderTarget(screenW, screenH int32) *rl.RenderTexture2D {
-	screenTexture = rl.LoadRenderTexture(screenW, screenH)
+	screenTexture := rl.LoadRenderTexture(screenW, screenH)
 	rl.SetTextureFilter(screenTexture.Texture, rl.FilterPoint)
-
-	ScreenWidth = screenW
-	ScreenHeight = screenH
-	ScaleRatio = WindowWidth / ScreenWidth
 
 	return &screenTexture
 }
 
-// GetRenderTarget retrieves the render target
-func GetRenderTarget() *rl.RenderTexture2D {
-	return &screenTexture
+// CopyToRenderTarget copies one target to another
+func CopyToRenderTarget(source, dest *rl.RenderTexture2D) {
+	rl.BeginTextureMode(*dest)
+	rl.DrawTexturePro(
+		source.Texture,
+		rl.NewRectangle(0, 0, float32(source.Texture.Width), float32(source.Texture.Height)),
+		rl.NewRectangle(0, 0, float32(dest.Texture.Width), float32(dest.Texture.Height)),
+		rl.NewVector2(0, 0),
+		0,
+		rl.White,
+	)
+	rl.EndTextureMode()
 }

@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-12-10 03:31:58
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 17:45:39
+ * @Last Modified time: 2018-12-10 21:44:07
  */
 
 package core
@@ -10,7 +10,7 @@ package core
 import (
 	"math"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 type tile struct {
@@ -57,9 +57,9 @@ func (o *Object) NewTile() {
 	}
 
 	o.Update = func(o *Object, dt float32) {
-		if rl.IsKeyDown(rl.KeyF) {
-			o.Rotation++
-		}
+		// if rl.IsKeyDown(rl.KeyF) {
+		// 	o.Rotation++
+		// }
 	}
 
 	o.Draw = func(o *Object) {

@@ -2,13 +2,13 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:25:59
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:25:38
+ * @Last Modified time: 2018-12-10 22:13:24
  */
 
 package core
 
 import (
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -19,8 +19,6 @@ type anim struct {
 
 // NewAnim animated sprite
 func (o *Object) NewAnim() {
-	o.IsCollidable = true
-
 	o.Trigger = func(o, inst *Object) {
 		if o.Ase != nil {
 			o.Ase.Play(o.AnimTag)

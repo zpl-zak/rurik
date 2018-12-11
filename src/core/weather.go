@@ -11,7 +11,7 @@ import (
 	"fmt"
 	"strconv"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 

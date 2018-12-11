@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-09 17:34:10
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:30:35
+ * @Last Modified time: 2018-12-10 22:12:15
  */
 
 package core
@@ -14,10 +14,10 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/gen2brain/raylib-go/raylib"
 	goaseprite "github.com/solarlune/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
 	"github.com/zaklaus/go-tiled"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -116,8 +116,8 @@ func initObjectTypes() {
 	}
 }
 
-// RegisterObjectType adds a new object type
-func RegisterObjectType(class, methodName string, ctor func(o *Object)) error {
+// RegisterClass adds a new object type
+func RegisterClass(class, methodName string, ctor func(o *Object)) error {
 	_, ok := objCtors[class]
 
 	if ok {
@@ -280,7 +280,7 @@ func (w *World) spawnObject(objectData *tiled.Object) *Object {
 		obj.IsCollidable = obj.CollisionType != "none"
 	}
 
-	fmt.Printf("Creating object: %s [%s].\n", obj.Name, obj.Class)
+	/* fmt.Printf("Creating object: %s [%s].\n", obj.Name, obj.Class) */
 
 	return obj
 }

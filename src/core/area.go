@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-14 02:26:11
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:25:04
+ * @Last Modified time: 2018-12-10 22:11:46
  */
 
 package core
@@ -10,8 +10,8 @@ package core
 import (
 	"strconv"
 
-	"github.com/gen2brain/raylib-go/raylib"
-	"github.com/gen2brain/raylib-go/raymath"
+	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/raylib-go/raymath"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 

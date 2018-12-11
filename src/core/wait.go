@@ -12,7 +12,7 @@ import (
 	"log"
 	"strconv"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 type wait struct {

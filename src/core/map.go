@@ -2,7 +2,7 @@
  * @Author: V4 Games
  * @Date: 2018-11-08 16:05:27
  * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 14:02:52
+ * @Last Modified time: 2018-12-10 21:19:37
  */
 
 package core
@@ -14,7 +14,7 @@ import (
 	"log"
 	"path"
 
-	rl "github.com/gen2brain/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	tiled "github.com/zaklaus/go-tiled"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
@@ -331,7 +331,11 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 
 			rl.DrawTexturePro(*tilemapImage,
 				sourceRect,
-				rl.NewRectangle(tilePos.X, tilePos.Y, tileW, tileH), rl.NewVector2(tileW/2, tileH/2), rot, SkyColor)
+				rl.NewRectangle(tilePos.X, tilePos.Y, tileW, tileH),
+				rl.NewVector2(tileW/2, tileH/2),
+				rot,
+				SkyColor,
+			)
 		}
 	}
 }

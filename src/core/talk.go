@@ -66,6 +66,11 @@ func (o *Object) NewTalk() {
 
 		CanSave = bitsSet(CanSave, isInDialogue)
 
+		if o.LastTrigger == 0 {
+			o.LastTrigger = rl.GetTime()
+			return
+		}
+
 		if o.mouseDoublePressTime > 0 {
 			o.mouseDoublePressTime -= int32(1000 * dt)
 		} else if o.mouseDoublePressTime < 0 {
@@ -90,7 +95,7 @@ func (o *Object) NewTalk() {
 			}
 		}
 
-		if (system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0)) && o.LastTrigger > 0 {
+		if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
 			if o.mouseDoublePressTime > 0 {
 				o.mouseDoublePressTime = 0
 			}

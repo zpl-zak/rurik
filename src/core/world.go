@@ -212,6 +212,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Rotation:      float32(o.Rotation),
 		CollisionType: o.Properties.GetString("colType"),
 		AutoStart:     o.Properties.GetString("autostart") == "1",
+		CanRepeat:     o.Properties.GetString("canRepeat") == "1",
 		FileName:      o.Properties.GetString("file"),
 		IsPersistent:  true,
 

@@ -2160,6 +2160,7 @@
   </object>
   <object id="23" name="bouncing_ball_talk" type="area" x="480" y="192">
    <properties>
+    <property name="canRepeat" value="1"/>
     <property name="proxy" value="bouncing_ball"/>
     <property name="radius" value="15"/>
     <property name="talk" value="bouncingBall.json"/>

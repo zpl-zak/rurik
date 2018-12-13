@@ -10,8 +10,8 @@ package core
 import (
 	"fmt"
 
-	rl "github.com/zaklaus/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
@@ -90,8 +90,7 @@ func (o *Object) NewTalk() {
 			}
 		}
 
-		if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
-
+		if (system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0)) && o.LastTrigger > 0 {
 			if o.mouseDoublePressTime > 0 {
 				o.mouseDoublePressTime = 0
 			}
@@ -133,6 +132,7 @@ func (o *Object) NewTalk() {
 		InitText(o.currentText)
 
 		o.Started = true
+		o.LastTrigger = 0
 	}
 
 	o.DrawUI = func(o *Object) {

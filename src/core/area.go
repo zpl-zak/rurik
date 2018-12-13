@@ -67,8 +67,8 @@ func (o *Object) NewArea() {
 				o.Talk = o.world.NewObjectPro(o.Name+"_talk", "talk")
 				o.Talk.FileName = talkFile
 				o.Talk.IsPersistent = false
-				o.Talk.CanRepeat = true
 				o.world.FinalizeObject(o.Talk)
+				o.Talk.CanRepeat = o.CanRepeat
 			}
 
 			if !o.Talk.Started && (rl.GetTime()-o.Talk.LastTrigger) > 1 {

@@ -12,6 +12,7 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"os"
 	"strings"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -68,6 +69,12 @@ func LoadNextTrack() {
 	st, ok := tracks[trackName]
 
 	if !ok {
+		fln := fmt.Sprintf("assets/music/%s", trackName)
+
+		if _, err := os.Stat(fln); os.IsNotExist(err) {
+			log.Printf("Music track %s not found!\n", trackName)
+			return
+		}
 		tr := rl.LoadMusicStream(fmt.Sprintf("assets/music/%s", trackName))
 		log.Printf("Loading track: %s!", trackName)
 		tracks[trackName] = tr

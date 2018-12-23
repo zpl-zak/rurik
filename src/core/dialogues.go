@@ -1,9 +1,18 @@
 /*
- * @Author: V4 Games
- * @Date: 2018-11-14 02:27:04
- * @Last Modified by: Dominik Madarász (zaklaus@madaraszd.net)
- * @Last Modified time: 2018-12-10 03:38:51
- */
+   Copyright 2018 V4 Games
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
 package core
 
@@ -11,8 +20,8 @@ import (
 	"fmt"
 	"log"
 
-	rl "github.com/zaklaus/raylib-go/raylib"
 	jsoniter "github.com/json-iterator/go"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 

@@ -1,0 +1,15 @@
+# Rurik engine
+
+A 2D cross-platform game engine/framework made as an experiment to explore what possibilities can be achieved in an ideal workspace.
+
+This engine is in active development and its features/API is subject to change. Any PRs are welcomed, especially those improving code quality and performance.
+
+## How to build
+
+Navigate to `src/demo` and execute `go get ./...` to fetch all dependencies. Afterwards, navigate back to the root folder and execute `make` to build the game.
+
+## License
+
+See [COPYING.md](COPYING.md) for licensing information. The demo code residing in `src/demo` directory falls under public domain and can be used freely.
+
+Used assets are licensed under their respective licenses and their usage is restricted only to this repository, unless a written permission of its authors is provided.

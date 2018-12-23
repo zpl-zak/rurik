@@ -4,6 +4,8 @@ A 2D cross-platform game engine/framework made as an experiment to explore what 
 
 This engine is in active development and its features/API is subject to change. Any PRs are welcomed, especially those improving code quality and performance.
 
+![](https://i.imgur.com/6b98kOA.png)
+
 ## How to build
 
 Navigate to `src/demo` and execute `go get ./...` to fetch all dependencies. Afterwards, navigate back to the root folder and execute `make` to build the game.

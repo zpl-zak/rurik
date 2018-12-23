@@ -1,5 +1,3 @@
-#!/bin/sh
-
 rm -rf package
 mkdir package
 cp -R assets package/assets

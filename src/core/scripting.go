@@ -21,28 +21,30 @@ import (
 	"log"
 	"reflect"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/robertkrimen/otto"
 )
 
 var (
 	// EventHandlers consists of registered events you can invoke from the scripting side
-	EventHandlers = make(map[string]func(data string) string)
+	EventHandlers = make(map[string]func(data interface{}) string)
+
+	// ScriptingContext is a scripting vm
+	ScriptingContext *otto.Otto
 )
 
 func initDefaultEvents() {
-	RegisterEvent("exitGame", func(in string) string {
+	RegisterEvent("exitGame", func(in interface{}) string {
 		CloseGame()
 		return "{}"
 	})
 
-	RegisterEvent("followPlayer", func(in string) string {
+	RegisterEvent("followPlayer", func(in interface{}) string {
 		type followPlayerData struct {
 			Speed float32
 		}
 
 		var data followPlayerData
-		jsoniter.UnmarshalFromString(in, &data)
+		DecodeInvokeData(&data, in)
 
 		if data.Speed != 0 {
 			MainCamera.Speed = data.Speed
@@ -54,7 +56,7 @@ func initDefaultEvents() {
 		return "{}"
 	})
 
-	RegisterEvent("cameraInterpolate", func(in string) string {
+	RegisterEvent("cameraInterpolate", func(in interface{}) string {
 		type cameraInterpolateData struct {
 			Speed   float32
 			Start   string
@@ -63,7 +65,7 @@ func initDefaultEvents() {
 		}
 
 		var data cameraInterpolateData
-		jsoniter.UnmarshalFromString(in, &data)
+		DecodeInvokeData(&data, in)
 
 		if data.Speed != 0 {
 			MainCamera.Speed = data.Speed
@@ -81,7 +83,31 @@ func initDefaultEvents() {
 	})
 }
 
-func initGameAPI(o *Object, vm *otto.Otto) {
+// DecodeInvokeData decodes incoming data from the script
+func DecodeInvokeData(data interface{}, in interface{}) {
+	inp := in.(map[string]interface{})
+	ref := reflect.ValueOf(data).Elem()
+
+	for k, v := range inp {
+		fieldSource := reflect.ValueOf(v)
+		fieldDest := ref.FieldByName(k)
+		if fieldDest.IsValid() && fieldDest.CanSet() {
+			fieldDest.Set(fieldSource)
+		} else {
+			log.Printf("Property %s not found while invoking an event!\n", k)
+		}
+	}
+}
+
+func initScriptingSystem() {
+	initDefaultEvents()
+
+	ScriptingContext = otto.New()
+
+	initGameAPI(ScriptingContext)
+}
+
+func initGameAPI(vm *otto.Otto) {
 	vm.Set("log", func(call otto.FunctionCall) otto.Value {
 		obj := call.Argument(0)
 		fmt.Println(obj)
@@ -125,24 +151,20 @@ func initGameAPI(o *Object, vm *otto.Otto) {
 			return otto.Value{}
 		}
 
-		eventData := ""
+		var eventData interface{}
 
 		if len(call.ArgumentList) > 1 {
-			eventData, _ = call.Argument(1).ToString()
+			eventData, _ = call.Argument(1).Export()
 		}
 
 		ret, _ := otto.ToValue(event(eventData))
 		return ret
 	})
 
-	vm.Set("CurrentWorld", o.world)
-	vm.Set("CurrentMap", CurrentMap)
-	vm.Set("Self", o)
-	vm.Set("LocalPlayer", LocalPlayer)
-	vm.Set("MainCamera", MainCamera)
+	vm.Eval("var exports = {};")
 }
 
 // RegisterEvent registers a particular event
-func RegisterEvent(name string, call func(data string) string) {
+func RegisterEvent(name string, call func(data interface{}) string) {
 	EventHandlers[name] = call
 }

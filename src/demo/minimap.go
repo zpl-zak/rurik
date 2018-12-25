@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/zaklaus/raylib-go/raylib"
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"madaraszd.net/zaklaus/rurik/src/core"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
@@ -15,8 +15,6 @@ type minimapProg struct {
 func newMinimap() *minimapProg {
 	return &minimapProg{
 		RenderTexture: system.CreateRenderTarget(screenW, screenH),
-		WorldTexture:  system.CreateRenderTarget(screenW, screenH),
-		SobelEffect:   system.NewProgram("", "assets/shaders/sobel.fs"),
 	}
 }
 
@@ -27,18 +25,19 @@ func (m *minimapProg) Apply() {
 		Y: float32(int(-core.MainCamera.Position.Y + screenH/2)),
 	}
 
-	rl.BeginTextureMode(*m.WorldTexture)
+	rl.BeginTextureMode(*m.RenderTexture)
 	{
 		rl.BeginMode2D(minimapCamera)
 		{
 			dbg := core.DebugMode
+			sky := core.SkyColor
+			core.SkyColor = rl.White
 			core.DebugMode = false
 			core.DrawMap(false)
 			core.DebugMode = dbg
+			core.SkyColor = sky
 		}
 		rl.EndMode2D()
 	}
 	rl.EndTextureMode()
-
-	m.SobelEffect.RenderToTexture(m.WorldTexture, m.RenderTexture)
 }

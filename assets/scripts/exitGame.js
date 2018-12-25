@@ -1,1 +1,3 @@
-invoke("exitGame")
+{
+    invoke("exitGame", {})
+}

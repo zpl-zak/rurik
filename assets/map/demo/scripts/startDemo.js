@@ -1,4 +1,12 @@
-invoke("cameraInterpolate", JSON.stringify({
-    start: "camera_start",
-    end: "camera_end"
-}))
+{
+    invoke("cameraInterpolate", {
+        Start: "camera_start",
+        End: "camera_end"
+    })
+
+    var abc = "hello"
+
+    log(abc)
+
+    exports.abc = abc
+}

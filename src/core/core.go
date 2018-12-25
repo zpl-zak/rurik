@@ -49,7 +49,7 @@ const (
 	GameVersion = "1.0.0"
 
 	// DefaultDebugShowAll shows all visible debug elements
-	DefaultDebugShowAll = true
+	DefaultDebugShowAll = false
 )
 
 // InitCore initializes the game engine
@@ -65,7 +65,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.InitInput()
 	rl.InitAudioDevice()
 
-	initDefaultEvents()
+	initScriptingSystem()
 	initObjectTypes()
 	InitDatabase()
 }

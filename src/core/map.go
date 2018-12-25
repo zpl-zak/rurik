@@ -276,7 +276,12 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 // CreateObjects iterates over all object definitions and spawns objects
 func (m *Map) CreateObjects(w *World) {
 	for _, objectGroup := range m.tilemap.ObjectGroups {
+		isColGroup := objectGroup.Properties.GetString("col") == "1"
 		for _, object := range objectGroup.Objects {
+			if isColGroup {
+				object.Type = "col"
+			}
+
 			obj := w.spawnObject(object)
 
 			if obj != nil {

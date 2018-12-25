@@ -29,6 +29,7 @@ type collision struct {
 func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
+	o.DebugVisible = false
 
 	o.Draw = func(o *Object) {
 		if !DebugMode || !o.DebugVisible {

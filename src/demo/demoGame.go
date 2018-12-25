@@ -75,7 +75,7 @@ func (g *demoGameMode) DrawUI() {
 			minimap.RenderTexture.Texture,
 			rl.NewRectangle(0, 0,
 				float32(minimap.RenderTexture.Texture.Width),
-				float32(minimap.RenderTexture.Texture.Height)),
+				float32(-minimap.RenderTexture.Texture.Height)),
 			rl.NewRectangle(screenW-102, 8, 94, 94),
 			rl.Vector2{},
 			0,
@@ -129,7 +129,7 @@ func (g *demoGameMode) Update() {
 	if core.DebugMode {
 		wheel := rl.GetMouseWheelMove()
 		if wheel != 0 {
-			core.MainCamera.SetCameraZoom(core.MainCamera.Zoom + float32(wheel)*0.05)
+			core.MainCamera.SetCameraZoom(core.MainCamera.Zoom + float32(wheel)*0.12)
 		}
 	}
 

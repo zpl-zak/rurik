@@ -20,12 +20,10 @@ import (
 	"log"
 
 	jsoniter "github.com/json-iterator/go"
-	"github.com/robertkrimen/otto"
 	"madaraszd.net/zaklaus/rurik/src/system"
 )
 
 type script struct {
-	Ctx         *otto.Otto
 	WasExecuted bool
 	CanRepeat   bool
 	Source      string
@@ -52,13 +50,17 @@ func (o *Object) NewScript() {
 
 		o.Source = string(data)
 
-		o.Ctx = otto.New()
-		initGameAPI(o, o.Ctx)
-
 		log.Printf("Loading script %s...\n", o.FileName)
 
 		if !o.WasExecuted || o.CanRepeat {
-			_, err := o.Ctx.Eval(o.Source)
+			ScriptingContext.Set("CurrentWorld", o.world)
+			ScriptingContext.Set("CurrentMap", CurrentMap)
+			ScriptingContext.Set("Self", o)
+			ScriptingContext.Set("Instigator", inst)
+			ScriptingContext.Set("LocalPlayer", LocalPlayer)
+			ScriptingContext.Set("MainCamera", MainCamera)
+
+			_, err := ScriptingContext.Eval(o.Source)
 
 			if err != nil {
 				log.Fatalf("Script error detected at '%s':%s: \n\t%s!\n", o.Name, o.FileName, err.Error())

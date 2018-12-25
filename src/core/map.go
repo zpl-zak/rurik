@@ -145,6 +145,7 @@ func FlushMaps() {
 	Maps = nil
 	LocalPlayer = nil
 	MainCamera = nil
+	initScriptingSystem()
 }
 
 // InitMap initializes current map (useful for new game/areas)

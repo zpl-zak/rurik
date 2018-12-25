@@ -3,5 +3,6 @@
         Speed: 0.09
     })
 
-    log(global.abc)
+    if (global.abc != null)
+        log(global.abc)
 }

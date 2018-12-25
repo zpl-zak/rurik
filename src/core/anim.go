@@ -17,13 +17,20 @@
 package core
 
 import (
+	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
 )
 
 type anim struct {
-	AnimTag     string
-	animStarted bool
+	AnimTag             string
+	animStarted         bool
+	PendingCurrentFrame int32
+}
+
+type animData struct {
+	AnimTag      string `json:"animTag"`
+	CurrentFrame int32  `json:"cframe"`
 }
 
 // NewAnim animated sprite
@@ -31,6 +38,11 @@ func (o *Object) NewAnim() {
 	o.Trigger = func(o, inst *Object) {
 		if o.Ase != nil {
 			o.Ase.Play(o.AnimTag)
+
+			if o.PendingCurrentFrame != -1 {
+				o.Ase.CurrentFrame = o.PendingCurrentFrame
+				o.PendingCurrentFrame = -1
+			}
 		}
 		o.animStarted = true
 	}
@@ -39,6 +51,28 @@ func (o *Object) NewAnim() {
 		if o.animStarted && o.Proxy == nil {
 			o.Ase.Update(dt)
 		}
+	}
+
+	o.Serialize = func(o *Object) string {
+		if o.Ase == nil {
+			return "{}"
+		}
+
+		data := animData{
+			AnimTag:      o.AnimTag,
+			CurrentFrame: o.Ase.CurrentFrame,
+		}
+
+		ret, _ := jsoniter.MarshalToString(&data)
+		return ret
+	}
+
+	o.Deserialize = func(o *Object, data string) {
+		inp := animData{}
+		jsoniter.UnmarshalFromString(data, &inp)
+
+		o.AnimTag = inp.AnimTag
+		o.PendingCurrentFrame = inp.CurrentFrame
 	}
 
 	o.Finish = func(o *Object) {

@@ -30,16 +30,19 @@ type InvokeData interface{}
 
 var (
 	// Natives consists of registered methods you can invoke from the scripting side
-	Natives = make(map[string]func(data InvokeData) interface{})
+	Natives map[string]func(data InvokeData) interface{}
 
 	// EventHandlers consists of handlers for a particular scriptable event
-	EventHandlers = make(map[string][]otto.Value)
+	EventHandlers map[string][]otto.Value
 
 	// ScriptingContext is a scripting ScriptingContext
 	ScriptingContext *otto.Otto
 )
 
 func initDefaultEvents() {
+	Natives = make(map[string]func(data InvokeData) interface{})
+	EventHandlers = make(map[string][]otto.Value)
+
 	RegisterNative("exitGame", func(in InvokeData) interface{} {
 		CloseGame()
 		return nil

@@ -102,6 +102,7 @@ func (s *SaveSystem) SaveGame(slotIndex int, stateName string) {
 func (s *SaveSystem) LoadGame(slotIndex int) {
 	state := &s.States[slotIndex]
 
+	initScriptingSystem()
 	defaultLoadProvider(state)
 }
 

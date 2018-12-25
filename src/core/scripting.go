@@ -91,7 +91,7 @@ func initDefaultEvents() {
 }
 
 // DecodeInvokeData decodes incoming data from the script
-func DecodeInvokeData(data InvokeData, in InvokeData) {
+func DecodeInvokeData(data interface{}, in InvokeData) {
 	inp := in.(map[string]interface{})
 	ref := reflect.ValueOf(data).Elem()
 

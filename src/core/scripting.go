@@ -43,11 +43,7 @@ func initDefaultEvents() {
 	})
 
 	RegisterEvent("followPlayer", func(in InvokeData) InvokeData {
-		type followPlayerData struct {
-			Speed float64
-		}
-
-		var data followPlayerData
+		var data struct{ Speed float64 }
 		DecodeInvokeData(&data, in)
 
 		if data.Speed != 0 {
@@ -60,14 +56,12 @@ func initDefaultEvents() {
 	})
 
 	RegisterEvent("cameraInterpolate", func(in InvokeData) InvokeData {
-		type cameraInterpolateData struct {
+		var data struct {
 			Speed   float64
 			Start   string
 			End     string
 			Instant bool
 		}
-
-		var data cameraInterpolateData
 		DecodeInvokeData(&data, in)
 
 		if data.Speed != 0 {

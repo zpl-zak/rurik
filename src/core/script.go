@@ -59,7 +59,7 @@ func (o *Object) NewScript() {
 			ScriptingContext.Set("Instigator", inst)
 			ScriptingContext.Set("LocalPlayer", LocalPlayer)
 			ScriptingContext.Set("MainCamera", MainCamera)
-			ScriptingContext.Set("FrameTime", system.FrameTime)
+			ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
 
 			_, err := ScriptingContext.Eval(o.Source)
 

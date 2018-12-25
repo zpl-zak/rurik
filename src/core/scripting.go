@@ -30,19 +30,19 @@ type InvokeData interface{}
 
 var (
 	// EventHandlers consists of registered events you can invoke from the scripting side
-	EventHandlers = make(map[string]func(data InvokeData) InvokeData)
+	EventHandlers = make(map[string]func(data InvokeData) interface{})
 
 	// ScriptingContext is a scripting ScriptingContext
 	ScriptingContext *otto.Otto
 )
 
 func initDefaultEvents() {
-	RegisterEvent("exitGame", func(in InvokeData) InvokeData {
+	RegisterEvent("exitGame", func(in InvokeData) interface{} {
 		CloseGame()
 		return nil
 	})
 
-	RegisterEvent("followPlayer", func(in InvokeData) InvokeData {
+	RegisterEvent("followPlayer", func(in InvokeData) interface{} {
 		var data struct{ Speed float64 }
 		DecodeInvokeData(&data, in)
 
@@ -55,7 +55,7 @@ func initDefaultEvents() {
 		return nil
 	})
 
-	RegisterEvent("cameraInterpolate", func(in InvokeData) InvokeData {
+	RegisterEvent("cameraInterpolate", func(in InvokeData) interface{} {
 		var data struct {
 			Speed   float64
 			Start   string
@@ -79,7 +79,7 @@ func initDefaultEvents() {
 		return nil
 	})
 
-	RegisterEvent("testReturnValue", func(in InvokeData) InvokeData {
+	RegisterEvent("testReturnValue", func(in InvokeData) interface{} {
 		return struct {
 			Foo string
 			Bar int32
@@ -192,6 +192,6 @@ func initScriptingSystem() {
 }
 
 // RegisterEvent registers a particular event
-func RegisterEvent(name string, call func(data InvokeData) InvokeData) {
+func RegisterEvent(name string, call func(data InvokeData) interface{}) {
 	EventHandlers[name] = call
 }

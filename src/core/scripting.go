@@ -192,10 +192,6 @@ func initGameAPI(vm *otto.Otto) {
 			log.Printf("Invalid invoke return value! %v\n", err)
 		}
 
-		if retObj == "null" {
-			return otto.Value{}
-		}
-
 		ret, _ := ScriptingContext.Object(fmt.Sprintf("(%s)", retObj))
 
 		return ret.Value()

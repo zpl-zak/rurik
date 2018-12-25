@@ -1,7 +1,7 @@
 package main
 
 import (
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 type shadertoyProg struct {

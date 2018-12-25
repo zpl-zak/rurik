@@ -19,7 +19,7 @@ package core
 import (
 	"fmt"
 
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (

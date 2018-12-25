@@ -3,5 +3,5 @@
         Speed: 0.09
     })
 
-    log(exports.abc)
+    log(global.abc)
 }

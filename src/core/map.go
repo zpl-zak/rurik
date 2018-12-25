@@ -25,7 +25,7 @@ import (
 
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (

@@ -22,7 +22,7 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (

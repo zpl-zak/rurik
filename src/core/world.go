@@ -27,7 +27,7 @@ import (
 	"github.com/solarlune/resolv/resolv"
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (
@@ -440,4 +440,9 @@ func (w *World) DrawObjectUI() {
 // SetPosition sets the object's position
 func (o *Object) SetPosition(x, y float32) {
 	o.Position = rl.NewVector2(x, y)
+}
+
+// GetWorld returns the active world
+func (o *Object) GetWorld() *World {
+	return o.world
 }

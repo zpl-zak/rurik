@@ -1,8 +1,8 @@
 package main
 
 import (
-	"madaraszd.net/zaklaus/rurik/src/core"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/core"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 type bloomProg struct {

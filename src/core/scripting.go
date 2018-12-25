@@ -29,20 +29,23 @@ import (
 type InvokeData interface{}
 
 var (
-	// EventHandlers consists of registered events you can invoke from the scripting side
-	EventHandlers = make(map[string]func(data InvokeData) interface{})
+	// Natives consists of registered methods you can invoke from the scripting side
+	Natives = make(map[string]func(data InvokeData) interface{})
+
+	// EventHandlers consists of handlers for a particular scriptable event
+	EventHandlers = make(map[string][]otto.Value)
 
 	// ScriptingContext is a scripting ScriptingContext
 	ScriptingContext *otto.Otto
 )
 
 func initDefaultEvents() {
-	RegisterEvent("exitGame", func(in InvokeData) interface{} {
+	RegisterNative("exitGame", func(in InvokeData) interface{} {
 		CloseGame()
 		return nil
 	})
 
-	RegisterEvent("followPlayer", func(in InvokeData) interface{} {
+	RegisterNative("followPlayer", func(in InvokeData) interface{} {
 		var data struct{ Speed float64 }
 		DecodeInvokeData(&data, in)
 
@@ -55,7 +58,7 @@ func initDefaultEvents() {
 		return nil
 	})
 
-	RegisterEvent("cameraInterpolate", func(in InvokeData) interface{} {
+	RegisterNative("cameraInterpolate", func(in InvokeData) interface{} {
 		var data struct {
 			Speed   float64
 			Start   string
@@ -79,7 +82,7 @@ func initDefaultEvents() {
 		return nil
 	})
 
-	RegisterEvent("testReturnValue", func(in InvokeData) interface{} {
+	RegisterNative("testReturnValue", func(in InvokeData) interface{} {
 		return struct {
 			Foo string
 			Bar int32
@@ -159,7 +162,7 @@ func initScriptingSystem() {
 	ScriptingContext.Set("invoke", func(call otto.FunctionCall) otto.Value {
 		eventName, _ := call.Argument(0).ToString()
 
-		event, ok := EventHandlers[eventName]
+		event, ok := Natives[eventName]
 
 		if !ok {
 			log.Printf("Can't invoke event '%s'!\n", eventName)
@@ -188,10 +191,54 @@ func initScriptingSystem() {
 		return ret.Value()
 	})
 
-	ScriptingContext.Object("exports = {}")
+	ScriptingContext.Set("addEventHandler", func(call otto.FunctionCall) otto.Value {
+		eventName := call.Argument(0).String()
+		eventHandler := call.Argument(1)
+
+		eventHandlers, ok := EventHandlers[eventName]
+		if !ok {
+			eventHandlers = []otto.Value{}
+		}
+
+		eventHandlers = append(eventHandlers, eventHandler)
+		EventHandlers[eventName] = eventHandlers
+
+		return otto.Value{}
+	})
+
+	ScriptingContext.Set("fireEvent", func(call otto.FunctionCall) otto.Value {
+		eventName := call.Argument(0).String()
+
+		fireEventOtto(eventName, call.ArgumentList[1:]...)
+
+		return otto.Value{}
+	})
+
+	ScriptingContext.Object("global = {}")
 }
 
-// RegisterEvent registers a particular event
-func RegisterEvent(name string, call func(data InvokeData) interface{}) {
-	EventHandlers[name] = call
+// RegisterNative registers a particular method
+func RegisterNative(name string, call func(data InvokeData) interface{}) {
+	Natives[name] = call
+}
+
+// FireEvent triggers an event of a particular name
+func FireEvent(name string, data ...interface{}) {
+	handlers, ok := EventHandlers[name]
+
+	if ok {
+		for _, v := range handlers {
+			v.Call(v, data)
+		}
+	}
+}
+
+func fireEventOtto(name string, data ...otto.Value) {
+	handlers, ok := EventHandlers[name]
+
+	if ok {
+		for _, v := range handlers {
+			v.Call(v, data)
+		}
+	}
 }

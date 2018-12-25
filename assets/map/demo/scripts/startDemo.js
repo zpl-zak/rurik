@@ -12,5 +12,5 @@
 
     log(abc)
 
-    exports.abc = abc
+    global.abc = abc
 }

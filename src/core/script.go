@@ -20,7 +20,7 @@ import (
 	"log"
 
 	jsoniter "github.com/json-iterator/go"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 type script struct {
@@ -59,6 +59,7 @@ func (o *Object) NewScript() {
 			ScriptingContext.Set("Instigator", inst)
 			ScriptingContext.Set("LocalPlayer", LocalPlayer)
 			ScriptingContext.Set("MainCamera", MainCamera)
+			ScriptingContext.Set("FrameTime", system.FrameTime)
 
 			_, err := ScriptingContext.Eval(o.Source)
 

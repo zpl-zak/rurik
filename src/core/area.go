@@ -21,7 +21,7 @@ import (
 
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/raylib-go/raymath"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 type area struct {

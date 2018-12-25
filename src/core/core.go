@@ -14,14 +14,14 @@
    limitations under the License.
 */
 
-package core // madaraszd.net/zaklaus/rurik
+package core // github.com/zaklaus/rurik
 import (
 	"log"
 	"os"
 	"runtime/pprof"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
-	"madaraszd.net/zaklaus/rurik/src/system"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (
@@ -152,6 +152,8 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			gameModeProfiler.StartInvocation()
 			CurrentGameMode.Update()
 			gameModeProfiler.StopInvocation()
+
+			FireEvent("onUpdate")
 
 			shouldRender = true
 

@@ -182,6 +182,11 @@ func initGameAPI(vm *otto.Otto) {
 		}
 
 		res := event(eventData)
+		tryConv, done := otto.ToValue(res)
+		if done == nil {
+			return tryConv
+		}
+
 		retObj, err := jsoniter.MarshalToString(&res)
 		if err != nil {
 			log.Printf("Invalid invoke return value! %v\n", err)

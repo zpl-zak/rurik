@@ -40,25 +40,24 @@ func initDefaultEvents() {
 
 	RegisterEvent("followPlayer", func(in interface{}) string {
 		type followPlayerData struct {
-			Speed float32
+			Speed float64
 		}
 
 		var data followPlayerData
 		DecodeInvokeData(&data, in)
 
 		if data.Speed != 0 {
-			MainCamera.Speed = data.Speed
+			MainCamera.Speed = float32(data.Speed)
 		}
 
 		MainCamera.Mode = CameraModeFollow
 		MainCamera.Follow = LocalPlayer
-
 		return "{}"
 	})
 
 	RegisterEvent("cameraInterpolate", func(in interface{}) string {
 		type cameraInterpolateData struct {
-			Speed   float32
+			Speed   float64
 			Start   string
 			End     string
 			Instant bool
@@ -68,7 +67,7 @@ func initDefaultEvents() {
 		DecodeInvokeData(&data, in)
 
 		if data.Speed != 0 {
-			MainCamera.Speed = data.Speed
+			MainCamera.Speed = float32(data.Speed)
 		}
 
 		if data.Instant {
@@ -91,8 +90,19 @@ func DecodeInvokeData(data interface{}, in interface{}) {
 	for k, v := range inp {
 		fieldSource := reflect.ValueOf(v)
 		fieldDest := ref.FieldByName(k)
+
 		if fieldDest.IsValid() && fieldDest.CanSet() {
-			fieldDest.Set(fieldSource)
+			if fieldDest.Type() == fieldSource.Type() {
+				fieldDest.Set(fieldSource)
+			} else {
+				log.Printf(
+					"Property %s of type %s has a different type %s inside of %s !\n",
+					k,
+					fieldSource.Type().String(),
+					fieldDest.Type().String(),
+					reflect.TypeOf(data).Elem().Name(),
+				)
+			}
 		} else {
 			log.Printf("Property %s not found while invoking an event!\n", k)
 		}

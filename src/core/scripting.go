@@ -21,24 +21,28 @@ import (
 	"log"
 	"reflect"
 
+	jsoniter "github.com/json-iterator/go"
 	"github.com/robertkrimen/otto"
 )
 
+// InvokeData is the incoming data from the DSL caller
+type InvokeData interface{}
+
 var (
 	// EventHandlers consists of registered events you can invoke from the scripting side
-	EventHandlers = make(map[string]func(data interface{}) string)
+	EventHandlers = make(map[string]func(data InvokeData) InvokeData)
 
 	// ScriptingContext is a scripting vm
 	ScriptingContext *otto.Otto
 )
 
 func initDefaultEvents() {
-	RegisterEvent("exitGame", func(in interface{}) string {
+	RegisterEvent("exitGame", func(in InvokeData) InvokeData {
 		CloseGame()
-		return "{}"
+		return nil
 	})
 
-	RegisterEvent("followPlayer", func(in interface{}) string {
+	RegisterEvent("followPlayer", func(in InvokeData) InvokeData {
 		type followPlayerData struct {
 			Speed float64
 		}
@@ -52,10 +56,10 @@ func initDefaultEvents() {
 
 		MainCamera.Mode = CameraModeFollow
 		MainCamera.Follow = LocalPlayer
-		return "{}"
+		return nil
 	})
 
-	RegisterEvent("cameraInterpolate", func(in interface{}) string {
+	RegisterEvent("cameraInterpolate", func(in InvokeData) InvokeData {
 		type cameraInterpolateData struct {
 			Speed   float64
 			Start   string
@@ -78,12 +82,22 @@ func initDefaultEvents() {
 		MainCamera.Start, _ = CurrentMap.World.FindObject(data.Start)
 		MainCamera.End, _ = CurrentMap.World.FindObject(data.End)
 
-		return "{}"
+		return nil
+	})
+
+	RegisterEvent("testReturnValue", func(in InvokeData) InvokeData {
+		return struct {
+			Foo string
+			Bar int32
+		}{
+			"hey",
+			123,
+		}
 	})
 }
 
 // DecodeInvokeData decodes incoming data from the script
-func DecodeInvokeData(data interface{}, in interface{}) {
+func DecodeInvokeData(data InvokeData, in InvokeData) {
 	inp := in.(map[string]interface{})
 	ref := reflect.ValueOf(data).Elem()
 
@@ -161,20 +175,31 @@ func initGameAPI(vm *otto.Otto) {
 			return otto.Value{}
 		}
 
-		var eventData interface{}
+		var eventData InvokeData
 
 		if len(call.ArgumentList) > 1 {
 			eventData, _ = call.Argument(1).Export()
 		}
 
-		ret, _ := otto.ToValue(event(eventData))
-		return ret
+		res := event(eventData)
+		retObj, err := jsoniter.MarshalToString(&res)
+		if err != nil {
+			log.Printf("Invalid invoke return value! %v\n", err)
+		}
+
+		if retObj == "null" {
+			return otto.Value{}
+		}
+
+		ret, _ := ScriptingContext.Object(fmt.Sprintf("(%s)", retObj))
+
+		return ret.Value()
 	})
 
 	vm.Eval("var exports = {};")
 }
 
 // RegisterEvent registers a particular event
-func RegisterEvent(name string, call func(data interface{}) string) {
+func RegisterEvent(name string, call func(data InvokeData) InvokeData) {
 	EventHandlers[name] = call
 }

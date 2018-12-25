@@ -94,6 +94,7 @@ func initDefaultEvents() {
 func DecodeInvokeData(data interface{}, in InvokeData) {
 	inp := in.(map[string]interface{})
 	ref := reflect.ValueOf(data).Elem()
+	dataName := reflect.TypeOf(data).Elem().Name()
 
 	for k, v := range inp {
 		fieldSource := reflect.ValueOf(v)
@@ -108,11 +109,11 @@ func DecodeInvokeData(data interface{}, in InvokeData) {
 					k,
 					fieldSource.Type().String(),
 					fieldDest.Type().String(),
-					reflect.TypeOf(data).Elem().Name(),
+					dataName,
 				)
 			}
 		} else {
-			log.Printf("Property %s not found while invoking an event!\n", k)
+			log.Printf("Property %s not found inside of %s while invoking an event!\n", k, dataName)
 		}
 	}
 }

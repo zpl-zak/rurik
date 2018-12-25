@@ -32,7 +32,7 @@ var (
 	// EventHandlers consists of registered events you can invoke from the scripting side
 	EventHandlers = make(map[string]func(data InvokeData) InvokeData)
 
-	// ScriptingContext is a scripting vm
+	// ScriptingContext is a scripting ScriptingContext
 	ScriptingContext *otto.Otto
 )
 
@@ -123,27 +123,23 @@ func initScriptingSystem() {
 
 	ScriptingContext = otto.New()
 
-	initGameAPI(ScriptingContext)
-}
-
-func initGameAPI(vm *otto.Otto) {
-	vm.Set("log", func(call otto.FunctionCall) otto.Value {
+	ScriptingContext.Set("log", func(call otto.FunctionCall) otto.Value {
 		obj := call.Argument(0)
 		fmt.Println(obj)
 
 		return otto.Value{}
 	})
 
-	vm.Set("findObject", func(call otto.FunctionCall) otto.Value {
+	ScriptingContext.Set("findObject", func(call otto.FunctionCall) otto.Value {
 		arg, _ := call.Argument(0).ToString()
-		wv, _ := vm.Get("CurrentWorld")
+		wv, _ := ScriptingContext.Get("CurrentWorld")
 		w, _ := wv.Export()
 		obj, _ := w.(*World).FindObject(arg)
-		ret, _ := vm.ToValue(obj)
+		ret, _ := ScriptingContext.ToValue(obj)
 		return ret
 	})
 
-	vm.Set("setProperty", func(call otto.FunctionCall) otto.Value {
+	ScriptingContext.Set("setProperty", func(call otto.FunctionCall) otto.Value {
 		source, _ := call.Argument(0).Export()
 		field, _ := call.Argument(1).ToString()
 		value, _ := call.Argument(2).Export()
@@ -155,12 +151,12 @@ func initGameAPI(vm *otto.Otto) {
 		return otto.Value{}
 	})
 
-	vm.Set("exitGame", func(call otto.FunctionCall) otto.Value {
+	ScriptingContext.Set("exitGame", func(call otto.FunctionCall) otto.Value {
 		CloseGame()
 		return otto.Value{}
 	})
 
-	vm.Set("invoke", func(call otto.FunctionCall) otto.Value {
+	ScriptingContext.Set("invoke", func(call otto.FunctionCall) otto.Value {
 		eventName, _ := call.Argument(0).ToString()
 
 		event, ok := EventHandlers[eventName]
@@ -192,7 +188,7 @@ func initGameAPI(vm *otto.Otto) {
 		return ret.Value()
 	})
 
-	vm.Eval("var exports = {};")
+	ScriptingContext.Eval("var exports = {};")
 }
 
 // RegisterEvent registers a particular event

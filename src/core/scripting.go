@@ -188,7 +188,7 @@ func initScriptingSystem() {
 		return ret.Value()
 	})
 
-	ScriptingContext.Eval("var exports = {};")
+	ScriptingContext.Object("exports = {}")
 }
 
 // RegisterEvent registers a particular event

@@ -447,15 +447,17 @@
   <object id="52" gid="167" x="1316.13" y="1388.63" width="32" height="32"/>
   <object id="59" name="candle1" type="light" x="1360" y="1513.5">
    <properties>
-    <property name="color" type="color" value="#ffcb860f"/>
-    <property name="radius" type="float" value="40"/>
+    <property name="atten" type="float" value="256"/>
+    <property name="color" type="color" value="#ffff0000"/>
+    <property name="radius" type="float" value="32"/>
    </properties>
    <point/>
   </object>
-  <object id="60" name="           " type="light" x="1489" y="1514.75">
+  <object id="60" name="candle2" type="light" x="1489" y="1514.75">
    <properties>
-    <property name="color" type="color" value="#ffcb860f"/>
-    <property name="radius" type="float" value="40"/>
+    <property name="atten" type="float" value="256"/>
+    <property name="color" type="color" value="#ff5500ff"/>
+    <property name="radius" type="float" value="32"/>
    </properties>
    <point/>
   </object>

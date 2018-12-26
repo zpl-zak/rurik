@@ -36,15 +36,17 @@ var (
 )
 
 type renderQueueEntry struct {
-	Target system.RenderTarget
-	FlipY  bool
+	Target    system.RenderTarget
+	FlipY     bool
+	blendMode rl.BlendMode
 }
 
 // PushRenderTarget appends the render target to the queue to be processed by the compositor pipeline
-func PushRenderTarget(tex system.RenderTarget, flipY bool) {
+func PushRenderTarget(tex system.RenderTarget, flipY bool, blendMode rl.BlendMode) {
 	renderTextureQueue = append(renderTextureQueue, renderQueueEntry{
-		Target: tex,
-		FlipY:  flipY,
+		Target:    tex,
+		FlipY:     flipY,
+		blendMode: blendMode,
 	})
 }
 
@@ -83,9 +85,10 @@ func renderGame() {
 			rl.DrawTexture(WorldTexture.Texture, 0, 0, rl.White)
 
 			// process the render queue
-			rl.BeginBlendMode(rl.BlendAdditive)
-			{
-				for _, r := range renderTextureQueue {
+
+			for _, r := range renderTextureQueue {
+				rl.BeginBlendMode(r.blendMode)
+				{
 					v := r.Target
 					height := float32(v.Texture.Height)
 					if r.FlipY {
@@ -97,9 +100,9 @@ func renderGame() {
 						rl.Vector2{},
 						rl.White,
 					)
+					rl.EndBlendMode()
 				}
 			}
-			rl.EndBlendMode()
 
 			rl.BeginBlendMode(rl.BlendAlpha)
 			{

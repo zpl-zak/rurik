@@ -22,15 +22,23 @@ import (
 )
 
 var (
-	additiveLightTexture system.RenderTarget
-	blurLightTextures    []system.RenderTarget
+	additiveLightTexture       system.RenderTarget
+	multiplicativeLightTexture system.RenderTarget
+	blurLightTextures          []system.RenderTarget
 
 	blurProgram system.Program
 )
 
 func updateLightingSolution() {
 	populateAdditiveLayer()
-	blurAdditiveLight()
+	blurLight(additiveLightTexture, 32)
+
+	populateMultiplicativeLight()
+	blurLight(multiplicativeLightTexture, 32)
+	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
+
+	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
+	//system.CopyToRenderTarget(multiplicativeLightTexture, WorldTexture, true)
 }
 
 func populateAdditiveLayer() {
@@ -38,6 +46,7 @@ func populateAdditiveLayer() {
 
 	if additiveLightTexture == nil || WindowWasResized {
 		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 		blurLightTextures = []system.RenderTarget{
 			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
 			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
@@ -50,11 +59,13 @@ func populateAdditiveLayer() {
 		rl.BeginMode2D(RenderCamera)
 		{
 			for _, o := range objs {
+				col := o.color
+				col.A /= 2
 				rl.DrawCircleGradient(
 					int32(o.Position.X),
 					int32(o.Position.Y),
 					o.radius,
-					o.color,
+					col,
 					rl.Blank,
 				)
 			}
@@ -68,7 +79,7 @@ func updateShadersOnResize() {
 	blurProgram.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)
 }
 
-func blurAdditiveLight() {
+func blurLight(tex system.RenderTarget, maxIter int) {
 	if blurProgram.Shader.ID == 0 {
 		blurProgram = system.NewProgram("", "assets/shaders/blur.fs")
 		updateShadersOnResize()
@@ -79,8 +90,7 @@ func blurAdditiveLight() {
 	}
 
 	var hor int32 = 1
-	maxIter := 32
-	srcTex := additiveLightTexture
+	srcTex := tex
 
 	for i := 0; i < maxIter; i++ {
 		blurProgram.SetShaderValuei("horizontal", []int32{hor}, 1)
@@ -90,6 +100,42 @@ func blurAdditiveLight() {
 		hor = 1 - hor
 	}
 
-	//system.CopyToRenderTarget(srcTex, WorldTexture, true)
-	PushRenderTarget(srcTex, false)
+	system.CopyToRenderTarget(srcTex, tex, hor == 1)
+}
+
+func populateMultiplicativeLight() {
+	objs := CurrentMap.World.GetObjectsOfType("light", false)
+
+	if additiveLightTexture == nil || WindowWasResized {
+		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		blurLightTextures = []system.RenderTarget{
+			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
+			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
+		}
+	}
+
+	rl.BeginTextureMode(*multiplicativeLightTexture)
+	{
+		rl.ClearBackground(SkyColor)
+
+		rl.BeginBlendMode(rl.BlendAdditive)
+		{
+			rl.BeginMode2D(RenderCamera)
+			{
+				for _, o := range objs {
+					rl.DrawCircleGradient(
+						int32(o.Position.X),
+						int32(o.Position.Y),
+						o.attenuation,
+						o.color,
+						rl.Blank,
+					)
+				}
+			}
+			rl.EndMode2D()
+		}
+		rl.EndBlendMode()
+	}
+	rl.EndTextureMode()
 }

@@ -82,8 +82,8 @@ func (g *demoGameMode) DrawUI() {
 }
 
 func (g *demoGameMode) PostDraw() {
-	/* bloom.Apply()
-	minimap.Apply() */
+	bloom.Apply()
+	minimap.Apply()
 }
 
 func (g *demoGameMode) IgnoreUpdate() bool {

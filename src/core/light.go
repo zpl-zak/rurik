@@ -23,8 +23,9 @@ import (
 )
 
 type light struct {
-	color  rl.Color
-	radius float32
+	color       rl.Color
+	radius      float32
+	attenuation float32
 }
 
 // NewLight light instance
@@ -42,6 +43,13 @@ func (o *Object) NewLight() {
 		if radius != "" {
 			rad, _ := strconv.ParseFloat(radius, 32)
 			o.radius = float32(rad)
+		}
+
+		attenuation := o.Meta.Properties.GetString("atten")
+
+		if attenuation != "" {
+			rad, _ := strconv.ParseFloat(attenuation, 32)
+			o.attenuation = float32(rad)
 		}
 	}
 }

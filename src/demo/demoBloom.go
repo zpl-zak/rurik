@@ -1,6 +1,7 @@
 package main
 
 import (
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
 )
@@ -30,6 +31,19 @@ func newBloom() *bloomProg {
 }
 
 func (b *bloomProg) Apply() {
+	if core.WindowWasResized {
+		blurTextures := []system.RenderTarget{
+			system.CreateRenderTarget(screenW, screenH),
+			system.CreateRenderTarget(screenW, screenH),
+		}
+
+		b.TresholdTexture = system.CreateRenderTarget(screenW, screenH)
+		b.BlurTexture = blurTextures
+
+		b.ExtractColors.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)
+		b.BlurImage.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)
+	}
+
 	b.ExtractColors.RenderToTexture(core.WorldTexture, b.TresholdTexture)
 
 	var hor int32 = 1
@@ -44,5 +58,5 @@ func (b *bloomProg) Apply() {
 		hor = 1 - hor
 	}
 
-	core.PushRenderTarget(b.BlurTexture[1], false)
+	core.PushRenderTarget(b.BlurTexture[1], false, rl.BlendAdditive)
 }

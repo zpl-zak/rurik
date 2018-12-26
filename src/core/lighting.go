@@ -54,7 +54,7 @@ func updateLightingSolution() {
 
 	// Apply lighting layers
 	PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
-	PushRenderTarget(origObjectsLightTexture, false, rl.BlendAdditive)
+	PushRenderTarget(origObjectsLightTexture, false, rl.BlendAlpha)
 	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 	//system.CopyToRenderTarget(multiplicativeLightTexture, WorldTexture, true)
@@ -143,7 +143,7 @@ func populateMultiplicativeLight() {
 
 func populateAoLight() {
 	sky := SkyColor
-	SkyColor = rl.Black
+	SkyColor = rl.NewColor(0, 0, 0, 127)
 
 	rl.BeginTextureMode(*aoLightTexture)
 	{

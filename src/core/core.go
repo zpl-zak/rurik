@@ -140,12 +140,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		updateWindow()
 
 		for unprocessedTime > float64(system.FrameTime) {
-
-			// WindowWasResized should be reset this cycle now
-			if WindowWasResized {
-				WindowWasResized = false
-			}
-
 			UpdateEditor()
 
 			musicProfiler.StartInvocation()
@@ -182,6 +176,11 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			}
 
 			renderGame()
+
+			// WindowWasResized should be reset this cycle now
+			if WindowWasResized {
+				WindowWasResized = false
+			}
 
 			frames++
 		} else {
@@ -225,6 +224,7 @@ func updateWindow() {
 		system.WindowHeight = height
 		system.ScreenWidth = width / system.ScaleRatio
 		system.ScreenHeight = height / system.ScaleRatio
+		WindowWasResized = true
 
 		rl.UnloadRenderTexture(*WorldTexture)
 		WorldTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)

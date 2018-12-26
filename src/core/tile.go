@@ -103,6 +103,18 @@ func (o *Object) NewTile() {
 			rot = 90
 		}
 
-		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: 0, Y: float32(o.Height)}, rot+o.Rotation, SkyColor)
+		var tint rl.Color
+
+		if o.TintColor == rl.Blank {
+			tint = SkyColor
+		} else {
+			tint = mixColor(o.TintColor, SkyColor)
+		}
+
+		if o.Fullbright {
+			tint = o.TintColor
+		}
+
+		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: 0, Y: float32(o.Height)}, rot+o.Rotation, tint)
 	}
 }

@@ -44,13 +44,13 @@ func updateLightingSolution() {
 	}
 
 	populateAdditiveLayer()
-	blurLight(additiveLightTexture, 32)
+	//blurLight(additiveLightTexture, 32)
 
 	populateMultiplicativeLight()
-	blurLight(multiplicativeLightTexture, 32)
+	//blurLight(multiplicativeLightTexture, 32)
 
 	populateAoLight()
-	blurLight(aoLightTexture, 8)
+	//blurLight(aoLightTexture, 8)
 
 	// Apply lighting layers
 	PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)

@@ -105,6 +105,22 @@ func vec3ToColor(a rl.Vector3) rl.Color {
 	)
 }
 
+func colorToVec3(a rl.Color) rl.Vector3 {
+	return rl.NewVector3(
+		float32(a.R)/255.0,
+		float32(a.G)/255.0,
+		float32(a.B)/255.0,
+	)
+}
+
+func mixColor(a, b rl.Color) rl.Color {
+	return vec3ToColor(raymath.Vector3Lerp(
+		colorToVec3(a),
+		colorToVec3(b),
+		0.5,
+	))
+}
+
 func isMouseInRectangle(x, y, x2, y2 int32) bool {
 	x2 = x + x2
 	y2 = y + y2

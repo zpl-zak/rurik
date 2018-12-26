@@ -76,6 +76,8 @@ type Object struct {
 	WasExecuted   bool
 	CanRepeat     bool
 	IsPersistent  bool
+	Fullbright    bool
+	TintColor     rl.Color
 
 	// Internal fields
 	WasUpdated bool
@@ -211,6 +213,16 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 	idx := w.GlobalIndex
 	w.GlobalIndex++
 
+	tintHex := o.Properties.GetString("tint")
+	var tint rl.Color
+
+	if tintHex != "" {
+		tintVec, _ := getColorFromHex(tintHex)
+		tint = vec3ToColor(tintVec)
+	} else {
+		tint = rl.Blank
+	}
+
 	return &Object{
 		GID:           idx,
 		world:         w,
@@ -224,7 +236,9 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		CollisionType: o.Properties.GetString("colType"),
 		AutoStart:     o.Properties.GetString("autostart") == "1",
 		CanRepeat:     o.Properties.GetString("canRepeat") == "1",
+		Fullbright:    o.Properties.GetString("fullbright") == "1",
 		FileName:      o.Properties.GetString("file"),
+		TintColor:     tint,
 		IsPersistent:  true,
 
 		// Callbacks

@@ -89,6 +89,7 @@ func (prog *Program) RenderToTexture(source, target *rl.RenderTexture2D) {
 // UpdateDefaultUniforms updates the shader with default game engine values
 func (prog *Program) UpdateDefaultUniforms() {
 	prog.SetShaderValue("time", []float32{rl.GetTime()}, 1)
+	prog.SetShaderValue("size", []float32{float32(ScreenWidth), float32(ScreenHeight)}, 2)
 }
 
 // SetShaderValue sets shader uniform value (float)

@@ -30,6 +30,7 @@ var (
 	gameModeProfiler   *system.Profiler
 	drawProfiler       *system.Profiler
 	sortRenderProfiler *system.Profiler
+	lightingProfiler   *system.Profiler
 
 	isProfilerCollapsed bool
 
@@ -46,6 +47,7 @@ func InitGameProfilers() {
 	gameModeProfiler = system.NewProfiler("gameMode")
 	drawProfiler = system.NewProfiler("draw")
 	sortRenderProfiler = system.NewProfiler("sortRender")
+	lightingProfiler = system.NewProfiler("lighting")
 
 	frameRateString = "total time: 0 ms (0 FPS)"
 	otherTimeString = "measured time: 0 ms"
@@ -82,6 +84,7 @@ func drawProfiling() {
 
 		if !drawProfiler.IsCollapsed {
 			pushEditorElement(renderNode, sortRenderProfiler.DisplayString, nil)
+			pushEditorElement(renderNode, lightingProfiler.DisplayString, nil)
 		}
 	}
 }

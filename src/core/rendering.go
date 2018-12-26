@@ -65,7 +65,9 @@ func renderGame() {
 		}
 		rl.EndTextureMode()
 
+		lightingProfiler.StartInvocation()
 		updateLightingSolution()
+		lightingProfiler.StopInvocation()
 
 		// Render all UI elements
 		rl.BeginTextureMode(*UITexture)

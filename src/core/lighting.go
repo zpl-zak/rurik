@@ -24,34 +24,44 @@ import (
 var (
 	additiveLightTexture       system.RenderTarget
 	multiplicativeLightTexture system.RenderTarget
+	aoLightTexture             system.RenderTarget
+	origObjectsLightTexture    system.RenderTarget
 	blurLightTextures          []system.RenderTarget
 
 	blurProgram system.Program
 )
 
 func updateLightingSolution() {
+	if additiveLightTexture == nil || WindowWasResized {
+		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		aoLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		origObjectsLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		blurLightTextures = []system.RenderTarget{
+			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
+			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
+		}
+	}
+
 	populateAdditiveLayer()
 	blurLight(additiveLightTexture, 32)
 
 	populateMultiplicativeLight()
 	blurLight(multiplicativeLightTexture, 32)
-	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 
+	populateAoLight()
+	blurLight(aoLightTexture, 8)
+
+	// Apply lighting layers
+	PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
+	PushRenderTarget(origObjectsLightTexture, false, rl.BlendAdditive)
+	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 	//system.CopyToRenderTarget(multiplicativeLightTexture, WorldTexture, true)
 }
 
 func populateAdditiveLayer() {
 	objs := CurrentMap.World.GetObjectsOfType("light", false)
-
-	if additiveLightTexture == nil || WindowWasResized {
-		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		blurLightTextures = []system.RenderTarget{
-			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-		}
-	}
 
 	rl.BeginTextureMode(*additiveLightTexture)
 	{
@@ -106,15 +116,6 @@ func blurLight(tex system.RenderTarget, maxIter int) {
 func populateMultiplicativeLight() {
 	objs := CurrentMap.World.GetObjectsOfType("light", false)
 
-	if additiveLightTexture == nil || WindowWasResized {
-		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		blurLightTextures = []system.RenderTarget{
-			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-		}
-	}
-
 	rl.BeginTextureMode(*multiplicativeLightTexture)
 	{
 		rl.ClearBackground(SkyColor)
@@ -136,6 +137,31 @@ func populateMultiplicativeLight() {
 			rl.EndMode2D()
 		}
 		rl.EndBlendMode()
+	}
+	rl.EndTextureMode()
+}
+
+func populateAoLight() {
+	sky := SkyColor
+	SkyColor = rl.Black
+
+	rl.BeginTextureMode(*aoLightTexture)
+	{
+		rl.ClearBackground(rl.White)
+		rl.BeginMode2D(RenderCamera)
+		CurrentMap.World.DrawObjects()
+		rl.EndMode2D()
+	}
+	rl.EndTextureMode()
+
+	SkyColor = sky
+
+	rl.BeginTextureMode(*origObjectsLightTexture)
+	{
+		rl.ClearBackground(rl.Blank)
+		rl.BeginMode2D(RenderCamera)
+		CurrentMap.World.DrawObjects()
+		rl.EndMode2D()
 	}
 	rl.EndTextureMode()
 }

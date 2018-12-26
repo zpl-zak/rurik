@@ -48,6 +48,7 @@ type camera struct {
 	ZoomSpeed  float32
 	Mode       int
 	First      bool
+	FollowName string
 }
 
 type cameraData struct {
@@ -71,10 +72,18 @@ func (c *Object) NewCamera() {
 	c.ZoomSpeed = 0.8
 	c.DebugVisible = false
 	c.First = true
+	followName := c.Meta.Properties.GetString("follow")
+	if followName == "" {
+		c.FollowName = "player"
+	} else {
+		c.FollowName = followName
+	}
+	c.Mode = CameraModeFollow
 	strMode := c.Meta.Properties.GetString("mode")
+	if strMode != "" {
+		c.SetCameraMode(strMode)
+	}
 	spd, _ := strconv.ParseFloat(c.Meta.Properties.GetString("speed"), 32)
-
-	c.SetCameraMode(strMode)
 
 	if spd == 0 {
 		spd = 1
@@ -82,7 +91,7 @@ func (c *Object) NewCamera() {
 
 	c.Serialize = func(o *Object) string {
 		val, _ := jsoniter.MarshalToString(&cameraData{
-			Follow:     "",
+			Follow:     o.FollowName,
 			Start:      "",
 			End:        "",
 			Speed:      o.Speed,
@@ -109,6 +118,7 @@ func (c *Object) NewCamera() {
 		o.ZoomSpeed = dat.ZoomSpeed
 		o.Mode = dat.Mode
 		o.First = dat.First
+		o.FollowName = dat.Follow
 	}
 
 	c.Speed = float32(spd)
@@ -137,7 +147,11 @@ func (c *Object) NewCamera() {
 
 func finishCamera(c *Object) {
 	if c.Mode == CameraModeFollow {
-		c.Follow, _ = c.world.FindObject(c.Meta.Properties.GetString("follow"))
+		c.Follow, _ = c.world.FindObject(c.FollowName)
+
+		if c.First && c.Follow != nil {
+			c.Position = c.Follow.Position
+		}
 	} else if c.Mode == CameraModeLerp {
 		c.Start, _ = c.world.FindObject(c.Meta.Properties.GetString("start"))
 		c.End, _ = c.world.FindObject(c.Meta.Properties.GetString("end"))

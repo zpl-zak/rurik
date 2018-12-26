@@ -209,6 +209,7 @@ func setupDefaultCamera() {
 	defCam.Mode = CameraModeFollow
 	defCam.Follow = LocalPlayer
 	defCam.Visible = false
+	defCam.IsPersistent = false
 
 	CurrentMap.World.AddObject(defCam)
 }

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="61">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="8" nextobjectid="62">
  <properties>
   <property name="skyColor" type="color" value="#ff676896"/>
  </properties>
@@ -459,6 +459,9 @@
     <property name="color" type="color" value="#ff5500ff"/>
     <property name="radius" type="float" value="32"/>
    </properties>
+   <point/>
+  </object>
+  <object id="61" name="main_camera" type="cam" x="1370" y="1591.5">
    <point/>
   </object>
  </objectgroup>

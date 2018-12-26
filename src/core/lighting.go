@@ -69,12 +69,12 @@ func populateAdditiveLayer() {
 		rl.BeginMode2D(RenderCamera)
 		{
 			for _, o := range objs {
-				col := o.color
+				col := o.Color
 				col.A /= 2
 				rl.DrawCircleGradient(
 					int32(o.Position.X),
 					int32(o.Position.Y),
-					o.radius,
+					float32(o.Radius),
 					col,
 					rl.Blank,
 				)
@@ -128,8 +128,8 @@ func populateMultiplicativeLight() {
 					rl.DrawCircleGradient(
 						int32(o.Position.X),
 						int32(o.Position.Y),
-						o.attenuation,
-						o.color,
+						o.Attenuation,
+						o.Color,
 						rl.Blank,
 					)
 				}

@@ -136,6 +136,10 @@ func SwitchMap(name string) {
 		CurrentMap = m
 		system.MapName = name
 	}
+
+	if MainCamera == nil {
+		setupDefaultCamera()
+	}
 }
 
 // FlushMaps disposes all data

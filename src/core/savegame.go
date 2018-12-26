@@ -205,6 +205,12 @@ func defaultLoadProvider(state *GameState) {
 			o.Deserialize(o, wo.Custom)
 		}
 
+		cam, _ := CurrentMap.World.FindObject("main_camera")
+
+		if cam == nil {
+			setupDefaultCamera()
+		}
+
 		m.World.InitObjects()
 	}
 }

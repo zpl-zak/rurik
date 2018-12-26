@@ -40,6 +40,9 @@ var (
 	FrameTime float32 = 1 / 60.0
 
 	nullTarget RenderTarget
+
+	blurTextures []RenderTarget
+	blurProgram  Program
 )
 
 // RenderTarget describes our render texture
@@ -54,6 +57,21 @@ func InitRenderer(title string, winW, winH int32) {
 
 	WindowWidth = winW
 	WindowHeight = winH
+
+	UpdateSystemRenderTargets()
+}
+
+// UpdateSystemRenderTargets updates all system render targets
+func UpdateSystemRenderTargets() {
+	if blurTextures != nil {
+		rl.UnloadRenderTexture(*blurTextures[0])
+		rl.UnloadRenderTexture(*blurTextures[1])
+	}
+
+	blurTextures = []RenderTarget{
+		CreateRenderTarget(ScreenWidth, ScreenHeight),
+		CreateRenderTarget(ScreenWidth, ScreenHeight),
+	}
 }
 
 // CreateRenderTarget generates a render target used by the game
@@ -90,4 +108,23 @@ func CopyToRenderTarget(source, dest *rl.RenderTexture2D, flipY bool) {
 		rl.White,
 	)
 	rl.EndTextureMode()
+}
+
+// BlurRenderTarget blurs the render target
+func BlurRenderTarget(tex RenderTarget, maxIter int) {
+	if blurProgram.Shader.ID == 0 {
+		blurProgram = NewProgram("", "assets/shaders/blur.fs")
+	}
+
+	var hor int32 = 1
+	//srcTex := tex
+
+	for i := 0; i < maxIter; i++ {
+		blurProgram.SetShaderValuei("horizontal", []int32{hor}, 1)
+		//blurProgram.RenderToTexture(srcTex, blurTextures[hor])
+		//srcTex = blurTextures[hor]
+		hor = 1 - hor
+	}
+
+	CopyToRenderTarget(tex, tex, hor == 1)
 }

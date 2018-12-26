@@ -234,5 +234,7 @@ func updateWindow() {
 
 		rl.UnloadRenderTexture(*finalRenderTexture)
 		finalRenderTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+
+		system.UpdateSystemRenderTargets()
 	}
 }

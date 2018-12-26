@@ -8,21 +8,19 @@ import (
 
 type minimapProg struct {
 	RenderTexture system.RenderTarget
-	WorldTexture  system.RenderTarget
-	SobelEffect   system.Program
 }
 
 func newMinimap() *minimapProg {
 	return &minimapProg{
-		RenderTexture: system.CreateRenderTarget(screenW, screenH),
+		RenderTexture: system.CreateRenderTarget(320, 320),
 	}
 }
 
 func (m *minimapProg) Apply() {
 	minimapCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 	minimapCamera.Offset = rl.Vector2{
-		X: float32(int(-core.MainCamera.Position.X + screenW/2)),
-		Y: float32(int(-core.MainCamera.Position.Y + screenH/2)),
+		X: float32(int(-core.MainCamera.Position.X + float32(320)/2)),
+		Y: float32(int(-core.MainCamera.Position.Y + float32(320)/2)),
 	}
 
 	rl.BeginTextureMode(*m.RenderTexture)
@@ -40,4 +38,6 @@ func (m *minimapProg) Apply() {
 		rl.EndMode2D()
 	}
 	rl.EndTextureMode()
+
+	// system.BlurRenderTarget(m.RenderTexture, 128)
 }

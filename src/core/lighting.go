@@ -26,21 +26,14 @@ var (
 	multiplicativeLightTexture system.RenderTarget
 	aoLightTexture             system.RenderTarget
 	origObjectsLightTexture    system.RenderTarget
-	blurLightTextures          []system.RenderTarget
-
-	blurProgram system.Program
 )
 
 func updateLightingSolution() {
 	if additiveLightTexture == nil || WindowWasResized {
 		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		aoLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		origObjectsLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		blurLightTextures = []system.RenderTarget{
-			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-			system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-		}
+		// aoLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+		// origObjectsLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 	}
 
 	populateAdditiveLayer()
@@ -49,12 +42,12 @@ func updateLightingSolution() {
 	populateMultiplicativeLight()
 	//blurLight(multiplicativeLightTexture, 32)
 
-	populateAoLight()
+	//populateAoLight()
 	//blurLight(aoLightTexture, 8)
 
 	// Apply lighting layers
-	PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
-	PushRenderTarget(origObjectsLightTexture, false, rl.BlendAlpha)
+	// PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
+	// PushRenderTarget(origObjectsLightTexture, false, rl.BlendAlpha)
 	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 	//system.CopyToRenderTarget(multiplicativeLightTexture, WorldTexture, true)
@@ -83,34 +76,6 @@ func populateAdditiveLayer() {
 		rl.EndMode2D()
 	}
 	rl.EndTextureMode()
-}
-
-func updateShadersOnResize() {
-	blurProgram.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)
-}
-
-func blurLight(tex system.RenderTarget, maxIter int) {
-	if blurProgram.Shader.ID == 0 {
-		blurProgram = system.NewProgram("", "assets/shaders/blur.fs")
-		updateShadersOnResize()
-	}
-
-	if WindowWasResized {
-		updateShadersOnResize()
-	}
-
-	var hor int32 = 1
-	srcTex := tex
-
-	for i := 0; i < maxIter; i++ {
-		blurProgram.SetShaderValuei("horizontal", []int32{hor}, 1)
-
-		blurProgram.RenderToTexture(srcTex, blurLightTextures[hor])
-		srcTex = blurLightTextures[hor]
-		hor = 1 - hor
-	}
-
-	system.CopyToRenderTarget(srcTex, tex, hor == 1)
 }
 
 func populateMultiplicativeLight() {

@@ -108,6 +108,8 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		rl.SetTraceLog(rl.LogError | rl.LogWarning | rl.LogInfo)
 	}
 
+	RenderCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
+
 	for IsRunning {
 		if rl.WindowShouldClose() {
 			IsRunning = false
@@ -165,6 +167,11 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			FireEvent("onUpdate")
 
 			shouldRender = true
+
+			RenderCamera.Offset = rl.Vector2{
+				X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + float32(system.ScreenWidth)/2)),
+				Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + float32(system.ScreenHeight)/2)),
+			}
 
 			unprocessedTime -= float64(system.FrameTime)
 		}

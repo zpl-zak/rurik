@@ -22,7 +22,6 @@ const (
 var (
 	dynobjCounter int
 	playMapName   string
-	gameCamera    rl.Camera2D
 	bloom         *bloomProg
 	shadertoy     *shadertoyProg
 	minimap       *minimapProg
@@ -44,8 +43,6 @@ func (g *demoGameMode) Init() {
 	core.LoadMap(playMapName)
 	core.InitMap()
 
-	gameCamera = rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
-
 	initShaders()
 }
 
@@ -58,7 +55,7 @@ func initShaders() {
 func (g *demoGameMode) Draw() {
 	drawBackground()
 
-	rl.BeginMode2D(gameCamera)
+	rl.BeginMode2D(core.RenderCamera)
 	{
 		core.DrawMap(true)
 	}
@@ -85,8 +82,8 @@ func (g *demoGameMode) DrawUI() {
 }
 
 func (g *demoGameMode) PostDraw() {
-	bloom.Apply()
-	minimap.Apply()
+	/* bloom.Apply()
+	minimap.Apply() */
 }
 
 func (g *demoGameMode) IgnoreUpdate() bool {
@@ -132,12 +129,7 @@ func (g *demoGameMode) Update() {
 		}
 	}
 
-	gameCamera.Zoom = core.MainCamera.Zoom
-
-	gameCamera.Offset = rl.Vector2{
-		X: float32(int(-core.MainCamera.Position.X*core.MainCamera.Zoom + float32(system.ScreenWidth)/2)),
-		Y: float32(int(-core.MainCamera.Position.Y*core.MainCamera.Zoom + float32(system.ScreenHeight)/2)),
-	}
+	core.RenderCamera.Zoom = core.MainCamera.Zoom
 
 	if core.WindowWasResized {
 		initShaders()

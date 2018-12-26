@@ -15,7 +15,7 @@ out vec4 finalColor;
 uniform bool horizontal;
 uniform vec2 size = vec2(640, 480);
 
-float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
+uniform float weight[3] = float[](0.2270270270, 0.3162162162, 0.0702702703);
 
 void main()
 {

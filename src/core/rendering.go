@@ -30,6 +30,9 @@ var (
 
 	finalRenderTexture system.RenderTarget
 	renderTextureQueue = []renderQueueEntry{}
+
+	// RenderCamera is a read-only camera used only for rendering
+	RenderCamera rl.Camera2D
 )
 
 type renderQueueEntry struct {
@@ -59,6 +62,8 @@ func renderGame() {
 			drawProfiler.StopInvocation()
 		}
 		rl.EndTextureMode()
+
+		updateLightingSolution()
 
 		// Render all UI elements
 		rl.BeginTextureMode(*UITexture)

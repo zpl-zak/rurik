@@ -65,7 +65,7 @@ func CreateRenderTarget(screenW, screenH int32) *rl.RenderTexture2D {
 }
 
 // CopyToRenderTarget copies one target to another
-func CopyToRenderTarget(source, dest *rl.RenderTexture2D) {
+func CopyToRenderTarget(source, dest *rl.RenderTexture2D, flipY bool) {
 	if nullTarget == nil {
 		nullTarget = CreateRenderTarget(ScreenWidth, ScreenHeight)
 	}
@@ -75,10 +75,15 @@ func CopyToRenderTarget(source, dest *rl.RenderTexture2D) {
 		inp = nullTarget
 	}
 
+	var neg float32 = 1.0
+	if flipY {
+		neg = -1.0
+	}
+
 	rl.BeginTextureMode(*dest)
 	rl.DrawTexturePro(
 		inp.Texture,
-		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(inp.Texture.Height)),
+		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(inp.Texture.Height)*neg),
 		rl.NewRectangle(0, 0, float32(dest.Texture.Width), float32(dest.Texture.Height)),
 		rl.NewVector2(0, 0),
 		0,

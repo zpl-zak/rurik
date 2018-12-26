@@ -103,6 +103,7 @@ type Object struct {
 	anim
 	area
 	tile
+	light
 }
 
 func (w *World) flushObjects() {
@@ -122,6 +123,7 @@ func initObjectTypes() {
 		"anim":   "Anim",
 		"area":   "Area",
 		"tile":   "Tile",
+		"light":  "Light",
 	}
 }
 

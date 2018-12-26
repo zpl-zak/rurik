@@ -31,7 +31,7 @@ type light struct {
 type lightData struct {
 	Color       rl.Color `json:"col"`
 	Attenuation float32  `json:"atten"`
-	Radius      int      `json:"rad"`
+	Radius      float32  `json:"rad"`
 }
 
 // NewLight light instance
@@ -68,7 +68,7 @@ func (o *Object) NewLight() {
 
 		if radius != "" {
 			rad, _ := strconv.ParseFloat(radius, 32)
-			o.Radius = int(rad)
+			o.Radius = float32(rad)
 		}
 
 		attenuation := o.Meta.Properties.GetString("atten")

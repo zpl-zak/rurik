@@ -25,6 +25,7 @@ var (
 	bloom         *bloomProg
 	shadertoy     *shadertoyProg
 	minimap       *minimapProg
+	pulseManager  *core.Object
 )
 
 type demoGameMode struct{}
@@ -91,6 +92,14 @@ func (g *demoGameMode) IgnoreUpdate() bool {
 }
 
 func (g *demoGameMode) Update() {
+	if pulseManager == nil {
+		w := core.CurrentMap.World
+		pulseManager = w.NewObjectPro("pulse_script", "script")
+		pulseManager.FileName = "pulsatingLights.js"
+		w.FinalizeObject(pulseManager)
+		pulseManager.Trigger(pulseManager, nil)
+	}
+
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
 		core.FlushMaps()
 		core.LoadMap(playMapName)

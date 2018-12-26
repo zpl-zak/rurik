@@ -142,14 +142,13 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		for unprocessedTime > float64(system.FrameTime) {
 			UpdateEditor()
 
+			updateProfiler.StartInvocation()
 			musicProfiler.StartInvocation()
 			UpdateMusic()
 			musicProfiler.StopInvocation()
 
 			if !CurrentGameMode.IgnoreUpdate() {
-				updateProfiler.StartInvocation()
 				UpdateMaps()
-				updateProfiler.StopInvocation()
 			}
 
 			UpdateMapUI()
@@ -159,6 +158,7 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			gameModeProfiler.StopInvocation()
 
 			FireEvent("onUpdate")
+			updateProfiler.StopInvocation()
 
 			shouldRender = true
 

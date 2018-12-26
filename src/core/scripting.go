@@ -23,6 +23,8 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	"github.com/robertkrimen/otto"
+	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 // InvokeData is the incoming data from the DSL caller
@@ -230,6 +232,8 @@ func FireEvent(name string, data ...interface{}) {
 	handlers, ok := EventHandlers[name]
 
 	if ok {
+		ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
+		ScriptingContext.Set("TotalTime", rl.GetTime()*float32(TimeScale))
 		scriptingProfiler.StartInvocation()
 		for _, v := range handlers {
 			v.Call(v, data)
@@ -242,6 +246,8 @@ func fireEventOtto(name string, data ...otto.Value) {
 	handlers, ok := EventHandlers[name]
 
 	if ok {
+		ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
+		ScriptingContext.Set("TotalTime", rl.GetTime()*float32(TimeScale))
 		scriptingProfiler.StartInvocation()
 		for _, v := range handlers {
 			v.Call(v, data)

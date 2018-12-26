@@ -25,7 +25,6 @@ import (
 )
 
 type area struct {
-	Radius     int
 	isInCircle bool
 	Talk       *Object
 }
@@ -34,7 +33,8 @@ type area struct {
 func (o *Object) NewArea() {
 	o.Finish = func(o *Object) {
 		o.Proxy, _ = o.world.FindObject(o.Meta.Properties.GetString("proxy"))
-		o.Radius, _ = strconv.Atoi(o.Meta.Properties.GetString("radius"))
+		r, _ := strconv.ParseFloat(o.Meta.Properties.GetString("radius"), 32)
+		o.Radius = float32(r)
 		o.Radius *= 2
 	}
 

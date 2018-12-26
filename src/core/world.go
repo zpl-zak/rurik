@@ -78,6 +78,7 @@ type Object struct {
 	IsPersistent  bool
 	Fullbright    bool
 	TintColor     rl.Color
+	Radius        float32
 
 	// Internal fields
 	WasUpdated bool
@@ -271,6 +272,10 @@ func (w *World) NewObjectPro(name, class string) *Object {
 func (w *World) AddObject(o *Object) {
 	if o == nil {
 		return
+	}
+
+	if o.Name == "" {
+		o.Name = fmt.Sprintf("unknown_%d", o.GID)
 	}
 
 	duplicateObject, _ := w.FindObject(o.Name)

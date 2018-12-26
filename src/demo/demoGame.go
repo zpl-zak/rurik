@@ -97,7 +97,7 @@ func (g *demoGameMode) Update() {
 		pulseManager = w.NewObjectPro("pulse_script", "script")
 		pulseManager.FileName = "pulsatingLights.js"
 		w.FinalizeObject(pulseManager)
-		pulseManager.Trigger(pulseManager, nil)
+		//pulseManager.Trigger(pulseManager, nil)
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {

@@ -155,12 +155,13 @@ func (o *Object) NewTalk() {
 		}
 
 		var height int32 = 120
-		var width int32 = 640
+		width := system.WindowWidth
 		start := system.ScreenHeight - height
-		offsetX := (system.ScreenWidth - width) / 2
 
-		rl.DrawRectangle(int32(offsetX), start, width, height, rl.Black)
-		rl.DrawTexture(*chatBanner, int32(offsetX), start, rl.White)
+		rl.DrawRectangle(0, start, width, height, rl.NewColor(46, 46, 84, 255))
+		rl.DrawRectangle(5, start+5, 32, 32, rl.NewColor(53, 64, 59, 255))
+		rl.DrawRectangleLines(4, start+4, 34, 34, rl.NewColor(55, 148, 110, 255))
+
 		ot := o.currentText
 
 		// Pos X: 5, Y: 5
@@ -169,7 +170,7 @@ func (o *Object) NewTalk() {
 			rl.DrawTexturePro(
 				*ot.Avatar,
 				rl.NewRectangle(0, 0, float32(ot.Avatar.Width), float32(ot.Avatar.Height)),
-				rl.NewRectangle(float32(offsetX)+5, float32(start)+5, 32, 32),
+				rl.NewRectangle(5, float32(start)+5, 32, 32),
 				rl.Vector2{},
 				0,
 				rl.White,
@@ -178,7 +179,7 @@ func (o *Object) NewTalk() {
 
 		rl.DrawText(
 			ot.Name,
-			offsetX+45,
+			45,
 			start+16,
 			10,
 			rl.Orange,
@@ -186,14 +187,14 @@ func (o *Object) NewTalk() {
 
 		rl.DrawText(
 			ot.Text,
-			offsetX+5,
+			5,
 			start+45,
 			10,
 			rl.White,
 		)
 
 		// choices
-		chsX := width - 220
+		chsX := system.ScreenWidth - 220
 		chsY := start + 16
 
 		if len(ot.Choices) > 0 {

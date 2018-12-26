@@ -68,15 +68,15 @@ func (g *demoGameMode) Draw() {
 func (g *demoGameMode) DrawUI() {
 	core.DrawMapUI()
 
-	// draw small animated picture
+	// draw a minimap
 	{
-		rl.DrawRectangle(screenW-105, 5, 100, 100, rl.Blue)
+		rl.DrawRectangle(system.ScreenWidth-105, 5, 100, 100, rl.Blue)
 		rl.DrawTexturePro(
 			minimap.RenderTexture.Texture,
 			rl.NewRectangle(0, 0,
 				float32(minimap.RenderTexture.Texture.Width),
 				float32(-minimap.RenderTexture.Texture.Height)),
-			rl.NewRectangle(screenW-102, 8, 94, 94),
+			rl.NewRectangle(float32(system.ScreenWidth)-102, 8, 94, 94),
 			rl.Vector2{},
 			0,
 			rl.White,
@@ -86,7 +86,6 @@ func (g *demoGameMode) DrawUI() {
 
 func (g *demoGameMode) PostDraw() {
 	bloom.Apply()
-	shadertoy.Apply()
 	minimap.Apply()
 }
 
@@ -136,16 +135,20 @@ func (g *demoGameMode) Update() {
 	gameCamera.Zoom = core.MainCamera.Zoom
 
 	gameCamera.Offset = rl.Vector2{
-		X: float32(int(-core.MainCamera.Position.X*core.MainCamera.Zoom + screenW/2)),
-		Y: float32(int(-core.MainCamera.Position.Y*core.MainCamera.Zoom + screenH/2)),
+		X: float32(int(-core.MainCamera.Position.X*core.MainCamera.Zoom + float32(system.ScreenWidth)/2)),
+		Y: float32(int(-core.MainCamera.Position.Y*core.MainCamera.Zoom + float32(system.ScreenHeight)/2)),
+	}
+
+	if core.WindowWasResized {
+		initShaders()
 	}
 }
 
 func drawBackground() {
 	bgImage := system.GetTexture("bg.png")
 
-	rows := int(screenW/bgImage.Width) + 1
-	cols := int(screenH/bgImage.Height) + 1
+	rows := int(system.ScreenWidth/bgImage.Width) + 1
+	cols := int(system.ScreenHeight/bgImage.Height) + 1
 	tileW := float32(bgImage.Width)
 	tileH := float32(bgImage.Height)
 	src := rl.NewRectangle(0, 0, tileW, tileH)
@@ -168,7 +171,7 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	playMapName = *flag.String("map", "demo", "Map name to play.")
+	playMapName = *flag.String("map", "village", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	flag.Parse()
 

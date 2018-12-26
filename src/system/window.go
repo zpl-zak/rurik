@@ -48,7 +48,7 @@ type RenderTarget *rl.RenderTexture2D
 // InitRenderer initializes the renderer and creates the window
 func InitRenderer(title string, winW, winH int32) {
 	rl.SetTraceLog(rl.LogError)
-	//rl.SetConfigFlags(rl.FlagWindowResizable)
+	rl.SetConfigFlags(rl.FlagWindowResizable)
 	rl.InitWindow(winW, winH, title)
 	rl.SetTargetFPS(0) // we use our own game loop timing.
 

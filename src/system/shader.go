@@ -76,7 +76,7 @@ func (prog *Program) RenderToTexture(source, target *rl.RenderTexture2D) {
 	rl.BeginShaderMode(prog.Shader)
 	rl.DrawTexturePro(
 		inp.Texture,
-		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(inp.Texture.Height)),
+		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(-inp.Texture.Height)),
 		rl.NewRectangle(0, 0, float32(target.Texture.Width), float32(target.Texture.Height)),
 		rl.Vector2{},
 		0,

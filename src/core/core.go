@@ -42,6 +42,9 @@ var (
 
 	// IsRunning tells us whether the game is still running
 	IsRunning = true
+
+	// WindowWasResized states whether window was resized at this cycle
+	WindowWasResized = false
 )
 
 const (
@@ -132,8 +135,14 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			frames = 0
 			frameCounter = 0
 		}
+		updateWindow()
 
 		for unprocessedTime > float64(system.FrameTime) {
+
+			// WindowWasResized should be reset this cycle now
+			if WindowWasResized {
+				WindowWasResized = false
+			}
 
 			UpdateEditor()
 
@@ -195,4 +204,27 @@ func setupDefaultCamera() {
 	defCam.Visible = false
 
 	CurrentMap.World.AddObject(defCam)
+}
+
+func updateWindow() {
+	width := int32(rl.GetScreenWidth())
+	height := int32(rl.GetScreenHeight())
+
+	if width != system.WindowWidth || height != system.WindowHeight {
+		// Re-create all render textures and let user know about the change
+
+		system.WindowWidth = width
+		system.WindowHeight = height
+		system.ScreenWidth = width / system.ScaleRatio
+		system.ScreenHeight = height / system.ScaleRatio
+
+		rl.UnloadRenderTexture(*WorldTexture)
+		WorldTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+
+		rl.UnloadRenderTexture(*UITexture)
+		UITexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+
+		rl.UnloadRenderTexture(*finalRenderTexture)
+		finalRenderTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+	}
 }

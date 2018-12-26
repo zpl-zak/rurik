@@ -4,6 +4,7 @@ A 2D cross-platform game engine/framework made as an experiment to explore what 
 
 This engine is in active development and its features/API is subject to change. Any PRs are welcomed, especially those improving code quality and performance.
 
+![](https://user-images.githubusercontent.com/9026786/50441112-738cd880-08f9-11e9-95fd-4e0d074bcb20.png)
 ![](https://i.imgur.com/6b98kOA.png)
 
 ## How to build

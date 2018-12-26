@@ -31,6 +31,7 @@ var (
 	drawProfiler       *system.Profiler
 	sortRenderProfiler *system.Profiler
 	lightingProfiler   *system.Profiler
+	scriptingProfiler  *system.Profiler
 
 	isProfilerCollapsed bool
 
@@ -48,6 +49,7 @@ func InitGameProfilers() {
 	drawProfiler = system.NewProfiler("draw")
 	sortRenderProfiler = system.NewProfiler("sortRender")
 	lightingProfiler = system.NewProfiler("lighting")
+	scriptingProfiler = system.NewProfiler("scripting")
 
 	frameRateString = "total time: 0 ms (0 FPS)"
 	otherTimeString = "measured time: 0 ms"
@@ -75,6 +77,7 @@ func drawProfiling() {
 
 		if !updateProfiler.IsCollapsed {
 			pushEditorElement(updateNode, collisionProfiler.DisplayString, nil)
+			pushEditorElement(updateNode, scriptingProfiler.DisplayString, nil)
 		}
 		pushEditorElement(profilerNode, musicProfiler.DisplayString, nil)
 		pushEditorElement(profilerNode, weatherProfiler.DisplayString, nil)

@@ -230,9 +230,11 @@ func FireEvent(name string, data ...interface{}) {
 	handlers, ok := EventHandlers[name]
 
 	if ok {
+		scriptingProfiler.StartInvocation()
 		for _, v := range handlers {
 			v.Call(v, data)
 		}
+		scriptingProfiler.StopInvocation()
 	}
 }
 
@@ -240,8 +242,10 @@ func fireEventOtto(name string, data ...otto.Value) {
 	handlers, ok := EventHandlers[name]
 
 	if ok {
+		scriptingProfiler.StartInvocation()
 		for _, v := range handlers {
 			v.Call(v, data)
 		}
+		scriptingProfiler.StopInvocation()
 	}
 }

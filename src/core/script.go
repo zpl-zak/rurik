@@ -61,7 +61,9 @@ func (o *Object) NewScript() {
 			ScriptingContext.Set("MainCamera", MainCamera)
 			ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
 
+			scriptingProfiler.StartInvocation()
 			_, err := ScriptingContext.Eval(o.Source)
+			scriptingProfiler.StopInvocation()
 
 			if err != nil {
 				log.Fatalf("Script error detected at '%s':%s: \n\t%s!\n", o.Name, o.FileName, err.Error())

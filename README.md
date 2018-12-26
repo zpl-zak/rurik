@@ -15,4 +15,4 @@ Navigate to `src/demo` and execute `go get ./...` to fetch all dependencies. Aft
 
 See [COPYING.md](COPYING.md) for licensing information. The demo code residing in `src/demo` directory falls under public domain and can be used freely.
 
-Used assets are licensed under their respective licenses and their usage is restricted only to this repository, unless a written permission of its authors is provided.
+Used assets are licensed under their respective licenses. Unless explicitly stated, a written permission of its authors is required for the content to be used outside of this repository.

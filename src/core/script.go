@@ -20,7 +20,6 @@ import (
 	"log"
 
 	jsoniter "github.com/json-iterator/go"
-	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -54,14 +53,10 @@ func (o *Object) NewScript() {
 		log.Printf("Loading script %s...\n", o.FileName)
 
 		if !o.WasExecuted || o.CanRepeat {
+			updateScriptingContext()
 			ScriptingContext.Set("CurrentWorld", o.world)
-			ScriptingContext.Set("CurrentMap", CurrentMap)
 			ScriptingContext.Set("Self", o)
 			ScriptingContext.Set("Instigator", inst)
-			ScriptingContext.Set("LocalPlayer", LocalPlayer)
-			ScriptingContext.Set("MainCamera", MainCamera)
-			ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
-			ScriptingContext.Set("TotalTime", rl.GetTime()*float32(TimeScale))
 
 			scriptingProfiler.StartInvocation()
 			_, err := ScriptingContext.Eval(o.Source)

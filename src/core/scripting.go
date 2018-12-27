@@ -211,6 +211,24 @@ func initScriptingSystem() {
 		return otto.Value{}
 	})
 
+	ScriptingContext.Set("GetObjectsOfType", func(call otto.FunctionCall) otto.Value {
+		className := call.Argument(0).String()
+		avoidType := false
+
+		if len(call.ArgumentList) > 1 {
+			avoidType, _ = call.Argument(1).ToBoolean()
+		}
+
+		allObjects := []*Object{}
+
+		for _, v := range Maps {
+			allObjects = append(allObjects, v.World.GetObjectsOfType(className, avoidType)...)
+		}
+
+		ret, _ := otto.ToValue(allObjects)
+		return ret
+	})
+
 	ScriptingContext.Set("fireEvent", func(call otto.FunctionCall) otto.Value {
 		eventName := call.Argument(0).String()
 
@@ -232,8 +250,7 @@ func FireEvent(name string, data ...interface{}) {
 	handlers, ok := EventHandlers[name]
 
 	if ok {
-		ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
-		ScriptingContext.Set("TotalTime", rl.GetTime()*float32(TimeScale))
+		updateScriptingContext()
 		scriptingProfiler.StartInvocation()
 		for _, v := range handlers {
 			v.Call(v, data)
@@ -246,12 +263,23 @@ func fireEventOtto(name string, data ...otto.Value) {
 	handlers, ok := EventHandlers[name]
 
 	if ok {
-		ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
-		ScriptingContext.Set("TotalTime", rl.GetTime()*float32(TimeScale))
+		updateScriptingContext()
 		scriptingProfiler.StartInvocation()
 		for _, v := range handlers {
 			v.Call(v, data)
 		}
 		scriptingProfiler.StopInvocation()
 	}
+}
+
+func updateScriptingContext() {
+	ScriptingContext.Set("FrameTime", system.FrameTime*float32(TimeScale))
+	ScriptingContext.Set("TotalTime", rl.GetTime()*float32(TimeScale))
+	ScriptingContext.Set("LocalPlayer", LocalPlayer)
+	ScriptingContext.Set("MainCamera", MainCamera)
+	ScriptingContext.Set("CurrentMap", CurrentMap)
+
+	ScriptingContext.Set("CurrentWorld", CurrentMap.World)
+	ScriptingContext.Set("Self", nil)
+	ScriptingContext.Set("Instigator", nil)
 }

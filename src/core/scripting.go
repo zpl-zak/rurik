@@ -211,7 +211,7 @@ func initScriptingSystem() {
 		return otto.Value{}
 	})
 
-	ScriptingContext.Set("GetObjectsOfType", func(call otto.FunctionCall) otto.Value {
+	ScriptingContext.Set("getObjectsOfType", func(call otto.FunctionCall) otto.Value {
 		className := call.Argument(0).String()
 		avoidType := false
 

@@ -175,9 +175,11 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	playMapName = *flag.String("map", "village", "Map name to play.")
+	mapName := flag.String("map", "village", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	flag.Parse()
+
+	playMapName = *mapName
 
 	if core.DebugMode {
 		core.DebugMode = *dbgMode == 1

@@ -68,6 +68,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.InitInput()
 	rl.InitAudioDevice()
 
+	InitGameProfilers()
 	initScriptingSystem()
 	initObjectTypes()
 	InitDatabase()
@@ -88,7 +89,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 	var frameCounter float64
 	var frames int32
 
-	InitGameProfilers()
 	defer shutdown()
 
 	if CurrentGameMode == nil {

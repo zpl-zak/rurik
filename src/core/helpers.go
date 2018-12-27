@@ -18,6 +18,8 @@ package core
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 
 	colorful "github.com/lucasb-eyer/go-colorful"
 	"github.com/solarlune/resolv/resolv"
@@ -70,6 +72,14 @@ func scalarLerp(v1, v2 float32, amount float32) (result float32) {
 	result = v1 + amount*(v2-v1)
 
 	return result
+}
+
+func stringToVec2(inp string) rl.Vector2 {
+	comps := strings.Split(inp, " ")
+	x, _ := strconv.ParseFloat(comps[0], 32)
+	y, _ := strconv.ParseFloat(comps[1], 32)
+
+	return rl.NewVector2(float32(x), float32(y))
 }
 
 func lerpColor(a, b rl.Vector3, t float64) rl.Vector3 {

@@ -129,12 +129,15 @@ type defaultMapData struct {
 type objectData interface{}
 
 type defaultObjectData struct {
-	Name     string `json:"objectName"`
-	Type     string `json:"class"`
-	Position rl.Vector2
-	Movement rl.Vector2
-	Facing   rl.Vector2
-	Custom   string `json:"custom"`
+	Name        string `json:"objectName"`
+	Type        string `json:"class"`
+	Position    rl.Vector2
+	Movement    rl.Vector2
+	Facing      rl.Vector2
+	Custom      string   `json:"custom"`
+	Color       rl.Color `json:"color"`
+	Attenuation float32  `json:"atten"`
+	Radius      float32  `json:"rad"`
 }
 
 func defaultSaveProvider(state *GameState) defaultSaveData {
@@ -157,12 +160,15 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 			}
 
 			obj := defaultObjectData{
-				Name:     b.Name,
-				Type:     b.Class,
-				Position: b.Position,
-				Movement: b.Movement,
-				Facing:   b.Facing,
-				Custom:   b.Serialize(b),
+				Name:        b.Name,
+				Type:        b.Class,
+				Position:    b.Position,
+				Movement:    b.Movement,
+				Facing:      b.Facing,
+				Color:       b.Color,
+				Attenuation: b.Attenuation,
+				Radius:      b.Radius,
+				Custom:      b.Serialize(b),
 			}
 
 			mapData.Objects = append(mapData.Objects, obj)
@@ -202,6 +208,9 @@ func defaultLoadProvider(state *GameState) {
 			o.Position = wo.Position
 			o.Movement = wo.Movement
 			o.Facing = wo.Facing
+			o.Color = wo.Color
+			o.Attenuation = wo.Attenuation
+			o.Radius = wo.Radius
 			o.Deserialize(o, wo.Custom)
 		}
 

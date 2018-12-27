@@ -54,7 +54,7 @@ func updateLightingSolution() {
 }
 
 func populateAdditiveLayer() {
-	objs := CurrentMap.World.GetObjectsOfType("light", false)
+	objs := CurrentMap.World.Objects
 
 	rl.BeginTextureMode(*additiveLightTexture)
 	{
@@ -62,11 +62,15 @@ func populateAdditiveLayer() {
 		rl.BeginMode2D(RenderCamera)
 		{
 			for _, o := range objs {
+				if !o.HasSpecularLight {
+					continue
+				}
+
 				col := o.Color
 				col.A /= 2
 				rl.DrawCircleGradient(
-					int32(o.Position.X),
-					int32(o.Position.Y),
+					int32(o.Position.X+16+o.Offset.X),
+					int32(o.Position.Y-16+o.Offset.Y),
 					float32(o.Radius),
 					col,
 					rl.Blank,
@@ -79,7 +83,7 @@ func populateAdditiveLayer() {
 }
 
 func populateMultiplicativeLight() {
-	objs := CurrentMap.World.GetObjectsOfType("light", false)
+	objs := CurrentMap.World.Objects
 
 	rl.BeginTextureMode(*multiplicativeLightTexture)
 	{
@@ -90,9 +94,13 @@ func populateMultiplicativeLight() {
 			rl.BeginMode2D(RenderCamera)
 			{
 				for _, o := range objs {
+					if !o.HasLight {
+						continue
+					}
+
 					rl.DrawCircleGradient(
-						int32(o.Position.X),
-						int32(o.Position.Y),
+						int32(o.Position.X+16+o.Offset.X),
+						int32(o.Position.Y-16+o.Offset.Y),
 						o.Attenuation,
 						o.Color,
 						rl.Blank,

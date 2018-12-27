@@ -21,6 +21,7 @@ import (
 	"log"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 
 	goaseprite "github.com/solarlune/GoAseprite"
@@ -50,35 +51,40 @@ type World struct {
 
 // Object is map object with logic and data
 type Object struct {
-	GID           int
-	Name          string
-	Class         string
-	Visible       bool
-	DebugVisible  bool
-	Position      rl.Vector2
-	Movement      rl.Vector2
-	Rotation      float32
-	Facing        rl.Vector2
-	Size          []int32
-	Meta          *tiled.Object
-	Depends       []*Object
-	Target        *Object
-	Proxy         *Object
-	ProxyName     string
-	FileName      string
-	Texture       *rl.Texture2D
-	Ase           *goaseprite.File
-	LastTrigger   float32
-	AutoStart     bool
-	IsCollidable  bool
-	CollisionType string
-	Started       bool
-	WasExecuted   bool
-	CanRepeat     bool
-	IsPersistent  bool
-	Fullbright    bool
-	TintColor     rl.Color
-	Radius        float32
+	GID              int
+	Name             string
+	Class            string
+	Visible          bool
+	DebugVisible     bool
+	Position         rl.Vector2
+	Movement         rl.Vector2
+	Rotation         float32
+	Facing           rl.Vector2
+	Size             []int32
+	Meta             *tiled.Object
+	Depends          []*Object
+	Target           *Object
+	Proxy            *Object
+	ProxyName        string
+	FileName         string
+	Texture          *rl.Texture2D
+	Ase              *goaseprite.File
+	LastTrigger      float32
+	AutoStart        bool
+	IsCollidable     bool
+	CollisionType    string
+	Started          bool
+	WasExecuted      bool
+	CanRepeat        bool
+	IsPersistent     bool
+	Fullbright       bool
+	TintColor        rl.Color
+	Color            rl.Color
+	Attenuation      float32
+	Radius           float32
+	HasLight         bool
+	HasSpecularLight bool
+	Offset           rl.Vector2
 
 	// Internal fields
 	WasUpdated bool
@@ -106,7 +112,6 @@ type Object struct {
 	anim
 	area
 	tile
-	light
 }
 
 func (w *World) flushObjects() {
@@ -126,7 +131,6 @@ func initObjectTypes() {
 		"anim":   "Anim",
 		"area":   "Area",
 		"tile":   "Tile",
-		"light":  "Light",
 	}
 }
 
@@ -224,23 +228,60 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		tint = rl.Blank
 	}
 
+	hexColor := o.Properties.GetString("color")
+	var color rl.Color
+
+	if hexColor != "" {
+		col, _ := getColorFromHex(hexColor)
+		color = vec3ToColor(col)
+	}
+
+	txtRadius := o.Properties.GetString("radius")
+	var radius float32
+
+	if txtRadius != "" {
+		rad, _ := strconv.ParseFloat(txtRadius, 32)
+		radius = float32(rad)
+	}
+
+	txtAttenuation := o.Properties.GetString("atten")
+	var attenuation float32
+
+	if txtAttenuation != "" {
+		atten, _ := strconv.ParseFloat(txtAttenuation, 32)
+		attenuation = float32(atten)
+	}
+
+	txtOffset := o.Properties.GetString("offset")
+	var offset rl.Vector2
+
+	if txtOffset != "" {
+		offset = stringToVec2(txtOffset)
+	}
+
 	return &Object{
-		GID:           idx,
-		world:         w,
-		Name:          o.Name,
-		Class:         o.Type,
-		Visible:       true,
-		DebugVisible:  DefaultDebugShowAll,
-		Meta:          o,
-		Depends:       []*Object{},
-		Rotation:      float32(o.Rotation),
-		CollisionType: o.Properties.GetString("colType"),
-		AutoStart:     o.Properties.GetString("autostart") == "1",
-		CanRepeat:     o.Properties.GetString("canRepeat") == "1",
-		Fullbright:    o.Properties.GetString("fullbright") == "1",
-		FileName:      o.Properties.GetString("file"),
-		TintColor:     tint,
-		IsPersistent:  true,
+		GID:              idx,
+		world:            w,
+		Name:             o.Name,
+		Class:            o.Type,
+		Visible:          true,
+		DebugVisible:     DefaultDebugShowAll,
+		Meta:             o,
+		Depends:          []*Object{},
+		Rotation:         float32(o.Rotation),
+		CollisionType:    o.Properties.GetString("colType"),
+		AutoStart:        o.Properties.GetString("autostart") == "1",
+		CanRepeat:        o.Properties.GetString("canRepeat") == "1",
+		Fullbright:       o.Properties.GetString("fullbright") == "1",
+		HasLight:         o.Properties.GetString("light") == "1",
+		HasSpecularLight: o.Properties.GetString("specular") == "1",
+		FileName:         o.Properties.GetString("file"),
+		TintColor:        tint,
+		Color:            color,
+		Attenuation:      attenuation,
+		Radius:           radius,
+		Offset:           offset,
+		IsPersistent:     true,
 
 		// Callbacks
 		Finish:          func(o *Object) {},

@@ -123,9 +123,11 @@ func (g *demoGameMode) Update() {
 		if core.CurrentMap != nil {
 			w := core.CurrentMap.World
 			name := fmt.Sprintf("dynobj:%d", dynobjCounter)
-			newObject := w.NewObjectPro(name, "light")
+			newObject := w.NewObjectPro(name, "target")
 			newObject.Position = core.LocalPlayer.Position
 			newObject.Color = rl.Pink
+			newObject.HasLight = true
+			newObject.HasSpecularLight = true
 			newObject.Attenuation = 256
 			newObject.Radius = 8
 			w.AddObject(newObject)

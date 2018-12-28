@@ -1,1 +1,1 @@
-build/rurik.exe "$*"
+build/rurik.exe "$@"

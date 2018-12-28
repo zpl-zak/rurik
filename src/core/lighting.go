@@ -48,9 +48,9 @@ func updateLightingSolution() {
 	// Apply lighting layers
 	// PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
 	// PushRenderTarget(origObjectsLightTexture, false, rl.BlendAlpha)
-	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
-	//system.CopyToRenderTarget(multiplicativeLightTexture, WorldTexture, true)
+	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
+	//system.CopyToRenderTarget(additiveLightTexture, WorldTexture, true)
 }
 
 func populateAdditiveLayer() {
@@ -67,7 +67,6 @@ func populateAdditiveLayer() {
 				}
 
 				col := o.Color
-				col.A /= 2
 				rl.DrawCircleGradient(
 					int32(o.Position.X+16+o.Offset.X),
 					int32(o.Position.Y-16+o.Offset.Y),

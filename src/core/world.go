@@ -85,6 +85,7 @@ type Object struct {
 	HasLight         bool
 	HasSpecularLight bool
 	Offset           rl.Vector2
+	LocalTileset     *tilesetData
 
 	// Internal fields
 	WasUpdated bool

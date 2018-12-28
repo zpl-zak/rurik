@@ -470,16 +470,7 @@
   <object id="42" gid="1073741829" x="1952" y="1502" width="32" height="32" rotation="180"/>
   <object id="43" gid="13" x="1959" y="1517" width="32" height="32"/>
   <object id="44" gid="255" x="1184" y="1554" width="32" height="32"/>
-  <object id="46" gid="334" x="1439.25" y="1769.75" width="32" height="32">
-   <properties>
-    <property name="atten" type="float" value="512"/>
-    <property name="color" type="color" value="#fff44601"/>
-    <property name="light" value="1"/>
-    <property name="offset" value="0 4"/>
-    <property name="radius" type="float" value="32"/>
-    <property name="specular" value="1"/>
-   </properties>
-  </object>
+  <object id="46" template="../../templates/lantern.tx" x="1439.25" y="1769.75"/>
   <object id="51" gid="166" x="1243.75" y="1388.38" width="32" height="32"/>
   <object id="52" gid="167" x="1316.13" y="1388.63" width="32" height="32"/>
   <object id="61" name="main_camera" type="cam" x="1370" y="1591.5">

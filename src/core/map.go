@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path"
 
 	tiled "github.com/zaklaus/go-tiled"
@@ -246,7 +247,7 @@ func ReloadMap(oldMap *Map) *Map {
 	return LoadMap(oldMap.mapName)
 }
 
-func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
+func (m *Map) loadMapTilesetData(tilesetName string) *tilesetData {
 	tilesetName = path.Base(tilesetName)
 
 	val, ok := m.tilesets[tilesetName]
@@ -255,6 +256,12 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 		return val
 	}
 
+	loadedTileset := loadTilesetData(tilesetName)
+	m.tilesets[tilesetName] = loadedTileset
+	return loadedTileset
+}
+
+func loadTilesetData(tilesetName string) *tilesetData {
 	data, err := ioutil.ReadFile(fmt.Sprintf("assets/tilesets/%s", tilesetName))
 
 	if err != nil {
@@ -274,8 +281,12 @@ func (m *Map) loadTilesetData(tilesetName string) *tilesetData {
 	loadedTileset.Image = system.GetTexture(fmt.Sprintf("../tilesets/%s", loadedTileset.ImageInfo.Source))
 	loadedTileset.IsCollapsed = true
 
-	m.tilesets[tilesetName] = loadedTileset
 	return loadedTileset
+}
+
+type objectTemplate struct {
+	Tileset tiled.Tileset `xml:"tileset"`
+	Object  tiled.Object  `xml:"object"`
 }
 
 // CreateObjects iterates over all object definitions and spawns objects
@@ -287,7 +298,57 @@ func (m *Map) CreateObjects(w *World) {
 				object.Type = "col"
 			}
 
+			var possibleTileset tiled.Tileset
+
+			if object.Template != "" {
+				object.Template = path.Join("assets", "templates", path.Base(object.Template))
+				fmt.Printf("Creating object using template: %s...\n", object.Template)
+
+				_, err := os.Stat(object.Template)
+				if os.IsNotExist(err) {
+					log.Fatalf("Could not load template %s!\n", object.Template)
+					return
+				}
+
+				tplData, _ := ioutil.ReadFile(object.Template)
+
+				var tpl objectTemplate
+				xml.Unmarshal(tplData, &tpl)
+				tplObject := tpl.Object
+
+				for _, prop := range tplObject.Properties {
+					isNew := true
+					for _, newProp := range object.Properties {
+						if prop.Name == newProp.Name {
+							isNew = false
+							break
+						}
+					}
+
+					if isNew {
+						object.Properties = append(object.Properties, prop)
+					}
+				}
+
+				if tplObject.GID > 0 && object.GID == 0 {
+					object.GID = tplObject.GID
+					possibleTileset = tpl.Tileset
+				}
+
+				if object.Width == 0 {
+					object.Width = tplObject.Width
+				}
+
+				if object.Height == 0 {
+					object.Height = tplObject.Height
+				}
+			}
+
 			obj := w.spawnObject(object)
+
+			if possibleTileset.FirstGID > 0 {
+				obj.LocalTileset = loadTilesetData(path.Base(possibleTileset.Source))
+			}
 
 			if obj != nil {
 				w.AddObject(obj)
@@ -318,7 +379,7 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 				continue
 			}
 
-			tilesetData := m.loadTilesetData(tile.Tileset.Source)
+			tilesetData := m.loadMapTilesetData(tile.Tileset.Source)
 
 			if tilesetData == nil {
 				log.Fatalf("Tileset data '%s' points to nil reference!\n", tile.Tileset.Source)
@@ -382,8 +443,11 @@ func (m *Map) GetTileDataFromID(tileID int) (rl.Rectangle, *rl.Texture2D) {
 		}
 	}
 
-	tilesetInfo := m.tilemap.Tilesets[tilesetID]
-	tileset := m.loadTilesetData(tilesetInfo.Source)
+	return GetFinalTileDataFromID(tileID, loadTilesetData(path.Base((m.tilemap.Tilesets[tilesetID].Source))))
+}
+
+// GetFinalTileDataFromID retrieves the final TileData from a specific tileset
+func GetFinalTileDataFromID(tileID int, tileset *tilesetData) (rl.Rectangle, *rl.Texture2D) {
 	tileRow := int(tileset.ImageInfo.Width) / int(tileset.TileWidth)
 
 	tileX := float32(tileID%tileRow) * float32(tileset.TileWidth)

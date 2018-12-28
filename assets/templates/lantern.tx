@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<template>
+ <tileset firstgid="1" source="../tilesets/MageCity.tsx"/>
+ <object gid="334" width="32" height="32">
+  <properties>
+   <property name="atten" type="float" value="512"/>
+   <property name="color" type="color" value="#fff44601"/>
+   <property name="light" value="1"/>
+   <property name="offset" value="0 4"/>
+   <property name="radius" type="float" value="32"/>
+   <property name="specular" value="1"/>
+  </properties>
+ </object>
+</template>

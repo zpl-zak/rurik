@@ -17,6 +17,7 @@
 package core
 
 import (
+	"log"
 	"math"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -72,7 +73,19 @@ func (o *Object) NewTile() {
 	}
 
 	o.Draw = func(o *Object) {
-		source, tex := CurrentMap.GetTileDataFromID(o.TileID - 1)
+		var source rl.Rectangle
+		var tex *rl.Texture2D
+		if o.LocalTileset != nil {
+			source, tex = GetFinalTileDataFromID(o.TileID-1, o.LocalTileset)
+		} else {
+			source, tex = CurrentMap.GetTileDataFromID(o.TileID - 1)
+		}
+
+		if tex == nil {
+			log.Fatalln("Can't render a tile, tileset not found!")
+			return
+		}
+
 		dest := rl.NewRectangle(o.Position.X, o.Position.Y, float32(o.Width), float32(o.Height))
 
 		if DebugMode && o.DebugVisible {

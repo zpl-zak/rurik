@@ -3,6 +3,8 @@ package main
 import (
 	"flag"
 	"fmt"
+	"path"
+	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -182,6 +184,8 @@ func main() {
 	flag.Parse()
 
 	playMapName = *mapName
+	playMapName = path.Base(playMapName)
+	playMapName = strings.Split(playMapName, ".")[0]
 
 	if core.DebugMode {
 		core.DebugMode = *dbgMode == 1

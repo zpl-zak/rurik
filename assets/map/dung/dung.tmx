@@ -220,11 +220,11 @@
   <object id="7" name="player" type="player" x="1442.5" y="1587.5">
    <point/>
   </object>
-  <object id="11" template="../../templates/lantern.tx" x="1309" y="1585">
+  <object id="11" template="../../templates/lantern.tx" x="1309.5" y="1579">
    <properties>
     <property name="color" type="color" value="#ff0055ff"/>
    </properties>
   </object>
-  <object id="12" template="../../templates/lantern.tx" x="1280" y="1573.5"/>
+  <object id="12" template="../../templates/lantern.tx" x="1280.5" y="1573.5"/>
  </objectgroup>
 </map>

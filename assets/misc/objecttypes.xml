@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objecttypes>
+ <objecttype name="col" color="#7aa47b"/>
+ <objecttype name="light" color="#7079a4"/>
+ <objecttype name="player" color="#8ba42f"/>
+</objecttypes>

@@ -443,7 +443,7 @@ func (m *Map) GetTileDataFromID(tileID int) (rl.Rectangle, *rl.Texture2D) {
 		}
 	}
 
-	return GetFinalTileDataFromID(tileID, loadTilesetData(path.Base((m.tilemap.Tilesets[tilesetID].Source))))
+	return GetFinalTileDataFromID(tileID, m.loadMapTilesetData(path.Base((m.tilemap.Tilesets[tilesetID].Source))))
 }
 
 // GetFinalTileDataFromID retrieves the final TileData from a specific tileset

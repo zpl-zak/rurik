@@ -486,17 +486,7 @@
     <property name="specular" value="1"/>
    </properties>
   </object>
-  <object id="67" gid="86" x="1151.5" y="1619.25" width="32" height="32">
-   <properties>
-    <property name="atten" type="float" value="128"/>
-    <property name="color" type="color" value="#ffd02326"/>
-    <property name="fullbright" type="int" value="1"/>
-    <property name="light" value="1"/>
-    <property name="radius" type="float" value="32"/>
-    <property name="specular" value="1"/>
-    <property name="tint" type="color" value="#ffcf1b1e"/>
-   </properties>
-  </object>
+  <object id="67" template="../../templates/potion_hp.tx" x="1151.5" y="1619.25"/>
  </objectgroup>
  <objectgroup id="6" name="Cols" locked="1" opacity="0.8">
   <properties>

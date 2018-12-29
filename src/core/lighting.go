@@ -48,8 +48,8 @@ func updateLightingSolution() {
 	// Apply lighting layers
 	// PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
 	// PushRenderTarget(origObjectsLightTexture, false, rl.BlendAlpha)
-	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
+	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 	//system.CopyToRenderTarget(additiveLightTexture, WorldTexture, true)
 }
 

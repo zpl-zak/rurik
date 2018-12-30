@@ -61,6 +61,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.ScreenWidth = screenW
 	system.ScreenHeight = screenH
 	system.ScaleRatio = system.WindowWidth / system.ScreenWidth
+	updateSystemRenderTargets()
 
 	WorldTexture = system.CreateRenderTarget(screenW, screenH)
 	UITexture = system.CreateRenderTarget(screenW, screenH)
@@ -214,6 +215,7 @@ func setupDefaultCamera() {
 }
 
 func updateWindow() {
+	return
 	width := int32(rl.GetScreenWidth())
 	height := int32(rl.GetScreenHeight())
 
@@ -226,15 +228,14 @@ func updateWindow() {
 		system.ScreenHeight = height / system.ScaleRatio
 		WindowWasResized = true
 
-		rl.UnloadRenderTexture(*WorldTexture)
+		rl.UnloadRenderTexture(WorldTexture)
 		WorldTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 
-		rl.UnloadRenderTexture(*UITexture)
+		rl.UnloadRenderTexture(UITexture)
 		UITexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 
-		rl.UnloadRenderTexture(*finalRenderTexture)
+		rl.UnloadRenderTexture(finalRenderTexture)
 		finalRenderTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-
-		system.UpdateSystemRenderTargets()
+		updateSystemRenderTargets()
 	}
 }

@@ -33,6 +33,11 @@ var (
 
 	// RenderCamera is a read-only camera used only for rendering
 	RenderCamera rl.Camera2D
+
+	nullTarget system.RenderTarget
+
+	blurTextures []system.RenderTarget
+	blurProgram  system.Program
 )
 
 type renderQueueEntry struct {
@@ -53,7 +58,7 @@ func PushRenderTarget(tex system.RenderTarget, flipY bool, blendMode rl.BlendMod
 func renderGame() {
 	rl.BeginDrawing()
 	{ // Render the game world
-		rl.BeginTextureMode(*WorldTexture)
+		rl.BeginTextureMode(WorldTexture)
 		{
 			drawProfiler.StartInvocation()
 			{
@@ -65,12 +70,8 @@ func renderGame() {
 		}
 		rl.EndTextureMode()
 
-		lightingProfiler.StartInvocation()
-		updateLightingSolution()
-		lightingProfiler.StopInvocation()
-
 		// Render all UI elements
-		rl.BeginTextureMode(*UITexture)
+		rl.BeginTextureMode(UITexture)
 		{
 			rl.ClearBackground(rl.Blank)
 			CurrentGameMode.DrawUI()
@@ -82,12 +83,12 @@ func renderGame() {
 		CurrentGameMode.PostDraw()
 
 		// Blend results into one final texture
-		rl.BeginTextureMode(*finalRenderTexture)
+		rl.BeginTextureMode(finalRenderTexture)
 		{
+			rl.ClearBackground(rl.Black)
 			rl.DrawTexture(WorldTexture.Texture, 0, 0, rl.White)
 
 			// process the render queue
-
 			for _, r := range renderTextureQueue {
 				rl.BeginBlendMode(r.blendMode)
 				{
@@ -127,4 +128,35 @@ func renderGame() {
 	)
 
 	renderTextureQueue = []renderQueueEntry{}
+}
+
+// BlurRenderTarget blurs the render target
+func BlurRenderTarget(tex system.RenderTarget, maxIter int) {
+	if blurProgram.Shader.ID == 0 {
+		blurProgram = system.NewProgram("", "assets/shaders/blur.fs")
+	}
+
+	var hor int32 = 1
+	srcTex := tex
+
+	for i := 0; i < maxIter; i++ {
+		blurProgram.SetShaderValuei("horizontal", []int32{hor}, 1)
+		blurProgram.RenderToTexture(srcTex, blurTextures[hor])
+		srcTex = blurTextures[hor]
+		hor = 1 - hor
+	}
+
+	system.CopyToRenderTarget(srcTex, tex, hor == 1)
+}
+
+func updateSystemRenderTargets() {
+	if blurTextures != nil {
+		rl.UnloadRenderTexture(blurTextures[0])
+		rl.UnloadRenderTexture(blurTextures[1])
+	}
+
+	blurTextures = []system.RenderTarget{
+		system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
+		system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
+	}
 }

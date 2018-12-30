@@ -26,19 +26,28 @@ var (
 	multiplicativeLightTexture system.RenderTarget
 )
 
-func updateLightingSolution() {
-	if additiveLightTexture == nil || WindowWasResized {
-		if additiveLightTexture != nil {
-			rl.UnloadRenderTexture(*additiveLightTexture)
-			rl.UnloadRenderTexture(*multiplicativeLightTexture)
+// UpdateLightingSolution generates all lightmaps and pushes them onto the blending stack
+// This is an example implementation of 2D lighting inside of an engine, however due to the
+// nature of this code, the whole lighting solution can be considered as an add-on, an optional
+// feature you can easily enable/disable at your leisure. You can use this code directly, or create
+// a different variation of it / develop your own solution. The principle behind this design is to
+// show the modularity and versatility of the engine, giving you the power to tweak the game
+// any means possible.
+func UpdateLightingSolution() {
+	if additiveLightTexture.ID == 0 || WindowWasResized {
+		if additiveLightTexture.ID != 0 {
+			rl.UnloadRenderTexture(additiveLightTexture)
+			rl.UnloadRenderTexture(multiplicativeLightTexture)
 		}
 
 		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 	}
 
+	lightingProfiler.StartInvocation()
 	populateAdditiveLayer()
 	populateMultiplicativeLight()
+	lightingProfiler.StopInvocation()
 
 	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
@@ -47,7 +56,7 @@ func updateLightingSolution() {
 func populateAdditiveLayer() {
 	objs := CurrentMap.World.Objects
 
-	rl.BeginTextureMode(*additiveLightTexture)
+	rl.BeginTextureMode(additiveLightTexture)
 	{
 		rl.ClearBackground(rl.Black)
 		rl.BeginMode2D(RenderCamera)
@@ -75,7 +84,7 @@ func populateAdditiveLayer() {
 func populateMultiplicativeLight() {
 	objs := CurrentMap.World.Objects
 
-	rl.BeginTextureMode(*multiplicativeLightTexture)
+	rl.BeginTextureMode(multiplicativeLightTexture)
 	{
 		rl.ClearBackground(SkyColor)
 

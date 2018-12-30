@@ -38,15 +38,10 @@ var (
 
 	// FrameTime is the target update time
 	FrameTime float32 = 1 / 60.0
-
-	nullTarget RenderTarget
-
-	blurTextures []RenderTarget
-	blurProgram  Program
 )
 
 // RenderTarget describes our render texture
-type RenderTarget *rl.RenderTexture2D
+type RenderTarget = rl.RenderTexture2D
 
 // InitRenderer initializes the renderer and creates the window
 func InitRenderer(title string, winW, winH int32) {
@@ -57,74 +52,32 @@ func InitRenderer(title string, winW, winH int32) {
 
 	WindowWidth = winW
 	WindowHeight = winH
-
-	UpdateSystemRenderTargets()
-}
-
-// UpdateSystemRenderTargets updates all system render targets
-func UpdateSystemRenderTargets() {
-	if blurTextures != nil {
-		rl.UnloadRenderTexture(*blurTextures[0])
-		rl.UnloadRenderTexture(*blurTextures[1])
-	}
-
-	blurTextures = []RenderTarget{
-		CreateRenderTarget(ScreenWidth, ScreenHeight),
-		CreateRenderTarget(ScreenWidth, ScreenHeight),
-	}
 }
 
 // CreateRenderTarget generates a render target used by the game
-func CreateRenderTarget(screenW, screenH int32) *rl.RenderTexture2D {
+func CreateRenderTarget(screenW, screenH int32) rl.RenderTexture2D {
 	screenTexture := rl.LoadRenderTexture(screenW, screenH)
 	rl.SetTextureFilter(screenTexture.Texture, rl.FilterPoint)
 
-	return &screenTexture
+	return screenTexture
 }
 
 // CopyToRenderTarget copies one target to another
-func CopyToRenderTarget(source, dest *rl.RenderTexture2D, flipY bool) {
-	if nullTarget == nil {
-		nullTarget = CreateRenderTarget(ScreenWidth, ScreenHeight)
-	}
-
-	inp := source
-	if source == nil {
-		inp = nullTarget
-	}
-
+func CopyToRenderTarget(source, dest RenderTarget, flipY bool) {
 	var neg float32 = 1.0
 	if flipY {
 		neg = -1.0
 	}
 
-	rl.BeginTextureMode(*dest)
+	rl.BeginTextureMode(dest)
+	rl.ClearBackground(rl.Black)
 	rl.DrawTexturePro(
-		inp.Texture,
-		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(inp.Texture.Height)*neg),
+		source.Texture,
+		rl.NewRectangle(0, 0, float32(source.Texture.Width), float32(source.Texture.Height)*neg),
 		rl.NewRectangle(0, 0, float32(dest.Texture.Width), float32(dest.Texture.Height)),
 		rl.NewVector2(0, 0),
 		0,
 		rl.White,
 	)
 	rl.EndTextureMode()
-}
-
-// BlurRenderTarget blurs the render target
-func BlurRenderTarget(tex RenderTarget, maxIter int) {
-	if blurProgram.Shader.ID == 0 {
-		blurProgram = NewProgram("", "assets/shaders/blur.fs")
-	}
-
-	var hor int32 = 1
-	//srcTex := tex
-
-	for i := 0; i < maxIter; i++ {
-		blurProgram.SetShaderValuei("horizontal", []int32{hor}, 1)
-		//blurProgram.RenderToTexture(srcTex, blurTextures[hor])
-		//srcTex = blurTextures[hor]
-		hor = 1 - hor
-	}
-
-	CopyToRenderTarget(tex, tex, hor == 1)
 }

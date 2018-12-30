@@ -32,9 +32,9 @@ func newBloom() *bloomProg {
 
 func (b *bloomProg) Apply() {
 	if core.WindowWasResized {
-		rl.UnloadRenderTexture(*b.BlurTexture[0])
-		rl.UnloadRenderTexture(*b.BlurTexture[1])
-		rl.UnloadRenderTexture(*b.TresholdTexture)
+		rl.UnloadRenderTexture(b.BlurTexture[0])
+		rl.UnloadRenderTexture(b.BlurTexture[1])
+		rl.UnloadRenderTexture(b.TresholdTexture)
 
 		blurTextures := []system.RenderTarget{
 			system.CreateRenderTarget(screenW, screenH),
@@ -50,7 +50,6 @@ func (b *bloomProg) Apply() {
 
 	b.ExtractColors.RenderToTexture(core.WorldTexture, b.TresholdTexture)
 
-	system.BlurRenderTarget(b.TresholdTexture, 10)
-
+	core.BlurRenderTarget(b.TresholdTexture, 10)
 	core.PushRenderTarget(b.TresholdTexture, false, rl.BlendAdditive)
 }

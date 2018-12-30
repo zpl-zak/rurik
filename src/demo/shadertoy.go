@@ -19,7 +19,7 @@ func newShadertoy() *shadertoyProg {
 
 func (s *shadertoyProg) Apply() {
 	s.ShadertoyShader.SetShaderValuei("iFrame", []int32{s.frameIndex}, 1)
-	s.ShadertoyShader.RenderToTexture(nil, s.RenderTexture)
+	s.ShadertoyShader.RenderToTexture(system.RenderTarget{}, s.RenderTexture)
 	//system.CopyToRenderTarget(s.RenderTexture, core.WorldTexture)
 
 	s.frameIndex++

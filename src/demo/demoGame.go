@@ -51,7 +51,7 @@ func (g *demoGameMode) Init() {
 
 func initShaders() {
 	bloom = newBloom()
-	shadertoy = newShadertoy()
+	//shadertoy = newShadertoy()
 	minimap = newMinimap()
 }
 
@@ -85,6 +85,9 @@ func (g *demoGameMode) DrawUI() {
 }
 
 func (g *demoGameMode) PostDraw() {
+	// Generates and applies the lightmaps
+	core.UpdateLightingSolution()
+
 	bloom.Apply()
 	minimap.Apply()
 }

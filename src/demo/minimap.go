@@ -23,8 +23,9 @@ func (m *minimapProg) Apply() {
 		Y: float32(int(-core.MainCamera.Position.Y + float32(320)/2)),
 	}
 
-	rl.BeginTextureMode(*m.RenderTexture)
+	rl.BeginTextureMode(m.RenderTexture)
 	{
+		rl.ClearBackground(rl.Black)
 		rl.BeginMode2D(minimapCamera)
 		{
 			dbg := core.DebugMode
@@ -39,5 +40,5 @@ func (m *minimapProg) Apply() {
 	}
 	rl.EndTextureMode()
 
-	// system.BlurRenderTarget(m.RenderTexture, 128)
+	core.BlurRenderTarget(m.RenderTexture, 128)
 }

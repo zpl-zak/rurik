@@ -61,22 +61,14 @@ func NewProgramFromCode(vsCode, fsCode string) Program {
 }
 
 // RenderToTexture renders the current render target to an output
-func (prog *Program) RenderToTexture(source, target *rl.RenderTexture2D) {
-	if nullTarget == nil {
-		nullTarget = CreateRenderTarget(ScreenWidth, ScreenHeight)
-	}
-
-	inp := source
-	if source == nil {
-		inp = nullTarget
-	}
-
-	prog.UpdateDefaultUniforms()
-	rl.BeginTextureMode(*target)
+func (prog *Program) RenderToTexture(source, target RenderTarget) {
+	rl.BeginTextureMode(target)
+	rl.ClearBackground(rl.Black)
 	rl.BeginShaderMode(prog.Shader)
+	prog.UpdateDefaultUniforms()
 	rl.DrawTexturePro(
-		inp.Texture,
-		rl.NewRectangle(0, 0, float32(inp.Texture.Width), float32(inp.Texture.Height)),
+		source.Texture,
+		rl.NewRectangle(0, 0, float32(source.Texture.Width), float32(source.Texture.Height)),
 		rl.NewRectangle(0, 0, float32(target.Texture.Width), float32(target.Texture.Height)),
 		rl.Vector2{},
 		0,

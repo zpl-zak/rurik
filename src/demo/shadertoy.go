@@ -1,6 +1,7 @@
 package main
 
 import (
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
 )
@@ -12,14 +13,17 @@ type shadertoyProg struct {
 }
 
 func newShadertoy() *shadertoyProg {
-	return &shadertoyProg{
-		RenderTexture:   system.CreateRenderTarget(320, 320),
+	v := &shadertoyProg{
+		RenderTexture:   system.CreateRenderTarget(96*6, 96*6),
 		ShadertoyShader: system.NewProgramFromCode("", shadertoyHeaderCode+shadertoySrcCode),
 	}
+
+	rl.SetTextureFilter(v.RenderTexture.Texture, rl.FilterTrilinear)
+
+	return v
 }
 
 func (s *shadertoyProg) Apply() {
-	s.ShadertoyShader.SetShaderValuei("iFrame", []int32{s.frameIndex}, 1)
 	s.ShadertoyShader.RenderToTexture(core.NullTexture, s.RenderTexture)
 
 	s.frameIndex++
@@ -47,217 +51,114 @@ uniform vec2 size = vec2(640, 480);
 
 `
 	shadertoySrcCode = `
-// srtuss, 2013
-
-#define ITER 20
-
-vec2 circuit(vec2 p)
+// https://www.shadertoy.com/view/4t2SRh
+float sdfCircle(vec2 center, float radius, vec2 coord )
 {
-	p = fract(p);
-	float r = 0.123;
-	float v = 0.0, g = 0.0;
-	float test = 0.0;
-	r = fract(r * 9184.928);
-	float cp, d;
-	
-	d = p.x;
-	g += pow(clamp(1.0 - abs(d), 0.0, 1.0), 160.0);
-	d = p.y;
-	g += pow(clamp(1.0 - abs(d), 0.0, 1.0), 160.0);
-	d = p.x - 1.0;
-	g += pow(clamp(1.0 - abs(d), 0.0, 1.0), 160.0);
-	d = p.y - 1.0;
-	g += pow(clamp(1.0 - abs(d), 0.0, 1.0), 160.0);
-	
-	for(int i = 0; i < ITER; i ++)
-	{
-		cp = 0.5 + (r - 0.5) * 0.9;
-		d = p.x - cp;
-		g += pow(clamp(1.0 - abs(d), 0.0, 1.0), 160.0);
-		if(d > 0.0)
-		{
-			r = fract(r * 4829.013);
-			p.x = (p.x - cp) / (1.0 - cp);
-			v += 1.0;
-			test = r;
-		}
-		else
-		{
-			r = fract(r * 1239.528);
-			p.x = p.x / cp;
-			test = r;
-		}
-		p = p.yx;
-	}
-	
-	v /= float(ITER);
-	
-	return vec2(v, g);
-}
-
-float rand12(vec2 p)
-{
-	vec2 r = (456.789 * sin(789.123 * p.xy));
-	return fract(r.x * r.y);
-}
-
-vec2 rand22(vec2 p)
-{
-	vec2 ra = (456.789 * sin(789.123 * p.xy));
-	vec2 rb = (456.789 * cos(789.123 * p.xy));
-	return vec2(fract(ra.x * ra.y + p.x), fract(rb.x * rb.y + p.y));
-}
-
-float noise12(vec2 p)
-{
-	vec2 fl = floor(p);
-	vec2 fr = fract(p);
-	fr = smoothstep(0.0, 1.0, fr);
-	return mix(
-		mix(rand12(fl),                  rand12(fl + vec2(1.0, 0.0)), fr.x),
-		mix(rand12(fl + vec2(0.0, 1.0)), rand12(fl + vec2(1.0, 1.0)), fr.x), fr.y);
-}
-
-float fbm12(vec2 p)
-{
-	return noise12(p) * 0.5 + noise12(p * 2.0 + vec2(11.93, 0.41)) * 0.25 + noise12(p * 4.0 + vec2(1.93, -17.41)) * 0.125 + noise12(p * 8.0 + vec2(-19.93, 11.41)) * 0.0625;
-}
-	
-vec3 voronoi(in vec2 x)
-{
-	vec2 n = floor(x); // grid cell id
-	vec2 f = fract(x); // grid internal position
-	vec2 mg; // shortest distance...
-	vec2 mr; // ..and second shortest distance
-	float md = 8.0, md2 = 8.0;
-	
-	for(int j = -1; j <= 1; j ++)
-	{
-		for(int i = -1; i <= 1; i ++)
-		{
-			vec2 g = vec2(float(i), float(j)); // cell id
-			vec2 o = rand22(n + g); // offset to edge point
-			vec2 r = g + o - f;
-			
-			float d = max(abs(r.x), abs(r.y)); // distance to the edge
-			
-			if(d < md)
-				{md2 = md; md = d; mr = r; mg = g;}
-			else if(d < md2)
-				{md2 = d;}
-		}
-	}
-	return vec3(n + mg, md2 - md);
-}
-
-vec2 rotate(vec2 p, float a)
-{
-	return vec2(p.x * cos(a) - p.y * sin(a), p.x * sin(a) + p.y * cos(a));
-}
-
-float xor(float a, float b)
-{
-    return min(max(-a, b), max(a, -b));
-}
-
-float fr2(vec2 uv)
-{
-    float v = 1e38, dfscl = 1.0;
+    vec2 offset = coord - center;
     
-    vec4 rnd = vec4(0.1, 0.3, 0.7, 0.8);
-    
-    #define RNDA rnd = fract(sin(rnd * 11.1111) * 2986.3971)
-    #define RNDB rnd = fract(cos(rnd * 11.1111) * 2986.3971)
-    
-    RNDA;
-    
-    for(int i = 0; i < 8; i++)
-    {
-        vec2 p = uv;
-        
-        //p.x += time;
-        
-        float si = 1.0 + rnd.x;
-        p = (abs(fract(p / si) - 0.5)) * si;
-        vec2 q = p;
-        float w = max(q.x - rnd.y * 0.7, q.y - rnd.z * 0.7);
-        w /= dfscl;
-        v = xor(v, w);
-        
-        if(w < 0.0)
-        {
-        	RNDA;
-        }
-        else
-        {
-            RNDB;
-        }
-        
-        float sii = 1.2;
-        
-        uv *= sii;
-        uv -= rnd.xz;
-        dfscl *= sii;
+    return sqrt((offset.x * offset.x) + (offset.y * offset.y)) - radius;
+}
+
+float sdfEllipse(vec2 center, float a, float b, vec2 coord)
+{
+    float a2 = a * a;
+    float b2 = b * b;
+    return (b2 * (coord.x - center.x) * (coord.x - center.x) + 
+        a2 * (coord.y - center.y) * (coord.y - center.y) - a2 * b2)/(a2 * b2);
+}
+
+float sdfLine(vec2 p0, vec2 p1, float width, vec2 coord)
+{
+    vec2 dir0 = p1 - p0;
+	vec2 dir1 = coord - p0;
+	float h = clamp(dot(dir0, dir1)/dot(dir0, dir0), 0.0, 1.0);
+	return (length(dir1 - dir0 * h) - width * 0.5);
+}
+
+float sdfUnion( const float a, const float b )
+{
+    return min(a, b);
+}
+
+float sdfDifference( const float a, const float b)
+{
+    return max(a, -b);
+}
+
+float sdfIntersection( const float a, const float b )
+{
+    return max(a, b);
+}
+
+vec4 render(float d, vec3 color, float stroke)
+{
+    //stroke = fwidth(d) * 2.0;
+    float anti = fwidth(d) * 1.0;
+    vec4 strokeLayer = vec4(vec3(0.05), 1.0-smoothstep(-anti, anti, d - stroke));
+    vec4 colorLayer = vec4(color, 1.0-smoothstep(-anti, anti, d));
+
+    if (stroke < 0.000001) {
+    	return colorLayer;
     }
-    return v;
-}
-
-
-vec3 pixel(vec2 uv)
-{
-	uv.x *= size.x / size.y;
-	
-	float t = time * 0.5;
-	
-	uv = rotate(uv, sin(t) * 0.1);
-	uv += t * vec2(0.5, 1.0);
-	
-	vec2 ci = circuit(uv * 0.1);
-	
-	vec3 vo, vo2, vo3;
-	vo = voronoi(uv);
-	
-	float f = 80.0;
-	
-	float cf = 0.1;
-	vec2 fr = (fract(uv / cf) - 0.5) * cf;
-	vec2 fl = (floor(uv / cf) - 0.5) * cf;
-	float cir = length(fr /*+ normalize(rand22(fl) * 2.0 - 1.0) * 0.2*/) - 0.03;
-	
-    float v;
-    v = min(cos(vo.z * f), cir * 50.0) + ci.y;
-	
-    float ww = fr2(uv / 1.5) * 1.5;
-    v = max(v, smoothstep(0.0, 0.01, ww - ci.y * 0.03));
-    
-    v = smoothstep(0.2, 0.0, v);
-    
-	//v = mix(v, 0.0, );
-    //v = mix(v, 1.0, smoothstep(0.02, 0.0, abs(ww)));
-	
-	//v += smoothstep(0.01, 0.0, length(fr) - 0.1);
-	
-	return vec3(v);
+    return vec4(mix(strokeLayer.rgb, colorLayer.rgb, colorLayer.a), strokeLayer.a);
 }
 
 void main()
 {
-	vec3 col;
-	
-	vec2 h = vec2(0.5, 0.0);
-	col = pixel(fragTexCoord.xy + h.yy);
-	col += pixel(fragTexCoord.xy + h.xy);
-	col += pixel(fragTexCoord.xy + h.yx);
-	col += pixel(fragTexCoord.xy + h.xx);
-	
-	col /= 4.0;
-	
-	//col = vec3(1.0);
-	
+	float mmSize = min(size.x, size.y);
+    float pixSize = 1.0 / mmSize;
 	vec2 uv = fragTexCoord.xy;
-	col *= ((1.0 - pow(abs(uv.x), 2.1)) * (1.0 - pow(abs(uv.y), 2.1)));
-	
-	finalColor = vec4(col, 1.0);
+    float stroke = pixSize * 1.5;
+    vec2 center = vec2(0.5, 0.5 * size.y/size.x);
+    
+    float a = sdfEllipse(vec2(0.5, center.y*2.0-0.34), 0.25, 0.25, uv);
+    float b = sdfEllipse(vec2(0.5, center.y*2.0+0.03), 0.8, 0.35, uv);
+    b = sdfIntersection(a, b);
+    vec4 layer1 = render(b, vec3(0.32, 0.56, 0.53), fwidth(b) * 2.0);
+    
+    // Draw strips
+    vec4 layer2 = layer1;
+    float t, r0, r1, r2, e, f;
+    vec2 sinuv = vec2(uv.x, (sin(uv.x*40.0)*0.02 + 1.0)*uv.y);
+    for (float i = 0.0; i < 10.0; i++) {
+    	t = mod(time + 0.3 * i, 3.0) * 0.2;
+    	r0 = (t - 0.15) / 0.2 * 0.9 + 0.1;
+    	r1 = (t - 0.15) / 0.2 * 0.1 + 0.9;
+        r2 = (t - 0.15) / 0.2 * 0.15 + 0.85;
+        e = sdfEllipse(vec2(0.5, center.y*2.0+0.37-t*r2), 0.7*r0, 0.35*r1, sinuv);
+    	f = sdfEllipse(vec2(0.5, center.y*2.0+0.41-t), 0.7*r0, 0.35*r1, sinuv);
+    	f = sdfDifference(e, f);
+    	f = sdfIntersection(f, b);
+    	vec4 layer = render(f, vec3(1.0, 0.81, 0.27), 0.0);
+        layer2 = mix(layer2, layer, layer.a);
+    }
+    
+    
+    // Draw the handle
+    float bottom = 0.08;
+    float handleWidth = 0.01;
+    float handleRadius = 0.04;
+    float d = sdfCircle(vec2(0.5-handleRadius+0.5*handleWidth, bottom), handleRadius, uv);
+    float c = sdfCircle(vec2(0.5-handleRadius+0.5*handleWidth, bottom), handleRadius-handleWidth, uv);
+    d = sdfDifference(d, c);
+    c = uv.y - bottom;
+    d = sdfIntersection(d, c);
+    c = sdfLine(vec2(0.5, center.y*2.0-0.05), vec2(0.5, bottom), handleWidth, uv);
+    d = sdfUnion(d, c);
+    c = sdfCircle(vec2(0.5, center.y*2.0-0.05), 0.01, uv);
+    d = sdfUnion(c, d);
+    c = sdfCircle(vec2(0.5-handleRadius*2.0+handleWidth, bottom), handleWidth*0.5, uv);
+    d = sdfUnion(c, d);
+    vec4 layer0 = render(d, vec3(0.404, 0.298, 0.278), stroke);
+    
+    vec2 p = (2.0*fragTexCoord.xy-size.xy)/min(size.y,size.x);
+    vec3 bcol = vec3(1.0,0.8,0.7-0.07*p.y)*(1.0-0.25*length(p));
+    finalColor = vec4(bcol, 1.0);  
+    finalColor.rgb = mix(finalColor.rgb, layer0.rgb, layer0.a);
+    finalColor.rgb = mix(finalColor.rgb, layer1.rgb, layer1.a);
+    finalColor.rgb = mix(finalColor.rgb, layer2.rgb, layer2.a);
+    
+    finalColor.rgb = pow(finalColor.rgb, vec3(1.0/2.2));
 }
 	`
 )

@@ -90,7 +90,7 @@ func (g *demoGameMode) DrawUI() {
 			shadertoy.RenderTexture.Texture,
 			rl.NewRectangle(0, 0,
 				float32(shadertoy.RenderTexture.Texture.Width),
-				float32(-shadertoy.RenderTexture.Texture.Height)),
+				float32(shadertoy.RenderTexture.Texture.Height)),
 			rl.NewRectangle(float32(system.ScreenWidth)-102, 113, 94, 94),
 			rl.Vector2{},
 			0,

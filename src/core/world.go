@@ -21,7 +21,6 @@ import (
 	"log"
 	"reflect"
 	"sort"
-	"strconv"
 	"strings"
 
 	goaseprite "github.com/solarlune/GoAseprite"
@@ -223,60 +222,23 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		o = &tiled.Object{}
 	}
 
-	idx := w.GlobalIndex
-	w.GlobalIndex++
-
-	tintHex := o.Properties.GetString("tint")
-	var tint rl.Color
-
-	if tintHex != "" {
-		tintVec, _ := getColorFromHex(tintHex)
-		tint = vec3ToColor(tintVec)
-	} else {
-		tint = rl.Blank
-	}
-
-	hexColor := o.Properties.GetString("color")
-	var color rl.Color
-
-	if hexColor != "" {
-		col, _ := getColorFromHex(hexColor)
-		color = vec3ToColor(col)
-	}
-
-	txtRadius := o.Properties.GetString("radius")
-	var radius float32
-
-	if txtRadius != "" {
-		rad, _ := strconv.ParseFloat(txtRadius, 32)
-		radius = float32(rad)
-	}
-
-	txtAttenuation := o.Properties.GetString("atten")
-	var attenuation float32
-
-	if txtAttenuation != "" {
-		atten, _ := strconv.ParseFloat(txtAttenuation, 32)
-		attenuation = float32(atten)
-	}
-
-	txtOffset := o.Properties.GetString("offset")
-	var offset rl.Vector2
-
-	if txtOffset != "" {
-		offset = stringToVec2(txtOffset)
-	}
-
 	return &Object{
-		GID:              idx,
-		world:            w,
-		Name:             o.Name,
-		Class:            o.Type,
-		Visible:          true,
-		DebugVisible:     DefaultDebugShowAll,
-		Meta:             o,
-		Depends:          []*Object{},
-		Rotation:         float32(o.Rotation),
+		GID: func() int {
+			idx := w.GlobalIndex
+			w.GlobalIndex++
+			return idx
+		}(),
+		world:        w,
+		Name:         o.Name,
+		Class:        o.Type,
+		Visible:      true,
+		DebugVisible: DefaultDebugShowAll,
+		Meta:         o,
+		Depends:      []*Object{},
+		Rotation:     float32(o.Rotation),
+		IsPersistent: true,
+
+		// Properties
 		CollisionType:    o.Properties.GetString("colType"),
 		AutoStart:        o.Properties.GetString("autostart") == "1",
 		CanRepeat:        o.Properties.GetString("canRepeat") == "1",
@@ -284,12 +246,11 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		HasLight:         o.Properties.GetString("light") == "1",
 		HasSpecularLight: o.Properties.GetString("specular") == "1",
 		FileName:         o.Properties.GetString("file"),
-		TintColor:        tint,
-		Color:            color,
-		Attenuation:      attenuation,
-		Radius:           radius,
-		Offset:           offset,
-		IsPersistent:     true,
+		TintColor:        GetColorFromProperty(o, "tint"),
+		Color:            GetColorFromProperty(o, "color"),
+		Attenuation:      GetFloatFromProperty(o, "atten"),
+		Radius:           GetFloatFromProperty(o, "radius"),
+		Offset:           GetVector2FromProperty(o, "offset"),
 
 		// Callbacks
 		Finish:          func(o *Object) {},

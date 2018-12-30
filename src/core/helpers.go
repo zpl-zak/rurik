@@ -23,6 +23,7 @@ import (
 
 	colorful "github.com/lucasb-eyer/go-colorful"
 	"github.com/solarlune/resolv/resolv"
+	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/raylib-go/raymath"
 	"github.com/zaklaus/rurik/src/system"
@@ -191,6 +192,48 @@ func isPointWithinRectangle(p rl.Vector2, r rl.Rectangle) bool {
 	}
 
 	return false
+}
+
+// GetColorFromProperty retrieves a color from property
+func GetColorFromProperty(o *tiled.Object, name string) rl.Color {
+	colorHex := o.Properties.GetString(name)
+	var color rl.Color
+
+	if colorHex != "" {
+		colorVec, _ := getColorFromHex(colorHex)
+		color = vec3ToColor(colorVec)
+	} else {
+		color = rl.Blank
+	}
+
+	return color
+}
+
+// GetVector2FromProperty retrieves a Vector2 from property
+func GetVector2FromProperty(o *tiled.Object, name string) rl.Vector2 {
+	txtVec := o.Properties.GetString(name)
+	var vec rl.Vector2
+
+	if txtVec != "" {
+		vec = stringToVec2(txtVec)
+	}
+
+	return vec
+}
+
+// GetFloatFromProperty retrieves a float from property
+func GetFloatFromProperty(o *tiled.Object, name string) float32 {
+	fltString := o.Properties.GetString(name)
+	var flt float32
+
+	if fltString != "" {
+		fltRaw, _ := strconv.ParseFloat(fltString, 32)
+		flt = float32(fltRaw)
+	} else {
+		flt = 0
+	}
+
+	return flt
 }
 
 func isPointWithinFrustum(p rl.Vector2) bool {

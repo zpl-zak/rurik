@@ -321,7 +321,7 @@ func (m *Map) CreateObjects(w *World) {
 
 			if object.Template != "" {
 				object.Template = path.Join("assets", "templates", path.Base(object.Template))
-				fmt.Printf("Creating object using template: %s...\n", object.Template)
+				log.Printf("Creating object using template: %s...\n", object.Template)
 
 				_, err := os.Stat(object.Template)
 				if os.IsNotExist(err) {

@@ -23,6 +23,7 @@ const (
 
 var (
 	dynobjCounter int
+	fmapload      bool
 	playMapName   string
 	bloom         *bloomProg
 	shadertoy     *shadertoyProg
@@ -52,8 +53,11 @@ func (g *demoGameMode) Init() {
 
 	g.playState = stateMenu
 
-	/* core.LoadMap(playMapName)
-	core.InitMap() */
+	if fmapload {
+		g.playState = statePlay
+		core.LoadMap(playMapName)
+		core.InitMap()
+	}
 
 	initShaders()
 }
@@ -229,11 +233,13 @@ func main() {
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
 	mapName := flag.String("map", "village", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
+	forceMapLoad := flag.Bool("forceload", false, "Forces map load and skips the title screen.")
 	flag.Parse()
 
 	playMapName = *mapName
 	playMapName = path.Base(playMapName)
 	playMapName = strings.Split(playMapName, ".")[0]
+	fmapload = *forceMapLoad
 
 	if core.DebugMode {
 		core.DebugMode = *dbgMode == 1

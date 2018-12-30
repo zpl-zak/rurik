@@ -24,7 +24,6 @@ type GameMode interface {
 	Draw()
 	DrawUI()
 	PostDraw()
-	IgnoreUpdate() bool
 	Serialize() string
 	Deserialize(data string)
 }

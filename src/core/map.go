@@ -145,7 +145,10 @@ func SwitchMap(name string) {
 
 // FlushMaps disposes all data
 func FlushMaps() {
-	CurrentMap.World = nil
+	if CurrentMap != nil {
+		CurrentMap.World = nil
+	}
+
 	CurrentMap = nil
 	Maps = nil
 	LocalPlayer = nil
@@ -165,6 +168,10 @@ func InitMap() {
 
 // UpdateMaps updates all maps' simulation regions (worlds)
 func UpdateMaps() {
+	if CurrentMap == nil {
+		return
+	}
+
 	weatherProfiler.StartInvocation()
 	CurrentMap.Weather.UpdateWeather()
 	weatherProfiler.StopInvocation()
@@ -178,6 +185,10 @@ func UpdateMaps() {
 func DrawMap(usesCulling bool) {
 	cullingEnabled = usesCulling
 
+	if CurrentMap == nil {
+		return
+	}
+
 	CurrentMap.DrawTilemap(false)
 	CurrentMap.World.DrawObjects()
 	CurrentMap.DrawTilemap(true) // render all overlays
@@ -187,12 +198,20 @@ func DrawMap(usesCulling bool) {
 
 // DrawMapUI draw current map's UI elements
 func DrawMapUI() {
+	if CurrentMap == nil {
+		return
+	}
+
 	CurrentMap.World.DrawObjectUI()
 }
 
 // UpdateMapUI draws debug UI
 func UpdateMapUI() {
 	if DebugMode {
+		if CurrentMap == nil {
+			return
+		}
+
 		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
 
 		if !mapNodeIsCollapsed {

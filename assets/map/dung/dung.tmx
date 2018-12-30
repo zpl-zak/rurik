@@ -324,9 +324,6 @@
   <object id="2" gid="8" x="1338" y="1598.5" width="32" height="32"/>
   <object id="3" gid="8" x="1277" y="1615.5" width="32" height="32"/>
   <object id="4" gid="1073741832" x="1342.5" y="1599.5" width="32" height="32" rotation="180"/>
-  <object id="7" name="player" type="player" x="1442.5" y="1587.5">
-   <point/>
-  </object>
   <object id="11" template="../../templates/lantern.tx" x="1612" y="1533.5">
    <properties>
     <property name="color" type="color" value="#ffcc6545"/>

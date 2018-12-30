@@ -279,7 +279,12 @@ func updateScriptingContext() {
 	ScriptingContext.Set("MainCamera", MainCamera)
 	ScriptingContext.Set("CurrentMap", CurrentMap)
 
-	ScriptingContext.Set("CurrentWorld", CurrentMap.World)
+	if CurrentMap != nil {
+		ScriptingContext.Set("CurrentWorld", CurrentMap.World)
+	} else {
+		ScriptingContext.Set("CurrentWorld", nil)
+	}
+
 	ScriptingContext.Set("Self", nil)
 	ScriptingContext.Set("Instigator", nil)
 }

@@ -124,12 +124,7 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		unprocessedTime += passedTime
 		frameCounter += passedTime
 
-		if LocalPlayer == nil {
-			log.Fatalln("Local player not defined!")
-			return
-		}
-
-		if MainCamera == nil {
+		if MainCamera == nil || (MainCamera != nil && MainCamera.Name == "TempCamera__") {
 			setupDefaultCamera()
 		}
 
@@ -149,15 +144,11 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			UpdateMusic()
 			musicProfiler.StopInvocation()
 
-			if !CurrentGameMode.IgnoreUpdate() {
-				UpdateMaps()
-			}
-
-			UpdateMapUI()
-
 			gameModeProfiler.StartInvocation()
 			CurrentGameMode.Update()
 			gameModeProfiler.StopInvocation()
+
+			UpdateMapUI()
 
 			FireEvent("onUpdate")
 			updateProfiler.StopInvocation()
@@ -205,6 +196,11 @@ func shutdown() {
 }
 
 func setupDefaultCamera() {
+	if CurrentMap == nil {
+		MainCamera = &Object{Name: "TempCamera__"}
+		return
+	}
+
 	defCam := CurrentMap.World.NewObjectPro("main_camera", "cam")
 	defCam.Position = LocalPlayer.Position
 	defCam.Mode = CameraModeFollow

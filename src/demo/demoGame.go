@@ -30,7 +30,14 @@ var (
 	pulseManager  *core.Object
 )
 
-type demoGameMode struct{}
+const (
+	stateMenu = iota
+	statePlay
+)
+
+type demoGameMode struct {
+	playState int
+}
 
 func (g *demoGameMode) Init() {
 	core.LoadPlaylist("tracklist.txt")
@@ -43,8 +50,10 @@ func (g *demoGameMode) Init() {
 		fmt.Printf("Custom type registration has failed: %s", err.Error())
 	}
 
-	core.LoadMap(playMapName)
-	core.InitMap()
+	g.playState = stateMenu
+
+	/* core.LoadMap(playMapName)
+	core.InitMap() */
 
 	initShaders()
 }
@@ -66,36 +75,43 @@ func (g *demoGameMode) Draw() {
 }
 
 func (g *demoGameMode) DrawUI() {
-	core.DrawMapUI()
+	switch g.playState {
+	case stateMenu:
+		rl.DrawText("Press F5 to load map", 185, 15, 16, rl.RayWhite)
 
-	// draw a minimap
-	{
-		rl.DrawRectangle(system.ScreenWidth-105, 5, 100, 100, rl.Blue)
-		rl.DrawTexturePro(
-			minimap.RenderTexture.Texture,
-			rl.NewRectangle(0, 0,
-				float32(minimap.RenderTexture.Texture.Width),
-				float32(-minimap.RenderTexture.Texture.Height)),
-			rl.NewRectangle(float32(system.ScreenWidth)-102, 8, 94, 94),
-			rl.Vector2{},
-			0,
-			rl.White,
-		)
-	}
+	case statePlay:
+		core.DrawMapUI()
 
-	// draw shadertoy example
-	{
-		rl.DrawRectangle(system.ScreenWidth-105, 110, 100, 100, rl.Fade(rl.Red, 0.6))
-		rl.DrawTexturePro(
-			shadertoy.RenderTexture.Texture,
-			rl.NewRectangle(0, 0,
-				float32(shadertoy.RenderTexture.Texture.Width),
-				float32(shadertoy.RenderTexture.Texture.Height)),
-			rl.NewRectangle(float32(system.ScreenWidth)-102, 113, 94, 94),
-			rl.Vector2{},
-			0,
-			rl.White,
-		)
+		// draw a minimap
+		{
+			rl.DrawRectangle(system.ScreenWidth-105, 5, 100, 100, rl.Blue)
+			rl.DrawTexturePro(
+				minimap.RenderTexture.Texture,
+				rl.NewRectangle(0, 0,
+					float32(minimap.RenderTexture.Texture.Width),
+					float32(-minimap.RenderTexture.Texture.Height)),
+				rl.NewRectangle(float32(system.ScreenWidth)-102, 8, 94, 94),
+				rl.Vector2{},
+				0,
+				rl.White,
+			)
+		}
+
+		// draw shadertoy example
+		{
+			rl.DrawRectangle(system.ScreenWidth-105, 110, 100, 100, rl.Fade(rl.Red, 0.6))
+			rl.DrawTexturePro(
+				shadertoy.RenderTexture.Texture,
+				rl.NewRectangle(0, 0,
+					float32(shadertoy.RenderTexture.Texture.Width),
+					float32(shadertoy.RenderTexture.Texture.Height)),
+				rl.NewRectangle(float32(system.ScreenWidth)-102, 113, 94, 94),
+				rl.Vector2{},
+				0,
+				rl.White,
+			)
+
+		}
 	}
 }
 
@@ -108,16 +124,24 @@ func (g *demoGameMode) PostDraw() {
 	shadertoy.Apply()
 }
 
-func (g *demoGameMode) IgnoreUpdate() bool {
-	return false
+func (g *demoGameMode) Update() {
+
+	switch g.playState {
+	case stateMenu:
+
+	case statePlay:
+		core.UpdateMaps()
+	}
+
+	updateInternals(g)
 }
 
-func (g *demoGameMode) Update() {
+func updateInternals(g *demoGameMode) {
 	if pulseManager == nil {
-		w := core.CurrentMap.World
+		/* w := core.CurrentMap.World
 		pulseManager = w.NewObjectPro("pulse_script", "script")
 		pulseManager.FileName = "pulsatingLights.js"
-		w.FinalizeObject(pulseManager)
+		w.FinalizeObject(pulseManager) */
 		//pulseManager.Trigger(pulseManager, nil)
 	}
 
@@ -125,6 +149,7 @@ func (g *demoGameMode) Update() {
 		core.FlushMaps()
 		core.LoadMap(playMapName)
 		core.InitMap()
+		g.playState = statePlay
 		return
 	}
 

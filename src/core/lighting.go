@@ -34,6 +34,10 @@ var (
 // show the modularity and versatility of the engine, giving you the power to tweak the game
 // any means possible.
 func UpdateLightingSolution() {
+	if CurrentMap == nil {
+		return
+	}
+
 	if additiveLightTexture.ID == 0 || WindowWasResized {
 		if additiveLightTexture.ID != 0 {
 			rl.UnloadRenderTexture(additiveLightTexture)

@@ -11,6 +11,8 @@ This engine is in active development and its features/API is subject to change. 
 
 Navigate to `src/demo` and execute `go get ./...` to fetch all dependencies. Afterwards, navigate back to the root folder and execute `make` to build the game.
 
+Make sure you meet all the requirements at [raylib-go](https://github.com/zaklaus/raylib-go) before you compile the project.
+
 ## License
 
 See [COPYING.md](COPYING.md) for licensing information. The demo code residing in `src/demo` directory falls under public domain and can be used freely.

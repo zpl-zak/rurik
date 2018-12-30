@@ -2,3 +2,13 @@
 build
 package
 gamesav.db
+
+# Android
+platforms/android/android/libs
+platforms/android/.gradle
+platforms/android/.idea
+platforms/android/android/assets
+platforms/android/android/project.properties
+platforms/android/android/.gradle
+platforms/android/android/.idea
+platforms/android/local.properties

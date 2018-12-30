@@ -11,9 +11,13 @@ type minimapProg struct {
 }
 
 func newMinimap() *minimapProg {
-	return &minimapProg{
+	v := &minimapProg{
 		RenderTexture: system.CreateRenderTarget(320, 320),
 	}
+
+	rl.SetTextureFilter(v.RenderTexture.Texture, rl.FilterBilinear)
+
+	return v
 }
 
 func (m *minimapProg) Apply() {
@@ -40,5 +44,5 @@ func (m *minimapProg) Apply() {
 	}
 	rl.EndTextureMode()
 
-	core.BlurRenderTarget(m.RenderTexture, 4)
+	core.BlurRenderTarget(m.RenderTexture, 32)
 }

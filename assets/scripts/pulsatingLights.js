@@ -1,10 +1,13 @@
-{
-    global.lights = CurrentWorld.GetObjectsOfType("light", false)
+{ 
+    global.lights = CurrentWorld.Objects.filter(function(v) {
+        return v.HasLight == true        
+    })
+    global.lightStrength = 1.0
+    global.lightSpeed = 4.0
 
     addEventHandler("onUpdate", function () {
-        for (var i = 0; i < global.lights.length; i++) {
-            var o = global.lights[i]
-            o.Radius += Math.sin(TotalTime)*1.0
-        }
+        global.lights.forEach(function(o) {
+            o.Radius += Math.sin(TotalTime * global.lightSpeed) * global.lightStrength
+        })
     })
 }

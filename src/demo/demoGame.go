@@ -194,6 +194,10 @@ func drawBackground() {
 	}
 }
 
+func init() {
+	rl.SetCallbackFunc(main)
+}
+
 func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")

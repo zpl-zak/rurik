@@ -48,7 +48,6 @@ func UpdateLightingSolution() {
 	populateAdditiveLayer()
 	populateMultiplicativeLight()
 	lightingProfiler.StopInvocation()
-
 	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 }
@@ -58,7 +57,7 @@ func populateAdditiveLayer() {
 
 	rl.BeginTextureMode(additiveLightTexture)
 	{
-		rl.ClearBackground(rl.Black)
+		rl.ClearBackground(rl.Blank)
 		rl.BeginMode2D(RenderCamera)
 		{
 			for _, o := range objs {
@@ -66,19 +65,24 @@ func populateAdditiveLayer() {
 					continue
 				}
 
-				col := o.Color
+				in := o.Color
+				in.A = 90
+				out := o.Color
+				out.A = 0
 				rl.DrawCircleGradient(
 					int32(o.Position.X+16+o.Offset.X),
 					int32(o.Position.Y-16+o.Offset.Y),
 					float32(o.Radius),
-					col,
-					rl.Blank,
+					in,
+					out,
 				)
 			}
 		}
 		rl.EndMode2D()
 	}
 	rl.EndTextureMode()
+
+	BlurRenderTarget(additiveLightTexture, 64)
 }
 
 func populateMultiplicativeLight() {
@@ -111,4 +115,5 @@ func populateMultiplicativeLight() {
 		rl.EndBlendMode()
 	}
 	rl.EndTextureMode()
+	BlurRenderTarget(multiplicativeLightTexture, 32)
 }

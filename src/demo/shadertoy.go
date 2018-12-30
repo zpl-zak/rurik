@@ -13,7 +13,7 @@ type shadertoyProg struct {
 
 func newShadertoy() *shadertoyProg {
 	return &shadertoyProg{
-		RenderTexture:   system.CreateRenderTarget(screenW, screenH),
+		RenderTexture:   system.CreateRenderTarget(320, 320),
 		ShadertoyShader: system.NewProgramFromCode("", shadertoyHeaderCode+shadertoySrcCode),
 	}
 }

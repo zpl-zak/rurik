@@ -28,13 +28,15 @@ var (
 	// UITexture represents the render target used by the interface
 	UITexture system.RenderTarget
 
+	// NullTexture should only be used for rendering with shaders
+	// that don't accept any previous texture data
+	NullTexture system.RenderTarget
+
 	finalRenderTexture system.RenderTarget
 	renderTextureQueue = []renderQueueEntry{}
 
 	// RenderCamera is a read-only camera used only for rendering
 	RenderCamera rl.Camera2D
-
-	nullTarget system.RenderTarget
 
 	blurTextures []system.RenderTarget
 	blurProgram  system.Program

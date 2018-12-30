@@ -51,7 +51,7 @@ func (g *demoGameMode) Init() {
 
 func initShaders() {
 	bloom = newBloom()
-	//shadertoy = newShadertoy()
+	shadertoy = newShadertoy()
 	minimap = newMinimap()
 }
 
@@ -82,6 +82,21 @@ func (g *demoGameMode) DrawUI() {
 			rl.White,
 		)
 	}
+
+	// draw shadertoy example
+	{
+		rl.DrawRectangle(system.ScreenWidth-105, 110, 100, 100, rl.Fade(rl.Red, 0.6))
+		rl.DrawTexturePro(
+			shadertoy.RenderTexture.Texture,
+			rl.NewRectangle(0, 0,
+				float32(shadertoy.RenderTexture.Texture.Width),
+				float32(-shadertoy.RenderTexture.Texture.Height)),
+			rl.NewRectangle(float32(system.ScreenWidth)-102, 113, 94, 94),
+			rl.Vector2{},
+			0,
+			rl.White,
+		)
+	}
 }
 
 func (g *demoGameMode) PostDraw() {
@@ -90,6 +105,7 @@ func (g *demoGameMode) PostDraw() {
 
 	bloom.Apply()
 	minimap.Apply()
+	shadertoy.Apply()
 }
 
 func (g *demoGameMode) IgnoreUpdate() bool {

@@ -40,5 +40,5 @@ func (m *minimapProg) Apply() {
 	}
 	rl.EndTextureMode()
 
-	core.BlurRenderTarget(m.RenderTexture, 128)
+	core.BlurRenderTarget(m.RenderTexture, 4)
 }

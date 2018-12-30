@@ -65,6 +65,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 
 	WorldTexture = system.CreateRenderTarget(screenW, screenH)
 	UITexture = system.CreateRenderTarget(screenW, screenH)
+	NullTexture = system.CreateRenderTarget(screenW, screenH)
 	finalRenderTexture = system.CreateRenderTarget(screenW, screenH)
 	system.InitInput()
 	rl.InitAudioDevice()
@@ -215,7 +216,6 @@ func setupDefaultCamera() {
 }
 
 func updateWindow() {
-	return
 	width := int32(rl.GetScreenWidth())
 	height := int32(rl.GetScreenHeight())
 
@@ -236,6 +236,10 @@ func updateWindow() {
 
 		rl.UnloadRenderTexture(finalRenderTexture)
 		finalRenderTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+
+		rl.UnloadRenderTexture(NullTexture)
+		NullTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
+
 		updateSystemRenderTargets()
 	}
 }

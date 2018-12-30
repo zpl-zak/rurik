@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -19,8 +20,7 @@ func newShadertoy() *shadertoyProg {
 
 func (s *shadertoyProg) Apply() {
 	s.ShadertoyShader.SetShaderValuei("iFrame", []int32{s.frameIndex}, 1)
-	s.ShadertoyShader.RenderToTexture(system.RenderTarget{}, s.RenderTexture)
-	//system.CopyToRenderTarget(s.RenderTexture, core.WorldTexture)
+	s.ShadertoyShader.RenderToTexture(core.NullTexture, s.RenderTexture)
 
 	s.frameIndex++
 }

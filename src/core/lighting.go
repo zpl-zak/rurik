@@ -24,33 +24,24 @@ import (
 var (
 	additiveLightTexture       system.RenderTarget
 	multiplicativeLightTexture system.RenderTarget
-	aoLightTexture             system.RenderTarget
-	origObjectsLightTexture    system.RenderTarget
 )
 
 func updateLightingSolution() {
 	if additiveLightTexture == nil || WindowWasResized {
+		if additiveLightTexture != nil {
+			rl.UnloadRenderTexture(*additiveLightTexture)
+			rl.UnloadRenderTexture(*multiplicativeLightTexture)
+		}
+
 		additiveLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 		multiplicativeLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		// aoLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
-		// origObjectsLightTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 	}
 
 	populateAdditiveLayer()
-	//blurLight(additiveLightTexture, 32)
-
 	populateMultiplicativeLight()
-	//blurLight(multiplicativeLightTexture, 32)
 
-	//populateAoLight()
-	//blurLight(aoLightTexture, 8)
-
-	// Apply lighting layers
-	// PushRenderTarget(aoLightTexture, false, rl.BlendMultiplied)
-	// PushRenderTarget(origObjectsLightTexture, false, rl.BlendAlpha)
 	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
-	//system.CopyToRenderTarget(additiveLightTexture, WorldTexture, true)
 }
 
 func populateAdditiveLayer() {
@@ -109,31 +100,6 @@ func populateMultiplicativeLight() {
 			rl.EndMode2D()
 		}
 		rl.EndBlendMode()
-	}
-	rl.EndTextureMode()
-}
-
-func populateAoLight() {
-	sky := SkyColor
-	SkyColor = rl.NewColor(0, 0, 0, 127)
-
-	rl.BeginTextureMode(*aoLightTexture)
-	{
-		rl.ClearBackground(rl.White)
-		rl.BeginMode2D(RenderCamera)
-		CurrentMap.World.DrawObjects()
-		rl.EndMode2D()
-	}
-	rl.EndTextureMode()
-
-	SkyColor = sky
-
-	rl.BeginTextureMode(*origObjectsLightTexture)
-	{
-		rl.ClearBackground(rl.Blank)
-		rl.BeginMode2D(RenderCamera)
-		CurrentMap.World.DrawObjects()
-		rl.EndMode2D()
 	}
 	rl.EndTextureMode()
 }

@@ -6,7 +6,6 @@ import (
 	"path"
 	"strings"
 
-	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
@@ -36,108 +35,42 @@ const (
 	statePlay
 )
 
-type demoGameMode struct {
-	playState int
+func init() {
+	rl.SetCallbackFunc(main)
 }
 
-func (g *demoGameMode) Init() {
-	core.LoadPlaylist("tracklist.txt")
-	core.LoadNextTrack()
+func main() {
+	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
+	musicVol := flag.Int("musicvol", 10, "Music volume.")
+	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
+	mapName := flag.String("map", "village", "Map name to play.")
+	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
+	forceMapLoad := flag.Bool("forceload", false, "Forces map load and skips the title screen.")
+	flag.Parse()
 
-	// test class
-	err := core.RegisterClass("demo_testclass", "TestClass", NewTestClass)
+	playMapName = *mapName
+	playMapName = path.Base(playMapName)
+	playMapName = strings.Split(playMapName, ".")[0]
+	fmapload = *forceMapLoad
 
-	if err != nil {
-		fmt.Printf("Custom type registration has failed: %s", err.Error())
+	if core.DebugMode {
+		core.DebugMode = *dbgMode == 1
 	}
 
-	g.playState = stateMenu
+	core.InitCore("Demo game | Rurik Engine", windowW, windowH, screenW, screenH)
 
-	if fmapload {
-		g.playState = statePlay
-		core.LoadMap(playMapName)
-		core.InitMap()
-	}
+	demoGame := &demoGameMode{}
 
-	initShaders()
+	core.SetMusicVolume(float32(*musicVol) / 100)
+	core.WeatherTimeScale = *weatherTimeScale
+
+	core.Run(demoGame, *enableProfiler)
 }
 
 func initShaders() {
 	bloom = newBloom()
 	shadertoy = newShadertoy()
 	minimap = newMinimap()
-}
-
-func (g *demoGameMode) Draw() {
-	drawBackground()
-
-	rl.BeginMode2D(core.RenderCamera)
-	{
-		core.DrawMap(true)
-	}
-	rl.EndMode2D()
-}
-
-func (g *demoGameMode) DrawUI() {
-	switch g.playState {
-	case stateMenu:
-		rl.DrawText("Press F5 to load map", 185, 15, 16, rl.RayWhite)
-
-	case statePlay:
-		core.DrawMapUI()
-
-		// draw a minimap
-		{
-			rl.DrawRectangle(system.ScreenWidth-105, 5, 100, 100, rl.Blue)
-			rl.DrawTexturePro(
-				minimap.RenderTexture.Texture,
-				rl.NewRectangle(0, 0,
-					float32(minimap.RenderTexture.Texture.Width),
-					float32(-minimap.RenderTexture.Texture.Height)),
-				rl.NewRectangle(float32(system.ScreenWidth)-102, 8, 94, 94),
-				rl.Vector2{},
-				0,
-				rl.White,
-			)
-		}
-
-		// draw shadertoy example
-		{
-			rl.DrawRectangle(system.ScreenWidth-105, 110, 100, 100, rl.Fade(rl.Red, 0.6))
-			rl.DrawTexturePro(
-				shadertoy.RenderTexture.Texture,
-				rl.NewRectangle(0, 0,
-					float32(shadertoy.RenderTexture.Texture.Width),
-					float32(shadertoy.RenderTexture.Texture.Height)),
-				rl.NewRectangle(float32(system.ScreenWidth)-102, 113, 94, 94),
-				rl.Vector2{},
-				0,
-				rl.White,
-			)
-
-		}
-	}
-}
-
-func (g *demoGameMode) PostDraw() {
-	// Generates and applies the lightmaps
-	core.UpdateLightingSolution()
-
-	bloom.Apply()
-	minimap.Apply()
-	shadertoy.Apply()
-}
-
-func (g *demoGameMode) Update() {
-
-	switch g.playState {
-	case stateMenu:
-
-	case statePlay:
-		core.UpdateMaps()
-	}
-
-	updateInternals(g)
 }
 
 func updateInternals(g *demoGameMode) {
@@ -221,60 +154,4 @@ func drawBackground() {
 			)
 		}
 	}
-}
-
-func init() {
-	rl.SetCallbackFunc(main)
-}
-
-func main() {
-	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
-	musicVol := flag.Int("musicvol", 10, "Music volume.")
-	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	mapName := flag.String("map", "village", "Map name to play.")
-	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
-	forceMapLoad := flag.Bool("forceload", false, "Forces map load and skips the title screen.")
-	flag.Parse()
-
-	playMapName = *mapName
-	playMapName = path.Base(playMapName)
-	playMapName = strings.Split(playMapName, ".")[0]
-	fmapload = *forceMapLoad
-
-	if core.DebugMode {
-		core.DebugMode = *dbgMode == 1
-	}
-
-	core.InitCore("Demo game | Rurik Engine", windowW, windowH, screenW, screenH)
-
-	demoGame := &demoGameMode{}
-
-	core.SetMusicVolume(float32(*musicVol) / 100)
-	core.WeatherTimeScale = *weatherTimeScale
-
-	core.Run(demoGame, *enableProfiler)
-}
-
-func (g *demoGameMode) Shutdown() {
-
-}
-
-func (g *demoGameMode) Serialize() string {
-	data := demoGameSaveData{
-		ObjectCounter: dynobjCounter,
-	}
-
-	ret, _ := jsoniter.MarshalToString(data)
-	return ret
-}
-
-func (g *demoGameMode) Deserialize(data string) {
-	var saveData demoGameSaveData
-	jsoniter.UnmarshalFromString(data, &saveData)
-
-	dynobjCounter = saveData.ObjectCounter
-}
-
-type demoGameSaveData struct {
-	ObjectCounter int
 }

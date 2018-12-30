@@ -86,6 +86,7 @@ type Object struct {
 	HasSpecularLight bool
 	Offset           rl.Vector2
 	LocalTileset     *tilesetData
+	UserData         ObjectUserData
 
 	// Internal fields
 	WasUpdated bool
@@ -113,6 +114,12 @@ type Object struct {
 	anim
 	area
 	tile
+}
+
+// ObjectUserData describes custom data used by game's classes
+type ObjectUserData interface {
+	Serialize() string
+	Deserialize(input string)
 }
 
 func (w *World) flushObjects() {
@@ -356,8 +363,6 @@ func (w *World) spawnObject(objectData *tiled.Object) *Object {
 	if obj.CollisionType != "" {
 		obj.IsCollidable = obj.CollisionType != "none"
 	}
-
-	/* fmt.Printf("Creating object: %s [%s].\n", obj.Name, obj.Class) */
 
 	return obj
 }

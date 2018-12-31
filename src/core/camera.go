@@ -140,8 +140,8 @@ func (c *Object) NewCamera() {
 		}
 
 		rl.DrawCircle(int32(o.Position.X), int32(o.Position.Y), 2, rl.White)
-		drawTextCentered(fmt.Sprintf("%s", o.Name), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
-		drawTextCentered(fmt.Sprintf("Mode: %s", mode), int32(o.Position.X), int32(o.Position.Y)+15, 10, rl.White)
+		DrawTextCentered(fmt.Sprintf("%s", o.Name), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
+		DrawTextCentered(fmt.Sprintf("Mode: %s", mode), int32(o.Position.X), int32(o.Position.Y)+15, 10, rl.White)
 	}
 }
 
@@ -161,7 +161,7 @@ func finishCamera(c *Object) {
 func updateCamera(c *Object, dt float32) {
 	var dest rl.Vector2
 
-	CanSave = bitsSet(CanSave, isSequenceHappening)
+	CanSave = BitsSet(CanSave, IsSequenceHappening)
 
 	if c.Mode == CameraModeFollow {
 		if c.Follow == nil {
@@ -170,7 +170,7 @@ func updateCamera(c *Object, dt float32) {
 		}
 
 		if c.Follow == LocalPlayer {
-			CanSave = bitsClear(CanSave, isSequenceHappening)
+			CanSave = BitsClear(CanSave, IsSequenceHappening)
 		}
 
 		dest = c.Follow.Position
@@ -209,16 +209,16 @@ func updateCamera(c *Object, dt float32) {
 				t = vd
 			}
 
-			c.Position = vector2Lerp(c.Start.Position, dest, c.Progress)
+			c.Position = Vector2Lerp(c.Start.Position, dest, c.Progress)
 			c.Progress += t * dt
 		} else {
-			c.Position = vector2Lerp(c.Position, dest, t)
+			c.Position = Vector2Lerp(c.Position, dest, t)
 		}
 	} else {
 		c.Position = dest
 	}
 
-	c.Zoom = scalarLerp(c.Zoom, c.TargetZoom, c.ZoomSpeed*dt)
+	c.Zoom = ScalarLerp(c.Zoom, c.TargetZoom, c.ZoomSpeed*dt)
 
 	c.First = false
 }

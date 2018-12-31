@@ -98,7 +98,7 @@ func (o *Object) NewTile() {
 				rl.DrawCircle(int32(e.X), int32(e.Y), 2, rl.Red)
 				rl.DrawLineEx(b, e, 1, rl.Yellow)
 			}
-			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
+			DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
 
 		var rot float32
@@ -121,7 +121,7 @@ func (o *Object) NewTile() {
 		if o.TintColor == rl.Blank {
 			tint = SkyColor
 		} else {
-			tint = mixColor(o.TintColor, SkyColor)
+			tint = MixColor(o.TintColor, SkyColor)
 		}
 
 		if o.Fullbright {

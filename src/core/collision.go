@@ -46,7 +46,7 @@ func (o *Object) NewCollision() {
 		rl.DrawRectangleLines(int32(o.Position.X), int32(o.Position.Y), int32(o.Meta.Width), int32(o.Meta.Height), color)
 
 		c := o.GetAABB(o)
-		drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
+		DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 	}
 
 	o.GetAABB = func(o *Object) rl.RectangleInt32 {

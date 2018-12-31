@@ -28,6 +28,6 @@ func (o *Object) NewTarget() {
 		}
 
 		rl.DrawCircle(int32(o.Position.X), int32(o.Position.Y), 5, rl.White)
-		drawTextCentered(o.Name, int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
+		DrawTextCentered(o.Name, int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
 	}
 }

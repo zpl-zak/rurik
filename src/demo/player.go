@@ -1,23 +1,9 @@
-/*
-   Copyright 2018 V4 Games
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
-
-package core
+package main
 
 import (
 	"fmt"
+
+	"github.com/zaklaus/rurik/src/core"
 
 	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -30,24 +16,24 @@ const ()
 type player struct{}
 
 // NewPlayer player
-func (p *Object) NewPlayer() {
+func NewPlayer(p *core.Object) {
 	aseData := system.GetAnimData("player")
 	p.Ase = &aseData
 	p.Texture = system.GetTexture("player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
 	p.Update = updatePlayer
 	p.Draw = drawPlayer
-	p.GetAABB = getSpriteAABB
+	p.GetAABB = core.GetSpriteAABB
 	p.HandleCollision = handlePlayerCollision
 	p.Facing = rl.NewVector2(1, 0)
 	p.IsCollidable = true
 
-	LocalPlayer = p
+	core.LocalPlayer = p
 
-	playAnim(p, "StandE")
+	core.PlayAnim(p, "StandE")
 }
 
-func updatePlayer(p *Object, dt float32) {
+func updatePlayer(p *core.Object, dt float32) {
 	p.Ase.Update(dt)
 
 	var moveSpeed float32 = 120
@@ -55,7 +41,7 @@ func updatePlayer(p *Object, dt float32) {
 	p.Movement.X = 0
 	p.Movement.Y = 0
 
-	if CanSave == 0 || bitsHas(CanSave, isInChallenge) {
+	if core.CanSave == 0 || core.BitsHas(core.CanSave, core.IsInChallenge) {
 		p.Movement.X = system.GetAxis("horizontal")
 		p.Movement.Y = system.GetAxis("vertical")
 	}
@@ -87,13 +73,13 @@ func updatePlayer(p *Object, dt float32) {
 		tag += "W"
 	}
 
-	playAnim(p, tag)
+	core.PlayAnim(p, tag)
 
 	p.Movement.X *= dt
 	p.Movement.Y *= dt
 
-	resX, okX := CheckForCollision(p, int32(p.Movement.X), 0)
-	resY, okY := CheckForCollision(p, 0, int32(p.Movement.Y))
+	resX, okX := core.CheckForCollision(p, int32(p.Movement.X), 0)
+	resY, okY := core.CheckForCollision(p, 0, int32(p.Movement.Y))
 
 	if okX {
 		p.Movement.X = float32(resX.ResolveX)
@@ -107,19 +93,19 @@ func updatePlayer(p *Object, dt float32) {
 	p.Position.Y += p.Movement.Y
 }
 
-func drawPlayer(p *Object) {
-	source := getSpriteRectangle(p)
-	dest := getSpriteOrigin(p)
+func drawPlayer(p *core.Object) {
+	source := core.GetSpriteRectangle(p)
+	dest := core.GetSpriteOrigin(p)
 
-	if DebugMode && p.DebugVisible {
-		c := getSpriteAABB(p)
+	if core.DebugMode && p.DebugVisible {
+		c := core.GetSpriteAABB(p)
 		rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
-		drawTextCentered(p.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
+		core.DrawTextCentered(p.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 	}
 
-	rl.DrawTexturePro(*p.Texture, source, dest, rl.Vector2{}, 0, SkyColor)
+	rl.DrawTexturePro(*p.Texture, source, dest, rl.Vector2{}, 0, core.SkyColor)
 }
 
-func handlePlayerCollision(res *resolv.Collision, p, other *Object) {
+func handlePlayerCollision(res *resolv.Collision, p, other *core.Object) {
 	fmt.Println("Collision has happened!")
 }

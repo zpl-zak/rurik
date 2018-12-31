@@ -56,12 +56,12 @@ type Weather struct {
 // WeatherInit sets up the mood by initializing Sky color tint and other properties
 func (w *Weather) WeatherInit(cmap *Map) {
 	var err error
-	w.SkyCurrentColor, err = getColorFromHex(cmap.tilemap.Properties.GetString("skyColor"))
+	w.SkyCurrentColor, err = GetColorFromHex(cmap.tilemap.Properties.GetString("skyColor"))
 
 	if err != nil {
 		SkyColor = rl.White
 	} else {
-		SkyColor = vec3ToColor(w.SkyCurrentColor)
+		SkyColor = Vec3ToColor(w.SkyCurrentColor)
 	}
 
 	w.SkyStages = []weatherStage{}
@@ -77,7 +77,7 @@ func (w *Weather) WeatherInit(cmap *Map) {
 		w.SkyTargetColor = w.SkyStages[0].Color
 		w.SkyTime = w.SkyStages[0].Duration
 		w.SkyTargetTime = w.SkyTime
-		SkyColor = vec3ToColor(w.SkyCurrentColor)
+		SkyColor = Vec3ToColor(w.SkyCurrentColor)
 		w.SkyStageIndex = 0
 
 		if err != nil {
@@ -99,12 +99,12 @@ func (w *Weather) UpdateWeather() {
 		}
 
 		if w.SkyTargetTime != 0 {
-			w.SkyCurrentColor = lerpColor(w.SkyLastColor, w.SkyTargetColor, 1-w.SkyTime/w.SkyTargetTime)
+			w.SkyCurrentColor = LerpColor(w.SkyLastColor, w.SkyTargetColor, 1-w.SkyTime/w.SkyTargetTime)
 		} else {
 			w.SkyCurrentColor = w.SkyTargetColor
 		}
 
-		SkyColor = vec3ToColor(w.SkyCurrentColor)
+		SkyColor = Vec3ToColor(w.SkyCurrentColor)
 	}
 
 	if DebugMode {
@@ -135,7 +135,7 @@ func (w *Weather) nextSkyStage() {
 }
 
 func (w *Weather) appendSkyStage(cmap *Map, SkyName, stageName string) {
-	color, err := getColorFromHex(cmap.tilemap.Properties.GetString(SkyName))
+	color, err := GetColorFromHex(cmap.tilemap.Properties.GetString(SkyName))
 
 	if err == nil {
 		w.UseTimeCycle = true

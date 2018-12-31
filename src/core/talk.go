@@ -73,7 +73,7 @@ func (o *Object) NewTalk() {
 			return
 		}
 
-		CanSave = bitsSet(CanSave, isInDialogue)
+		CanSave = BitsSet(CanSave, IsInDialogue)
 
 		if o.LastTrigger == 0 {
 			o.LastTrigger = rl.GetTime()
@@ -119,7 +119,7 @@ func (o *Object) NewTalk() {
 
 			if o.currentText == nil {
 				o.Started = false
-				CanSave = bitsClear(CanSave, isInDialogue)
+				CanSave = BitsClear(CanSave, IsInDialogue)
 				o.WasExecuted = true
 			}
 
@@ -212,7 +212,7 @@ func (o *Object) NewTalk() {
 					rl.White,
 				)
 
-				if isMouseInRectangle(chsX, ypos, 200, 15) {
+				if IsMouseInRectangle(chsX, ypos, 200, 15) {
 					if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 						rl.DrawRectangleLines(chsX, ypos, 200, 15, rl.Pink)
 					} else {

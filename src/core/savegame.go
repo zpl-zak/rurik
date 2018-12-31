@@ -33,11 +33,20 @@ var (
 )
 
 const (
-	isInMenu Bits = 1 << iota
-	isSequenceHappening
-	isPlayerDead
-	isInDialogue
-	isInChallenge
+	// IsInMenu is player in menu
+	IsInMenu Bits = 1 << iota
+
+	// IsSequenceHappening is a scripted sequence happening
+	IsSequenceHappening
+
+	// IsPlayerDead is it game over yet
+	IsPlayerDead
+
+	// IsInDialogue is player currently in an active dialogue
+	IsInDialogue
+
+	// IsInChallenge is player in a danger zone which disallows saving the game
+	IsInChallenge
 )
 
 // SaveSystem manages game save states

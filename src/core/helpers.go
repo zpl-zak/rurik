@@ -37,11 +37,19 @@ const (
 // Bits represent bitflags
 type Bits uint64
 
-func bitsSet(b, flag Bits) Bits    { return b | flag }
-func bitsClear(b, flag Bits) Bits  { return b &^ flag }
-func bitsToggle(b, flag Bits) Bits { return b ^ flag }
-func bitsHas(b, flag Bits) bool    { return b&flag != 0 }
+// BitsSet sets a bit
+func BitsSet(b, flag Bits) Bits { return b | flag }
 
+// BitsClear clears a bit
+func BitsClear(b, flag Bits) Bits { return b &^ flag }
+
+// BitsToggle toggles a bit on/off
+func BitsToggle(b, flag Bits) Bits { return b ^ flag }
+
+// BitsHas checks if a bit is set on
+func BitsHas(b, flag Bits) bool { return b&flag != 0 }
+
+// RayRectangleInt32ToResolv conv
 func rayRectangleInt32ToResolv(rec *resolv.Rectangle, i rl.RectangleInt32) {
 	*rec = resolv.Rectangle{
 		BasicShape: resolv.BasicShape{
@@ -54,7 +62,8 @@ func rayRectangleInt32ToResolv(rec *resolv.Rectangle, i rl.RectangleInt32) {
 	}
 }
 
-func drawTextCentered(text string, posX, posY, fontSize int32, color rl.Color) {
+// DrawTextCentered draws a text that is centered
+func DrawTextCentered(text string, posX, posY, fontSize int32, color rl.Color) {
 	if fontSize < 10 {
 		fontSize = 10
 	}
@@ -62,20 +71,23 @@ func drawTextCentered(text string, posX, posY, fontSize int32, color rl.Color) {
 	rl.DrawText(text, posX-rl.MeasureText(text, fontSize)/2, posY, fontSize, color)
 }
 
-func vector2Lerp(v1, v2 rl.Vector2, amount float32) (result rl.Vector2) {
+// Vector2Lerp lerps vec2
+func Vector2Lerp(v1, v2 rl.Vector2, amount float32) (result rl.Vector2) {
 	result.X = v1.X + amount*(v2.X-v1.X)
 	result.Y = v1.Y + amount*(v2.Y-v1.Y)
 
 	return result
 }
 
-func scalarLerp(v1, v2 float32, amount float32) (result float32) {
+// ScalarLerp lerps a scalar value
+func ScalarLerp(v1, v2 float32, amount float32) (result float32) {
 	result = v1 + amount*(v2-v1)
 
 	return result
 }
 
-func stringToVec2(inp string) rl.Vector2 {
+// StringToVec2 conv
+func StringToVec2(inp string) rl.Vector2 {
 	comps := strings.Split(inp, " ")
 	x, _ := strconv.ParseFloat(comps[0], 32)
 	y, _ := strconv.ParseFloat(comps[1], 32)
@@ -83,11 +95,13 @@ func stringToVec2(inp string) rl.Vector2 {
 	return rl.NewVector2(float32(x), float32(y))
 }
 
-func lerpColor(a, b rl.Vector3, t float64) rl.Vector3 {
+// LerpColor lerps Color
+func LerpColor(a, b rl.Vector3, t float64) rl.Vector3 {
 	return raymath.Vector3Lerp(a, b, float32(t))
 }
 
-func getColorFromHex(hex string) (rl.Vector3, error) {
+// GetColorFromHex conv
+func GetColorFromHex(hex string) (rl.Vector3, error) {
 	if hex == "" {
 		return rl.Vector3{}, fmt.Errorf("hex not specified")
 	}
@@ -107,7 +121,8 @@ func getColorFromHex(hex string) (rl.Vector3, error) {
 	return d, nil
 }
 
-func vec3ToColor(a rl.Vector3) rl.Color {
+// Vec3ToColor conv
+func Vec3ToColor(a rl.Vector3) rl.Color {
 	return rl.NewColor(
 		uint8(a.X*255),
 		uint8(a.Y*255),
@@ -116,7 +131,8 @@ func vec3ToColor(a rl.Vector3) rl.Color {
 	)
 }
 
-func colorToVec3(a rl.Color) rl.Vector3 {
+// ColorToVec3 conv
+func ColorToVec3(a rl.Color) rl.Vector3 {
 	return rl.NewVector3(
 		float32(a.R)/255.0,
 		float32(a.G)/255.0,
@@ -124,15 +140,17 @@ func colorToVec3(a rl.Color) rl.Vector3 {
 	)
 }
 
-func mixColor(a, b rl.Color) rl.Color {
-	return vec3ToColor(raymath.Vector3Lerp(
-		colorToVec3(a),
-		colorToVec3(b),
+// MixColor mixes two colors together
+func MixColor(a, b rl.Color) rl.Color {
+	return Vec3ToColor(raymath.Vector3Lerp(
+		ColorToVec3(a),
+		ColorToVec3(b),
 		0.5,
 	))
 }
 
-func isMouseInRectangle(x, y, x2, y2 int32) bool {
+// IsMouseInRectangle checks whether a mouse is inside of a rectangle
+func IsMouseInRectangle(x, y, x2, y2 int32) bool {
 	x2 = x + x2
 	y2 = y + y2
 
@@ -150,7 +168,8 @@ func isMouseInRectangle(x, y, x2, y2 int32) bool {
 	return false
 }
 
-func getSpriteAABB(o *Object) rl.RectangleInt32 {
+// GetSpriteAABB retrieves Aseprite boundaries
+func GetSpriteAABB(o *Object) rl.RectangleInt32 {
 	if o.Ase == nil {
 		return rl.RectangleInt32{
 			X:      int32(o.Position.X),
@@ -168,7 +187,8 @@ func getSpriteAABB(o *Object) rl.RectangleInt32 {
 	}
 }
 
-func playAnim(p *Object, animName string) {
+// PlayAnim plays an animation for a given object
+func PlayAnim(p *Object, animName string) {
 	if p.Ase.GetAnimation(animName) != nil {
 		p.Ase.Play(animName)
 	} else {
@@ -176,16 +196,19 @@ func playAnim(p *Object, animName string) {
 	}
 }
 
-func getSpriteRectangle(o *Object) rl.Rectangle {
+// GetSpriteRectangle retrieves sprite's bounds
+func GetSpriteRectangle(o *Object) rl.Rectangle {
 	sourceX, sourceY := o.Ase.GetFrameXY()
 	return rl.NewRectangle(float32(sourceX), float32(sourceY), float32(o.Ase.FrameWidth), float32(o.Ase.FrameHeight))
 }
 
-func getSpriteOrigin(o *Object) rl.Rectangle {
+// GetSpriteOrigin retrieves sprite's origin
+func GetSpriteOrigin(o *Object) rl.Rectangle {
 	return rl.NewRectangle(o.Position.X-float32(o.Ase.FrameWidth/2), o.Position.Y-float32(o.Ase.FrameHeight/2), float32(o.Ase.FrameWidth), float32(o.Ase.FrameHeight))
 }
 
-func isPointWithinRectangle(p rl.Vector2, r rl.Rectangle) bool {
+// IsPointWithinRectangle checks whether a point is within a rectangle
+func IsPointWithinRectangle(p rl.Vector2, r rl.Rectangle) bool {
 	if p.X > r.X && p.X < (r.X+r.Width) &&
 		p.Y > r.Y && p.Y < (r.Y+r.Height) {
 		return true
@@ -200,8 +223,8 @@ func GetColorFromProperty(o *tiled.Object, name string) rl.Color {
 	var color rl.Color
 
 	if colorHex != "" {
-		colorVec, _ := getColorFromHex(colorHex)
-		color = vec3ToColor(colorVec)
+		colorVec, _ := GetColorFromHex(colorHex)
+		color = Vec3ToColor(colorVec)
 	} else {
 		color = rl.Blank
 	}
@@ -215,7 +238,7 @@ func GetVector2FromProperty(o *tiled.Object, name string) rl.Vector2 {
 	var vec rl.Vector2
 
 	if txtVec != "" {
-		vec = stringToVec2(txtVec)
+		vec = StringToVec2(txtVec)
 	}
 
 	return vec
@@ -236,7 +259,8 @@ func GetFloatFromProperty(o *tiled.Object, name string) float32 {
 	return flt
 }
 
-func isPointWithinFrustum(p rl.Vector2) bool {
+// IsPointWithinFrustum checks whether a point is within camera's frustum
+func IsPointWithinFrustum(p rl.Vector2) bool {
 	if MainCamera == nil {
 		return false
 	}
@@ -253,5 +277,5 @@ func isPointWithinFrustum(p rl.Vector2) bool {
 		Height: float32(system.ScreenHeight)/MainCamera.Zoom + FrustumSafeMargin*2,
 	}
 
-	return isPointWithinRectangle(p, cam)
+	return IsPointWithinRectangle(p, cam)
 }

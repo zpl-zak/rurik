@@ -20,6 +20,9 @@ func (g *demoGameMode) Init() {
 	// test class
 	err := core.RegisterClass("demo_testclass", "TestClass", NewTestClass)
 
+	// player class
+	core.RegisterClass("player", "Player", NewPlayer)
+
 	if err != nil {
 		fmt.Printf("Custom type registration has failed: %s", err.Error())
 	}

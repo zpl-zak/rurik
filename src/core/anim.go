@@ -66,20 +66,20 @@ func (o *Object) NewAnim() {
 		}
 	}
 
-	o.GetAABB = getSpriteAABB
+	o.GetAABB = GetSpriteAABB
 
 	o.Draw = func(o *Object) {
 		if o.Ase == nil {
 			return
 		}
 
-		source := getSpriteRectangle(o)
-		dest := getSpriteOrigin(o)
+		source := GetSpriteRectangle(o)
+		dest := GetSpriteOrigin(o)
 
 		if DebugMode && o.DebugVisible {
-			c := getSpriteAABB(o)
+			c := GetSpriteAABB(o)
 			rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
-			drawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
+			DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
 
 		rl.DrawTexturePro(*o.Texture, source, dest, rl.Vector2{}, o.Rotation, SkyColor)

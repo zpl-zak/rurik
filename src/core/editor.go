@@ -21,7 +21,7 @@ import (
 )
 
 var (
-	rootIsCollapsed = false
+	rootIsCollapsed = true
 	rootElement     = &editorElement{
 		text:        "editor",
 		isCollapsed: &rootIsCollapsed,
@@ -62,7 +62,7 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 	color := rl.White
 	var ext int32 = 10
 
-	if element.isCollapsed != nil && isMouseInRectangle(offsetX, offsetY, rl.MeasureText(element.text, 10), 10) {
+	if element.isCollapsed != nil && IsMouseInRectangle(offsetX, offsetY, rl.MeasureText(element.text, 10), 10) {
 		color = rl.Red
 
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {

@@ -104,7 +104,6 @@ type Object struct {
 	Deserialize     func(o *Object, data string)
 
 	// Specialized data
-	player
 	collision
 	camera
 	wait
@@ -128,7 +127,6 @@ func (w *World) flushObjects() {
 
 func initObjectTypes() {
 	objTypes = map[string]string{
-		"player": "Player",
 		"col":    "Collision",
 		"cam":    "Camera",
 		"target": "Target",
@@ -448,7 +446,7 @@ func (w *World) DrawObjects() {
 			orig.X += float32(rec.Width / 2.0)
 			orig.Y += float32(rec.Height / 2.0)
 
-			if !isPointWithinFrustum(orig) && cullingEnabled {
+			if !IsPointWithinFrustum(orig) && cullingEnabled {
 				continue
 			}
 

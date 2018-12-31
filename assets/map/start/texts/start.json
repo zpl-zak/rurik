@@ -1,0 +1,31 @@
+{
+    "name": "ZaKlaus",
+    "avatar": "avatar.png",
+    "text": "Welcome to Rurik Framework!\n This demo showcases the framework's possibilities and features.\n Make a selection, please!",
+    "choices": [
+        {
+            "text": "Scripting & dialogues (demo)",
+            "next": {
+                "skipPrompt": true,
+                "event": "onDemoMapLoadRequest",
+                "eventArgs": "demo"
+            }        
+        },
+        {
+            "text": "Lighting system (village)",
+            "next": {
+                "skipPrompt": true,
+                "event": "onDemoMapLoadRequest",
+                "eventArgs": "village"
+            }        
+        },
+        {
+            "text": "Stress test (stress)",
+            "next": {
+                "skipPrompt": true,
+                "event": "onDemoMapLoadRequest",
+                "eventArgs": "stress"
+            }        
+        }
+    ]
+}

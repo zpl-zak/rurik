@@ -21,6 +21,10 @@ func newMinimap() *minimapProg {
 }
 
 func (m *minimapProg) Apply() {
+	if core.MainCamera == nil {
+		return
+	}
+
 	minimapCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 	minimapCamera.Offset = rl.Vector2{
 		X: float32(int(-core.MainCamera.Position.X + float32(320)/2)),

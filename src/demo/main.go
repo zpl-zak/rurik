@@ -43,7 +43,7 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	mapName := flag.String("map", "village", "Map name to play.")
+	mapName := flag.String("map", "start", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	forceMapLoad := flag.Bool("forceload", false, "Forces map load and skips the title screen.")
 	flag.Parse()
@@ -57,7 +57,8 @@ func main() {
 		core.DebugMode = *dbgMode == 1
 	}
 
-	core.InitCore("Demo game | Rurik Engine", windowW, windowH, screenW, screenH)
+	rl.SetConfigFlags(rl.FlagWindowResizable)
+	core.InitCore("Demo game | Rurik Framework", windowW, windowH, screenW, screenH)
 
 	demoGame := &demoGameMode{}
 
@@ -103,7 +104,7 @@ func updateInternals(g *demoGameMode) {
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF9) {
-		if core.CurrentMap != nil {
+		if core.CurrentMap != nil && core.LocalPlayer != nil {
 			w := core.CurrentMap.World
 			name := fmt.Sprintf("dynobj:%d", dynobjCounter)
 			newObject := w.NewObjectPro(name, "target")
@@ -119,14 +120,16 @@ func updateInternals(g *demoGameMode) {
 		}
 	}
 
-	if core.DebugMode {
-		wheel := rl.GetMouseWheelMove()
-		if wheel != 0 {
-			core.MainCamera.SetCameraZoom(core.MainCamera.Zoom + float32(wheel)*0.12)
+	if core.MainCamera != nil {
+		if core.DebugMode {
+			wheel := rl.GetMouseWheelMove()
+			if wheel != 0 {
+				core.MainCamera.SetCameraZoom(core.MainCamera.Zoom + float32(wheel)*0.12)
+			}
 		}
-	}
 
-	core.RenderCamera.Zoom = core.MainCamera.Zoom
+		core.RenderCamera.Zoom = core.MainCamera.Zoom
+	}
 
 	if core.WindowWasResized {
 		initShaders()

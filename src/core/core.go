@@ -91,8 +91,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 	var frameCounter float64
 	var frames int32
 
-	defer shutdown()
-
 	if CurrentGameMode == nil {
 		log.Fatalf("No GameMode has been set!\n")
 		return
@@ -155,9 +153,11 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 
 			shouldRender = true
 
-			RenderCamera.Offset = rl.Vector2{
-				X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + float32(system.ScreenWidth)/2)),
-				Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + float32(system.ScreenHeight)/2)),
+			if MainCamera != nil {
+				RenderCamera.Offset = rl.Vector2{
+					X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + float32(system.ScreenWidth)/2)),
+					Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + float32(system.ScreenHeight)/2)),
+				}
 			}
 
 			unprocessedTime -= float64(system.FrameTime)
@@ -176,8 +176,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			}
 
 			frames++
-		} else {
-			//time.Sleep(time.Millisecond)
 		}
 	}
 
@@ -185,6 +183,8 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		pprof.StopCPUProfile()
 		cpuProfiler.Close()
 	}
+
+	shutdown()
 }
 
 func shutdown() {
@@ -202,9 +202,15 @@ func setupDefaultCamera() {
 	}
 
 	defCam := CurrentMap.World.NewObjectPro("main_camera", "cam")
-	defCam.Position = LocalPlayer.Position
-	defCam.Mode = CameraModeFollow
-	defCam.Follow = LocalPlayer
+
+	if LocalPlayer != nil {
+		defCam.Position = LocalPlayer.Position
+		defCam.Mode = CameraModeFollow
+		defCam.Follow = LocalPlayer
+	} else {
+		defCam.Mode = CameraModeStatic
+	}
+
 	defCam.Visible = false
 	defCam.IsPersistent = false
 

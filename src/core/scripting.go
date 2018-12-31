@@ -229,6 +229,20 @@ func initScriptingSystem() {
 		return ret
 	})
 
+	ScriptingContext.Set("newColor", func(call otto.FunctionCall) otto.Value {
+		r32, _ := call.Argument(0).ToInteger()
+		r := uint8(r32)
+		g32, _ := call.Argument(1).ToInteger()
+		g := uint8(g32)
+		b32, _ := call.Argument(2).ToInteger()
+		b := uint8(b32)
+		a32, _ := call.Argument(3).ToInteger()
+		a := uint8(a32)
+
+		ret, _ := otto.ToValue(rl.NewColor(r, g, b, a))
+		return ret
+	})
+
 	ScriptingContext.Set("fireEvent", func(call otto.FunctionCall) otto.Value {
 		eventName := call.Argument(0).String()
 
@@ -278,6 +292,7 @@ func updateScriptingContext() {
 	ScriptingContext.Set("LocalPlayer", LocalPlayer)
 	ScriptingContext.Set("MainCamera", MainCamera)
 	ScriptingContext.Set("CurrentMap", CurrentMap)
+	ScriptingContext.Set("CurrentGameMode", CurrentGameMode)
 
 	if CurrentMap != nil {
 		ScriptingContext.Set("CurrentWorld", CurrentMap.World)

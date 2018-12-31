@@ -55,7 +55,7 @@ const (
 type Map struct {
 	tilemap  *tiled.Map
 	tilesets map[string]*tilesetData
-	mapName  string
+	Name     string
 	World    *World
 	Weather  Weather
 }
@@ -105,7 +105,7 @@ func LoadMap(name string) *Map {
 		cmap.tilemap.Properties = &tiled.Properties{}
 	}
 
-	cmap.mapName = name
+	cmap.Name = name
 
 	world := &World{
 		Objects: []*Object{},
@@ -215,7 +215,7 @@ func UpdateMapUI() {
 		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
 
 		if !mapNodeIsCollapsed {
-			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.mapName), nil)
+			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.Name), nil)
 			pushEditorElement(mapNode, fmt.Sprintf("no. of tilesets: %d", len(CurrentMap.tilesets)), nil)
 
 			tilesetsNode := pushEditorElement(mapNode, "tilesets", &tilesetsNodeIsCollapsed)
@@ -263,7 +263,7 @@ func drawWorldUI(mapNode *editorElement) {
 // Useful during development due to runtime asset hot-reloading capability.
 func ReloadMap(oldMap *Map) *Map {
 	oldMap.World.flushObjects()
-	return LoadMap(oldMap.mapName)
+	return LoadMap(oldMap.Name)
 }
 
 func (m *Map) loadMapTilesetData(tilesetName string) *tilesetData {
@@ -395,6 +395,10 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 			id := int(tile.ID)
 
 			if tile.IsNil() {
+				continue
+			}
+
+			if tile.Tileset == nil {
 				continue
 			}
 

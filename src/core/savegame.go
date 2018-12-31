@@ -151,14 +151,14 @@ type defaultObjectData struct {
 
 func defaultSaveProvider(state *GameState) defaultSaveData {
 	save := defaultSaveData{
-		CurrentMap:   CurrentMap.mapName,
+		CurrentMap:   CurrentMap.Name,
 		Maps:         []defaultMapData{},
 		GameModeData: CurrentGameMode.Serialize(),
 	}
 
 	for _, v := range Maps {
 		mapData := defaultMapData{
-			MapName:     v.mapName,
+			MapName:     v.Name,
 			Objects:     []defaultObjectData{},
 			WeatherData: v.Weather,
 		}

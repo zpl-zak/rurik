@@ -18,6 +18,7 @@ package core
 
 import (
 	"fmt"
+	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -111,10 +112,28 @@ func (o *Object) NewTalk() {
 
 			tgt, _ := o.world.FindObject(o.currentText.Target)
 
+			evnt := o.currentText.Event
+			evntArglist := o.currentText.EventArgs
+			evntArgs := []string{evntArglist}
+
+			if strings.Contains(evntArglist, ";") {
+				evntArgs = strings.Split(evntArglist, ";")
+			}
+
 			if len(o.currentText.Choices) > 0 {
 				o.currentText = o.currentText.Choices[o.selectedChoice].Next
 			} else {
 				o.currentText = o.currentText.Next
+			}
+
+			if o.currentText != nil && o.currentText.SkipPrompt {
+				tgt, _ = o.world.FindObject(o.currentText.Target)
+
+				evnt = o.currentText.Event
+				evntArglist = o.currentText.EventArgs
+				evntArgs = []string{evntArglist}
+
+				o.currentText = nil
 			}
 
 			if o.currentText == nil {
@@ -125,6 +144,10 @@ func (o *Object) NewTalk() {
 
 			if tgt != nil {
 				tgt.Trigger(tgt, o)
+			}
+
+			if evnt != "" {
+				FireEvent(evnt, evntArgs)
 			}
 		}
 

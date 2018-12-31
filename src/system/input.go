@@ -84,7 +84,7 @@ func InitInput() {
 	})
 
 	BindInputAction("use", inputAction{
-		allKeys:    []int32{rl.KeyE},
+		allKeys:    []int32{rl.KeyE, rl.KeyEnter},
 		joyButtons: []int32{rl.GamepadXboxButtonA},
 	})
 }

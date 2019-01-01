@@ -98,11 +98,19 @@ func updateInternals(g *demoGameMode) {
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF2) {
-		core.CurrentSaveSystem.SaveGame(0, "demo")
+		if g.playState == statePlay {
+			if core.CurrentSaveSystem.SaveGame(0, "demo") {
+				core.PushNotificationEx("Game has been saved!", 2, rl.RayWhite)
+			}
+		}
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF3) {
-		core.CurrentSaveSystem.LoadGame(0)
+		if g.playState == statePlay {
+			if core.CurrentSaveSystem.LoadGame(0) {
+				core.PushNotificationEx("Game has been loaded!", 2, rl.RayWhite)
+			}
+		}
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF9) {
@@ -120,6 +128,10 @@ func updateInternals(g *demoGameMode) {
 
 			dynobjCounter++
 		}
+	}
+
+	if core.DebugMode && rl.IsKeyPressed(rl.KeyF10) {
+		core.CloseGame()
 	}
 
 	if core.MainCamera != nil {

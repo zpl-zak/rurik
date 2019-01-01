@@ -88,10 +88,10 @@ func (s *SaveSystem) InitSaveSystem() {
 }
 
 // SaveGame saves the game state
-func (s *SaveSystem) SaveGame(slotIndex int, stateName string) {
+func (s *SaveSystem) SaveGame(slotIndex int, stateName string) bool {
 	if CanSave != 0 {
 		log.Printf("Cannot save the game right now! Reason: %v\n", CanSave)
-		return
+		return false
 	}
 
 	state := GameState{
@@ -105,14 +105,16 @@ func (s *SaveSystem) SaveGame(slotIndex int, stateName string) {
 	data, _ := jsoniter.Marshal(s)
 
 	ioutil.WriteFile("gamesav.db", data, 0600)
+	return true
 }
 
 // LoadGame restores the game state
-func (s *SaveSystem) LoadGame(slotIndex int) {
+func (s *SaveSystem) LoadGame(slotIndex int) bool {
 	state := &s.States[slotIndex]
 
 	initScriptingSystem()
 	defaultLoadProvider(state)
+	return true
 }
 
 // ShutdownSaveSystem closes down the connection

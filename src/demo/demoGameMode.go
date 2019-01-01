@@ -44,6 +44,11 @@ func (g *demoGameMode) Shutdown() {}
 
 func (g *demoGameMode) Update() {
 	switch g.playState {
+	case statePaused:
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			g.playState = statePlay
+		}
+
 	case stateMenu:
 		g.textWave = int32(math.Round(math.Sin(float64(rl.GetTime()) * 10)))
 
@@ -56,6 +61,10 @@ func (g *demoGameMode) Update() {
 
 	case statePlay:
 		core.UpdateMaps()
+
+		if rl.IsKeyPressed(rl.KeyEscape) && core.CurrentMap.Name != "start" {
+			g.playState = statePaused
+		}
 	}
 
 	updateInternals(g)
@@ -96,6 +105,11 @@ func (g *demoGameMode) DrawUI() {
 	case stateMenu:
 		core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20+g.textWave, 24, rl.RayWhite)
 		core.DrawTextCentered("Press E/ENTER to continue", system.ScreenWidth/2, system.ScreenHeight/2+5+g.textWave, 14, rl.White)
+
+	case statePaused:
+		rl.DrawRectangle(0, 0, system.ScreenWidth, system.ScreenHeight, rl.Fade(rl.Black, 0.8))
+		core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20+g.textWave, 24, rl.RayWhite)
+		core.DrawTextCentered("Press ESC to unpause", system.ScreenWidth/2, system.ScreenHeight/2+5+g.textWave, 14, rl.White)
 
 	case statePlay:
 		core.DrawMapUI()
@@ -148,6 +162,9 @@ func (g *demoGameMode) PostDraw() {
 
 	switch g.playState {
 	case stateMenu:
+
+	case statePaused:
+		fallthrough
 
 	case statePlay:
 		// Generates and applies the lightmaps

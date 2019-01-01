@@ -4,4 +4,8 @@
     addEventHandler("onDemoMapLoadRequest", function (mapName) {
         CurrentGameMode.LoadMap(mapName)
     })
+
+    addEventHandler("onGameExitRequest", function () {
+        exitGame()
+    })
 }

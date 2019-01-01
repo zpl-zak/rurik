@@ -25,7 +25,16 @@
                 "skipPrompt": true,
                 "event": "onDemoMapLoadRequest",
                 "eventArgs": "stress"
-            }        
+            }
+        },
+        {
+            "text": "Exit demo",
+            "next": {
+                "name": "ZaKlaus",
+                "avatar":"avatar.png",
+                "text": "Thank you for testing the tech demo!",
+                "event": "onGameExitRequest"
+            }
         }
     ]
 }

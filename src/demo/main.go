@@ -33,6 +33,7 @@ var (
 const (
 	stateMenu = iota
 	statePlay
+	statePaused
 )
 
 func init() {
@@ -57,6 +58,7 @@ func main() {
 		core.DebugMode = *dbgMode == 1
 	}
 
+	rl.SetExitKey(0)
 	rl.SetConfigFlags(rl.FlagWindowResizable)
 	core.InitCore("Demo game | Rurik Framework", windowW, windowH, screenW, screenH)
 

@@ -86,10 +86,7 @@ func updateInternals(g *demoGameMode) {
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
-		core.FlushMaps()
-		core.LoadMap(playMapName)
-		core.InitMap()
-		g.playState = statePlay
+		loadStartMap(g)
 		return
 	}
 
@@ -171,4 +168,11 @@ func drawBackground() {
 			)
 		}
 	}
+}
+
+func loadStartMap(g *demoGameMode) {
+	core.FlushMaps()
+	core.LoadMap(playMapName)
+	core.InitMap()
+	g.playState = statePlay
 }

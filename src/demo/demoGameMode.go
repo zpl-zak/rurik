@@ -49,6 +49,10 @@ func (g *demoGameMode) Update() {
 			g.playState = statePlay
 		}
 
+		if system.IsKeyPressed("use") {
+			loadStartMap(g)
+		}
+
 	case stateMenu:
 		g.textWave = int32(math.Round(math.Sin(float64(rl.GetTime()) * 10)))
 
@@ -109,7 +113,7 @@ func (g *demoGameMode) DrawUI() {
 	case statePaused:
 		rl.DrawRectangle(0, 0, system.ScreenWidth, system.ScreenHeight, rl.Fade(rl.Black, 0.8))
 		core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20+g.textWave, 24, rl.RayWhite)
-		core.DrawTextCentered("Press ESC to unpause", system.ScreenWidth/2, system.ScreenHeight/2+5+g.textWave, 14, rl.White)
+		core.DrawTextCentered("Press ESC to unpause or E/ENTER to return to the menu", system.ScreenWidth/2, system.ScreenHeight/2+5+g.textWave, 14, rl.White)
 
 	case statePlay:
 		core.DrawMapUI()

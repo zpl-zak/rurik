@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	rl "github.com/zaklaus/raylib-go/raylib"
 
 	"github.com/zaklaus/rurik/src/core"
@@ -11,14 +13,26 @@ import (
 // Instead of relying on Styling structures, that on their own are quite limited, this approach
 // offers full freedom to creativity at the expense of having duplicate code.
 
+type demoTalkMenuData struct {
+	WaveTime int32
+}
+
+func (d demoTalkMenuData) Serialize() string        { return "{}" }
+func (d demoTalkMenuData) Deserialize(input string) {}
+
 // NewTalkDemo class
 func NewTalkDemo(o *core.Object) {
 	o.NewTalk()
+
+	o.UserData = demoTalkMenuData{}
 
 	o.DrawUI = func(o *core.Object) {
 		if !o.Started {
 			return
 		}
+
+		mnu := o.UserData.(demoTalkMenuData)
+		mnu.WaveTime = int32(math.Round(math.Sin(float64(rl.GetTime()) * 40)))
 
 		width := system.ScreenWidth
 		start := system.ScreenHeight / 2
@@ -29,6 +43,8 @@ func NewTalkDemo(o *core.Object) {
 		// choices
 		chsX := width / 2
 		chsY := start + 40
+
+		rl.DrawRectangle(chsX-120+mnu.WaveTime, chsY-20, 240+mnu.WaveTime, int32(len(ot.Choices))*15+40, rl.Fade(rl.Black, 0.25))
 
 		if len(ot.Choices) > 0 {
 			for idx, ch := range ot.Choices {
@@ -60,11 +76,11 @@ func NewTalkDemo(o *core.Object) {
 				}
 			}
 		} else {
-			rl.DrawRectangle(chsX-100, chsY-2, 200, 15, rl.DarkPurple)
+			rl.DrawRectangle(chsX-100, chsY-5, 200, 15, rl.Blue)
 			core.DrawTextCentered(
 				"Press E to continue...",
 				chsX,
-				chsY,
+				chsY-3,
 				10,
 				rl.White,
 			)

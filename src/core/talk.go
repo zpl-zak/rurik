@@ -26,14 +26,15 @@ import (
 )
 
 const (
-	mouseDoublePress = 500
+	// MouseDoublePress default duration of mouse double press
+	MouseDoublePress = 500
 )
 
 type talk struct {
 	Texts                *Dialogue
-	currentText          *Dialogue
-	selectedChoice       int
-	mouseDoublePressTime int32
+	CurrentText          *Dialogue
+	SelectedChoice       int
+	MouseDoublePressTime int32
 }
 
 type talkData struct {
@@ -81,62 +82,62 @@ func (o *Object) NewTalk() {
 			return
 		}
 
-		if o.mouseDoublePressTime > 0 {
-			o.mouseDoublePressTime -= int32(1000 * dt)
-		} else if o.mouseDoublePressTime < 0 {
-			o.mouseDoublePressTime = 0
+		if o.MouseDoublePressTime > 0 {
+			o.MouseDoublePressTime -= int32(1000 * dt)
+		} else if o.MouseDoublePressTime < 0 {
+			o.MouseDoublePressTime = 0
 		}
 
-		if len(o.currentText.Choices) > 0 {
+		if len(o.CurrentText.Choices) > 0 {
 			if system.IsKeyPressed("up") {
-				o.selectedChoice--
+				o.SelectedChoice--
 
-				if o.selectedChoice < 0 {
-					o.selectedChoice = len(o.currentText.Choices) - 1
+				if o.SelectedChoice < 0 {
+					o.SelectedChoice = len(o.CurrentText.Choices) - 1
 				}
 			}
 
 			if system.IsKeyPressed("down") {
-				o.selectedChoice++
+				o.SelectedChoice++
 
-				if o.selectedChoice >= len(o.currentText.Choices) {
-					o.selectedChoice = 0
+				if o.SelectedChoice >= len(o.CurrentText.Choices) {
+					o.SelectedChoice = 0
 				}
 			}
 		}
 
-		if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.mouseDoublePressTime > 0) {
-			if o.mouseDoublePressTime > 0 {
-				o.mouseDoublePressTime = 0
+		if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && o.MouseDoublePressTime > 0) {
+			if o.MouseDoublePressTime > 0 {
+				o.MouseDoublePressTime = 0
 			}
 
-			tgt, _ := o.world.FindObject(o.currentText.Target)
+			tgt, _ := o.world.FindObject(o.CurrentText.Target)
 
-			evnt := o.currentText.Event
-			evntArglist := o.currentText.EventArgs
+			evnt := o.CurrentText.Event
+			evntArglist := o.CurrentText.EventArgs
 			evntArgs := []string{evntArglist}
 
 			if strings.Contains(evntArglist, ";") {
 				evntArgs = strings.Split(evntArglist, ";")
 			}
 
-			if len(o.currentText.Choices) > 0 {
-				o.currentText = o.currentText.Choices[o.selectedChoice].Next
+			if len(o.CurrentText.Choices) > 0 {
+				o.CurrentText = o.CurrentText.Choices[o.SelectedChoice].Next
 			} else {
-				o.currentText = o.currentText.Next
+				o.CurrentText = o.CurrentText.Next
 			}
 
-			if o.currentText != nil && o.currentText.SkipPrompt {
-				tgt, _ = o.world.FindObject(o.currentText.Target)
+			if o.CurrentText != nil && o.CurrentText.SkipPrompt {
+				tgt, _ = o.world.FindObject(o.CurrentText.Target)
 
-				evnt = o.currentText.Event
-				evntArglist = o.currentText.EventArgs
+				evnt = o.CurrentText.Event
+				evntArglist = o.CurrentText.EventArgs
 				evntArgs = []string{evntArglist}
 
-				o.currentText = nil
+				o.CurrentText = nil
 			}
 
-			if o.currentText == nil {
+			if o.CurrentText == nil {
 				o.Started = false
 				CanSave = BitsClear(CanSave, IsInDialogue)
 				o.WasExecuted = true
@@ -164,9 +165,9 @@ func (o *Object) NewTalk() {
 			o.Texts = data
 		}
 
-		o.currentText = o.Texts
+		o.CurrentText = o.Texts
 
-		InitText(o.currentText)
+		InitText(o.CurrentText)
 
 		o.Started = true
 		o.LastTrigger = 0
@@ -185,7 +186,7 @@ func (o *Object) NewTalk() {
 		rl.DrawRectangle(5, start+5, 32, 32, rl.NewColor(53, 64, 59, 255))
 		rl.DrawRectangleLines(4, start+4, 34, 34, rl.NewColor(55, 148, 110, 255))
 
-		ot := o.currentText
+		ot := o.CurrentText
 
 		// Pos X: 5, Y: 5
 		// Scale W: 34, 35
@@ -223,7 +224,7 @@ func (o *Object) NewTalk() {
 		if len(ot.Choices) > 0 {
 			for idx, ch := range ot.Choices {
 				ypos := chsY + int32(idx)*15 - 2
-				if idx == o.selectedChoice {
+				if idx == o.SelectedChoice {
 					rl.DrawRectangle(chsX, ypos, 200, 15, rl.DarkPurple)
 				}
 
@@ -243,9 +244,9 @@ func (o *Object) NewTalk() {
 					}
 
 					if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-						o.selectedChoice = idx
+						o.SelectedChoice = idx
 
-						o.mouseDoublePressTime = mouseDoublePress
+						o.MouseDoublePressTime = MouseDoublePress
 					}
 				}
 			}

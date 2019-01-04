@@ -21,6 +21,7 @@ func (g *demoGameMode) Init() {
 
 	// test class
 	err := core.RegisterClass("demo_testclass", "TestClass", NewTestClass)
+	core.RegisterClass("talk_demo", "TalkDemo", NewTalkDemo)
 
 	// player class
 	core.RegisterClass("player", "Player", NewPlayer)
@@ -126,7 +127,7 @@ func (g *demoGameMode) DrawUI() {
 			rl.DrawText("Press F9 to spawn a light object.", xoffs, yoffs-64, 12, rl.RayWhite)
 			rl.DrawText("Use your mousewheel to zoom in/out.", xoffs, yoffs-76, 12, rl.RayWhite)
 		} else {
-			core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20, 24, rl.RayWhite)
+			core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/3, 24, rl.RayWhite)
 		}
 
 		if core.CurrentMap.Name == "village" {

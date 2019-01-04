@@ -33,5 +33,5 @@ func (b *bloomProg) Apply() {
 	b.ExtractColors.RenderToTexture(core.WorldTexture, b.TresholdTexture)
 
 	core.BlurRenderTarget(b.TresholdTexture, 10)
-	core.PushRenderTarget(b.TresholdTexture, false, rl.BlendAdditive)
+	core.PushRenderTarget(b.TresholdTexture, true, rl.BlendAdditive)
 }

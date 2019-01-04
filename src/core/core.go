@@ -52,7 +52,7 @@ const (
 	GameVersion = "1.0.0"
 
 	// DefaultDebugShowAll shows all visible debug elements
-	DefaultDebugShowAll = false
+	DefaultDebugShowAll = true
 )
 
 // InitCore initializes the game engine

@@ -119,11 +119,12 @@ func (g *demoGameMode) DrawUI() {
 		core.DrawMapUI()
 
 		if core.CurrentMap.Name != "start" {
-
-			rl.DrawText("Press F5 at any time to go back to the menu.", 5, 40, 12, rl.RayWhite)
-			rl.DrawText("Press F2 to save and F3 to load a game state.", 5, 52, 12, rl.RayWhite)
-			rl.DrawText("Press F9 to spawn a light object.", 5, 64, 12, rl.RayWhite)
-			rl.DrawText("Use your mousewheel to zoom in/out.", 5, 76, 12, rl.RayWhite)
+			var xoffs int32 = 15
+			yoffs := system.ScreenHeight - 120
+			rl.DrawText("Press F5 at any time to go back to the menu.", xoffs, yoffs-40, 12, rl.RayWhite)
+			rl.DrawText("Press F2 to save and F3 to load a game state.", xoffs, yoffs-52, 12, rl.RayWhite)
+			rl.DrawText("Press F9 to spawn a light object.", xoffs, yoffs-64, 12, rl.RayWhite)
+			rl.DrawText("Use your mousewheel to zoom in/out.", xoffs, yoffs-76, 12, rl.RayWhite)
 		} else {
 			core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20, 24, rl.RayWhite)
 		}

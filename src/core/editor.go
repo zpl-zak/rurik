@@ -56,6 +56,8 @@ func DrawEditor() {
 // UpdateEditor updates editor debug UI
 func UpdateEditor() {
 	flushEditorElement()
+
+	DebugShowAll = !rootIsCollapsed
 }
 
 func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {

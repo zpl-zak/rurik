@@ -80,7 +80,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Name:         o.Name,
 		Class:        o.Type,
 		Visible:      true,
-		DebugVisible: DefaultDebugShowAll,
+		DebugVisible: DebugShowAll,
 		Meta:         o,
 		Depends:      []*Object{},
 		Rotation:     float32(o.Rotation),

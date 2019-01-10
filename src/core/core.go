@@ -45,14 +45,14 @@ var (
 
 	// WindowWasResized states whether window was resized at this cycle
 	WindowWasResized = false
+
+	// DebugShowAll shows all visible debug elements
+	DebugShowAll = false
 )
 
 const (
 	// GameVersion describes itself
 	GameVersion = "1.0.0"
-
-	// DefaultDebugShowAll shows all visible debug elements
-	DefaultDebugShowAll = true
 )
 
 // InitCore initializes the game engine

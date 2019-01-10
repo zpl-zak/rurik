@@ -62,8 +62,17 @@ func (g *demoGameMode) Update() {
 			g.playState = stateLevelSelection
 		}
 
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			core.CloseGame()
+			return
+		}
+
 	case stateLevelSelection:
 		g.updateLevelSelection()
+
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			g.playState = stateMenu
+		}
 
 	case statePlay:
 		core.UpdateMaps()

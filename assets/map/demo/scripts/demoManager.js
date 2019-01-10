@@ -48,7 +48,7 @@
         {
             invoke("exitGame", {})
         }
-            })
+    })
 
     addEventHandler("onIntroCutsceneEnds", function() {
         log("Camera is at camera_end, let's start the timer now!")

@@ -86,4 +86,10 @@ func (o *Object) NewScript() {
 		o.WasExecuted = dat.WasExecuted
 		o.CanRepeat = dat.CanRepeat
 	}
+
+	o.Finish = func(o *Object) {
+		if o.AutoStart {
+			o.Trigger(o, nil)
+		}
+	}
 }

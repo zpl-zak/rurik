@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="32" height="16" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="49">
+<map version="1.2" tiledversion="1.2.1" orientation="orthogonal" renderorder="right-down" width="32" height="16" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="50">
  <properties>
   <property name="dawnDuration" type="int" value="6"/>
   <property name="dayDuration" type="int" value="8"/>
@@ -2108,16 +2108,19 @@
    <point/>
   </object>
   <object id="9" name="camera_end" type="target" x="544" y="256">
-   <point/>
-  </object>
-  <object id="10" name="wait_2sec" type="wait" x="544" y="448">
    <properties>
-    <property name="duration" type="int" value="2000"/>
-    <property name="file" value="camFollowPlayer.js"/>
+    <property name="event" value="onIntroCutsceneEnds"/>
    </properties>
    <point/>
   </object>
-  <object id="14" name="intro_cutscene" type="talk" x="288" y="448">
+  <object id="10" name="wait_2sec" type="wait" x="729" y="338">
+   <properties>
+    <property name="duration" type="int" value="2000"/>
+    <property name="event" value="onFollowPlayer"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="14" name="intro_cutscene" type="talk" x="-83" y="379">
    <properties>
     <property name="autostart" value="1"/>
     <property name="depends" value="player"/>
@@ -2125,31 +2128,7 @@
    </properties>
    <point/>
   </object>
-  <object id="15" name="start_demo" type="script" x="192" y="448">
-   <properties>
-    <property name="file" value="startDemo.js"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="16" name="exit_game" type="script" x="128" y="448">
-   <properties>
-    <property name="file" value="exitGame.js"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="17" name="start_quick" type="script" x="64" y="448">
-   <properties>
-    <property name="file" value="camFollowPlayer.js"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="19" name="angry" type="script" x="64" y="512">
-   <properties>
-    <property name="file" value="zoomInAngry.js"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="20" name="bouncing_ball" type="anim" x="448" y="192">
+  <object id="20" name="bouncing_ball" type="anim" x="447" y="192">
    <properties>
     <property name="autostart" value="1"/>
     <property name="colType" value="none"/>
@@ -2161,9 +2140,9 @@
   <object id="23" name="bouncing_ball_talk" type="area" x="480" y="192">
    <properties>
     <property name="canRepeat" value="1"/>
+    <property name="event" value="onBouncingBallTrigger"/>
     <property name="proxy" value="bouncing_ball"/>
     <property name="radius" value="15"/>
-    <property name="talk" value="bouncingBall.json"/>
    </properties>
    <point/>
   </object>
@@ -2175,5 +2154,12 @@
   <object id="44" gid="7" x="608" y="256" width="32" height="32"/>
   <object id="45" type="col" x="608" y="256" width="32" height="96"/>
   <object id="46" type="col" x="384" y="220" width="32.5" height="36.5"/>
+  <object id="49" name="map_kernel" type="script" x="-132" y="208">
+   <properties>
+    <property name="autostart" value="1"/>
+    <property name="file" value="demoManager.js"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
 </map>

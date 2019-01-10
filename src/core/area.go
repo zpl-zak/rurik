@@ -17,6 +17,7 @@
 package core
 
 import (
+	"log"
 	"strconv"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -24,8 +25,9 @@ import (
 )
 
 type area struct {
-	isInCircle bool
-	Talk       *Object
+	isInCircle     bool
+	Talk           *Object
+	triggerOnHover bool
 }
 
 // NewArea trigger zone using various styles of execution
@@ -33,6 +35,7 @@ func (o *Object) NewArea() {
 	o.Finish = func(o *Object) {
 		o.Proxy, _ = o.world.FindObject(o.Meta.Properties.GetString("proxy"))
 		r, _ := strconv.ParseFloat(o.Meta.Properties.GetString("radius"), 32)
+		o.triggerOnHover = o.Meta.Properties.GetString("onhover") == "1"
 		o.Radius = float32(r)
 		o.Radius *= 2
 	}
@@ -40,11 +43,17 @@ func (o *Object) NewArea() {
 	o.Update = func(o *Object, dt float32) {
 		hit := false
 		for _, obj := range o.world.Objects {
+			if obj.CanTrigger == false || obj == o.Proxy {
+				continue
+			}
+
 			vd := raymath.Vector2Distance(getAreaOrigin(o), obj.Position)
 
 			if vd < float32(o.Radius) {
 				hit = true
-				obj.InsideArea(obj, o)
+				if obj.InsideArea(obj, o) || o.triggerOnHover {
+					o.Trigger(o, obj)
+				}
 			}
 		}
 
@@ -63,29 +72,10 @@ func (o *Object) NewArea() {
 	}
 
 	o.Trigger = func(o, inst *Object) {
-
-		if CanSave != 0 {
-			return
-		}
-
-		talkFile := o.Meta.Properties.GetString("talk")
-
-		if talkFile != "" {
-			if o.Talk == nil {
-				o.Talk = o.world.NewObjectPro(o.Name+"_talk", "talk")
-				o.Talk.FileName = talkFile
-				o.Talk.IsPersistent = false
-				o.world.FinalizeObject(o.Talk)
-				o.Talk.CanRepeat = o.CanRepeat
-			}
-
-			if !o.Talk.Started && (rl.GetTime()-o.Talk.LastTrigger) > 1 {
-				o.Talk.Trigger(o.Talk, o)
-			}
-		}
-
-		if o.Target != nil {
-			o.Target.Trigger(o.Target, o)
+		if o.EventName != "" {
+			FireEvent(o.EventName, o.EventArgs)
+		} else {
+			log.Printf("Talk object '%s' has no event attached!\n", o.Name)
 		}
 	}
 }

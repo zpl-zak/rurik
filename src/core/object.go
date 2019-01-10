@@ -40,7 +40,8 @@ type Object struct {
 	Size             []int32
 	Meta             *tiled.Object
 	Depends          []*Object
-	Target           *Object
+	EventName        string
+	EventArgs        []string
 	Proxy            *Object
 	ProxyName        string
 	FileName         string
@@ -53,6 +54,7 @@ type Object struct {
 	Started          bool
 	WasExecuted      bool
 	CanRepeat        bool
+	CanTrigger       bool
 	IsPersistent     bool
 	Fullbright       bool
 	TintColor        rl.Color
@@ -77,7 +79,7 @@ type Object struct {
 	DrawUI          func(o *Object)
 	Trigger         func(o, inst *Object)
 	HandleCollision func(res *resolv.Collision, o, other *Object)
-	InsideArea      func(o, a *Object)
+	InsideArea      func(o, a *Object) bool
 	GetAABB         func(o *Object) rl.RectangleInt32
 	Serialize       func(o *Object) string
 	Deserialize     func(o *Object, data string)

@@ -49,6 +49,18 @@ func BitsToggle(b, flag Bits) Bits { return b ^ flag }
 // BitsHas checks if a bit is set on
 func BitsHas(b, flag Bits) bool { return b&flag != 0 }
 
+// CompileEventArgs returns cooked event arguments
+func CompileEventArgs(args string) []string {
+	evntArglist := args
+	evntArgs := []string{evntArglist}
+
+	if strings.Contains(evntArglist, ";") {
+		evntArgs = strings.Split(evntArglist, ";")
+	}
+
+	return evntArgs
+}
+
 // RayRectangleInt32ToResolv conv
 func rayRectangleInt32ToResolv(rec *resolv.Rectangle, i rl.RectangleInt32) {
 	*rec = resolv.Rectangle{

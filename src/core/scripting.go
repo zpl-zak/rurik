@@ -87,6 +87,11 @@ func initDefaultEvents() {
 		return nil
 	})
 
+	RegisterNative("initDialogue", func(in InvokeData) interface{} {
+		log.Println("Rework dialogue system first!")
+		return nil
+	})
+
 	RegisterNative("testReturnValue", func(in InvokeData) interface{} {
 		return struct {
 			Foo string
@@ -292,6 +297,7 @@ func updateScriptingContext() {
 	ScriptingContext.Set("LocalPlayer", LocalPlayer)
 	ScriptingContext.Set("MainCamera", MainCamera)
 	ScriptingContext.Set("CurrentMap", CurrentMap)
+	ScriptingContext.Set("CanSave", CanSave)
 	ScriptingContext.Set("CurrentGameMode", CurrentGameMode)
 
 	if CurrentMap != nil {

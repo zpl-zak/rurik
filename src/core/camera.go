@@ -200,8 +200,8 @@ func updateCamera(c *Object, dt float32) {
 
 				c.Mode = CameraModeStatic
 
-				if c.Target != nil {
-					c.Target.Trigger(c.Target, c)
+				if c.End.EventName != "" {
+					FireEvent(c.End.EventName, c.End.EventArgs)
 				}
 			}
 

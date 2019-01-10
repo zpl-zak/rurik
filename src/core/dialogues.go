@@ -36,7 +36,6 @@ type Dialogue struct {
 	AvatarFile string    `json:"avatar"`
 	Text       string    `json:"text"`
 	Choices    []*Choice `json:"choices"`
-	Target     string    `json:"target"`
 	Event      string    `json:"event"`
 	EventArgs  string    `json:"eventArgs"`
 	SkipPrompt bool      `json:"skipPrompt"`

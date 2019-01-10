@@ -13,7 +13,7 @@
    </properties>
    <point/>
   </object>
-  <object id="2" name="event_manager" type="wait" x="639" y="494">
+  <object id="2" name="event_manager" type="script" x="351" y="197">
    <properties>
     <property name="autostart" value="1"/>
     <property name="file" value="startEventMgr.js"/>

@@ -71,29 +71,15 @@ func updateWait(o *Object, dt float32) {
 }
 
 func fireWait(o *Object) {
-	if o.Target != nil {
-		o.Target.Trigger(o.Target, o)
-	}
-
-	if o.Script != nil {
-		o.Script.Trigger(o.Script, o)
-	}
-
-	if o.Target == nil && o.Script == nil {
-		log.Printf("Timer %s has no target attached!\n", o.Name)
+	if o.EventName != "" {
+		FireEvent(o.EventName, o.EventArgs)
+	} else {
+		log.Printf("Timer object '%s' has no event attached!\n", o.Name)
 	}
 }
 
 func triggerWait(o, inst *Object) {
-	scriptName := o.Meta.Properties.GetString("file")
-
-	if scriptName != "" {
-		o.Script = o.world.NewObjectPro(o.Name+"_script", "script")
-		o.Script.FileName = scriptName
-		o.Script.IsPersistent = false
-		o.world.FinalizeObject(o.Script)
-	}
-
+	log.Printf("Timer object '%s' has been fired!\n", o.Name)
 	if o.Duration == 0 {
 		fireWait(o)
 		return

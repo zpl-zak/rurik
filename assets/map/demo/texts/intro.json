@@ -9,7 +9,8 @@
                 "name": "Ulrich",
                 "avatar": "ulrich.png",
                 "text": "Let's start then!",
-                "target": "start_demo"
+                "event": "onDemoStartChoice",
+                "eventArgs": "slow"
             }
         },
         {
@@ -18,7 +19,8 @@
                 "name": "Ulrich",
                 "avatar": "ulrich.png",
                 "text": "Okay...",
-                "target": "start_quick"
+                "event": "onDemoStartChoice",
+                "eventArgs": "quick"
             }
         },
         {
@@ -27,12 +29,14 @@
                 "name": "Ulrich",
                 "avatar": "ulrich_angry.png",
                 "text": "So be it!",
-                "target": "angry",
+                "event": "onDemoStartChoice",
+                "eventArgs": "angry",
                 "next": {
                     "name": "Ulrich",
                     "avatar": "ulrich_angry.png",
                     "text": "Go back to DOS, you worm!",
-                    "target": "exit_game"
+                    "event": "onDemoStartChoice",
+                    "eventArgs": "exit"
                 }
             }
         }

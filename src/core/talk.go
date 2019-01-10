@@ -18,7 +18,6 @@ package core
 
 import (
 	"fmt"
-	"strings"
 
 	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -111,15 +110,9 @@ func (o *Object) NewTalk() {
 				o.MouseDoublePressTime = 0
 			}
 
-			tgt, _ := o.world.FindObject(o.CurrentText.Target)
-
 			evnt := o.CurrentText.Event
 			evntArglist := o.CurrentText.EventArgs
-			evntArgs := []string{evntArglist}
-
-			if strings.Contains(evntArglist, ";") {
-				evntArgs = strings.Split(evntArglist, ";")
-			}
+			evntArgs := CompileEventArgs(evntArglist)
 
 			if len(o.CurrentText.Choices) > 0 {
 				o.CurrentText = o.CurrentText.Choices[o.SelectedChoice].Next
@@ -128,8 +121,6 @@ func (o *Object) NewTalk() {
 			}
 
 			if o.CurrentText != nil && o.CurrentText.SkipPrompt {
-				tgt, _ = o.world.FindObject(o.CurrentText.Target)
-
 				evnt = o.CurrentText.Event
 				evntArglist = o.CurrentText.EventArgs
 				evntArgs = []string{evntArglist}
@@ -141,10 +132,6 @@ func (o *Object) NewTalk() {
 				o.Started = false
 				CanSave = BitsClear(CanSave, IsInDialogue)
 				o.WasExecuted = true
-			}
-
-			if tgt != nil {
-				tgt.Trigger(tgt, o)
 			}
 
 			if evnt != "" {

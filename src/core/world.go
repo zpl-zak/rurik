@@ -94,6 +94,8 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		HasLight:         o.Properties.GetString("light") == "1",
 		HasSpecularLight: o.Properties.GetString("specular") == "1",
 		FileName:         o.Properties.GetString("file"),
+		EventName:        o.Properties.GetString("event"),
+		EventArgs:        CompileEventArgs(o.Properties.GetString("eventArgs")),
 		TintColor:        GetColorFromProperty(o, "tint"),
 		Color:            GetColorFromProperty(o, "color"),
 		Attenuation:      GetFloatFromProperty(o, "atten"),
@@ -108,7 +110,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Draw:            func(o *Object) {},
 		DrawUI:          func(o *Object) {},
 		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
-		InsideArea:      func(o, a *Object) {},
+		InsideArea:      func(o, a *Object) bool { return false },
 		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
 		Serialize:       func(o *Object) string { return "{}" },
 		Deserialize:     func(o *Object, data string) {},
@@ -205,12 +207,6 @@ func (w *World) resolveObjectDependencies(o *Object) {
 }
 
 func (w *World) findTargets(o *Object) {
-	target := o.Meta.Properties.GetString("target")
-
-	if target != "" {
-		o.Target, _ = w.FindObject(target)
-	}
-
 	if o.ProxyName == "" {
 		o.ProxyName = o.Meta.Properties.GetString("proxy")
 	}

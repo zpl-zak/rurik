@@ -77,6 +77,7 @@ type Object struct {
 	DrawUI          func(o *Object)
 	Trigger         func(o, inst *Object)
 	HandleCollision func(res *resolv.Collision, o, other *Object)
+	InsideArea      func(o, a *Object)
 	GetAABB         func(o *Object) rl.RectangleInt32
 	Serialize       func(o *Object) string
 	Deserialize     func(o *Object, data string)

@@ -108,6 +108,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Draw:            func(o *Object) {},
 		DrawUI:          func(o *Object) {},
 		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
+		InsideArea:      func(o, a *Object) {},
 		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
 		Serialize:       func(o *Object) string { return "{}" },
 		Deserialize:     func(o *Object, data string) {},

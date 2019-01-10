@@ -21,7 +21,6 @@ import (
 
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/raylib-go/raymath"
-	"github.com/zaklaus/rurik/src/system"
 )
 
 type area struct {
@@ -39,17 +38,17 @@ func (o *Object) NewArea() {
 	}
 
 	o.Update = func(o *Object, dt float32) {
-		vd := raymath.Vector2Distance(getAreaOrigin(o), LocalPlayer.Position)
+		hit := false
+		for _, obj := range o.world.Objects {
+			vd := raymath.Vector2Distance(getAreaOrigin(o), obj.Position)
 
-		if vd < float32(o.Radius) {
-			o.isInCircle = true
-
-			if system.IsKeyPressed("use") {
-				o.Trigger(o, LocalPlayer)
+			if vd < float32(o.Radius) {
+				hit = true
+				obj.InsideArea(obj, o)
 			}
-		} else {
-			o.isInCircle = false
 		}
+
+		o.isInCircle = hit
 	}
 
 	o.Draw = func(o *Object) {

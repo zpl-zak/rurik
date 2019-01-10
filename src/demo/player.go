@@ -27,6 +27,11 @@ func NewPlayer(p *core.Object) {
 	p.HandleCollision = handlePlayerCollision
 	p.Facing = rl.NewVector2(1, 0)
 	p.IsCollidable = true
+	p.InsideArea = func(o, area *core.Object) {
+		if system.IsKeyPressed("use") {
+			area.Trigger(area, o)
+		}
+	}
 
 	core.LocalPlayer = p
 

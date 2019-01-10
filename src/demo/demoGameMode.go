@@ -67,6 +67,7 @@ func (g *demoGameMode) Update() {
 
 	case statePlay:
 		core.UpdateMaps()
+		updateDialogue()
 
 		if rl.IsKeyPressed(rl.KeyEscape) && core.CurrentMap.Name != "start" {
 			g.playState = statePaused
@@ -123,6 +124,7 @@ func (g *demoGameMode) DrawUI() {
 
 	case statePlay:
 		core.DrawMapUI()
+		drawDialogue()
 
 		if core.CurrentMap.Name != "start" {
 			var xoffs int32 = 15

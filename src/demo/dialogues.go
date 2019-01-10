@@ -1,20 +1,4 @@
-/*
-   Copyright 2019 V4 Games
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-*/
-
-package core
+package main
 
 import (
 	"fmt"
@@ -22,6 +6,7 @@ import (
 
 	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -114,7 +99,7 @@ func InitDialogue(name string) {
 }
 
 func updateDialogue() {
-	if CurrentMap == nil {
+	if core.CurrentMap == nil {
 		dialogue = dialogueData{}
 		return
 	}
@@ -131,10 +116,10 @@ func updateDialogue() {
 		return
 	}
 
-	CanSave = BitsSet(CanSave, IsInDialogue)
+	core.CanSave = core.BitsSet(core.CanSave, core.IsInDialogue)
 
 	if dialogue.mouseDoublePressTime > 0 {
-		dialogue.mouseDoublePressTime -= int32(1000 * (system.FrameTime * float32(TimeScale)))
+		dialogue.mouseDoublePressTime -= int32(1000 * (system.FrameTime * float32(core.TimeScale)))
 	} else if dialogue.mouseDoublePressTime < 0 {
 		dialogue.mouseDoublePressTime = 0
 	}
@@ -164,7 +149,7 @@ func updateDialogue() {
 
 		evnt := dialogue.currentText.Event
 		evntArglist := dialogue.currentText.EventArgs
-		evntArgs := CompileEventArgs(evntArglist)
+		evntArgs := core.CompileEventArgs(evntArglist)
 
 		if len(dialogue.currentText.Choices) > 0 {
 			dialogue.currentText = dialogue.currentText.Choices[dialogue.selectedChoice].Next
@@ -183,11 +168,11 @@ func updateDialogue() {
 		if dialogue.currentText == nil {
 			dialogue.texts = nil
 			dialogue.extraTick = true
-			CanSave = BitsClear(CanSave, IsInDialogue)
+			core.CanSave = core.BitsClear(core.CanSave, core.IsInDialogue)
 		}
 
 		if evnt != "" {
-			FireEvent(evnt, evntArgs)
+			core.FireEvent(evnt, evntArgs)
 		}
 	}
 }
@@ -255,7 +240,7 @@ func drawDialogue() {
 				rl.White,
 			)
 
-			if IsMouseInRectangle(chsX, ypos, 200, 15) {
+			if core.IsMouseInRectangle(chsX, ypos, 200, 15) {
 				if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 					rl.DrawRectangleLines(chsX, ypos, 200, 15, rl.Pink)
 				} else {

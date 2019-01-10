@@ -77,7 +77,6 @@ func renderGame() {
 		{
 			rl.ClearBackground(rl.Blank)
 			CurrentGameMode.DrawUI()
-			drawDialogue()
 			drawNotifications()
 			DrawEditor()
 		}

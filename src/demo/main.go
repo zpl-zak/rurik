@@ -61,6 +61,7 @@ func main() {
 
 	rl.SetExitKey(0)
 	rl.SetConfigFlags(rl.FlagWindowResizable)
+	core.InitUserEvents = demoUserEvents
 	core.InitCore("Demo game | Rurik Framework", windowW, windowH, screenW, screenH)
 
 	demoGame := &demoGameMode{}
@@ -177,4 +178,16 @@ func loadStartMap(g *demoGameMode) {
 	core.LoadMap(playMapName)
 	core.InitMap()
 	g.playState = statePlay
+}
+
+func demoUserEvents() {
+	core.RegisterNative("initDialogue", func(in core.InvokeData) interface{} {
+		var data struct {
+			File string
+		}
+		core.DecodeInvokeData(&data, in)
+		InitDialogue(data.File)
+
+		return nil
+	})
 }

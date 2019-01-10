@@ -39,6 +39,9 @@ var (
 
 	// ScriptingContext is a scripting ScriptingContext
 	ScriptingContext *otto.Otto
+
+	// InitUserEvents is called to extend the API with user events
+	InitUserEvents func()
 )
 
 func initDefaultEvents() {
@@ -87,16 +90,6 @@ func initDefaultEvents() {
 		return nil
 	})
 
-	RegisterNative("initDialogue", func(in InvokeData) interface{} {
-		var data struct {
-			File string
-		}
-		DecodeInvokeData(&data, in)
-		InitDialogue(data.File)
-
-		return nil
-	})
-
 	RegisterNative("testReturnValue", func(in InvokeData) interface{} {
 		return struct {
 			Foo string
@@ -106,6 +99,11 @@ func initDefaultEvents() {
 			123,
 		}
 	})
+
+	if InitUserEvents != nil {
+		log.Println("Initializing custom natives...")
+		InitUserEvents()
+	}
 }
 
 // DecodeInvokeData decodes incoming data from the script

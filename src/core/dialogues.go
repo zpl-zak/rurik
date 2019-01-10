@@ -25,13 +25,22 @@ import (
 	"github.com/zaklaus/rurik/src/system"
 )
 
-var (
-	dialogues                    = make(map[string]Dialogue)
-	texts                        *Dialogue
-	currentText                  *Dialogue
-	selectedChoice               int
-	dialogueMouseDoublePressTime int32
+const (
+	// MouseDoublePress default duration of mouse double press
+	MouseDoublePress = 500
 )
+
+var dialogues = make(map[string]Dialogue)
+
+type dialogueData struct {
+	texts                *Dialogue
+	currentText          *Dialogue
+	selectedChoice       int
+	extraTick            bool
+	mouseDoublePressTime int32
+}
+
+var dialogue dialogueData
 
 // Dialogue defines connversation flow
 type Dialogue struct {
@@ -71,7 +80,7 @@ func InitText(t *Dialogue) {
 	}
 }
 
-// GetDialogue retrieves texts for a dialogue
+// GetDialogue retrieves dialogue.texts for a dialogue
 func GetDialogue(name string) *Dialogue {
 	dia, ok := dialogues[name]
 
@@ -93,72 +102,181 @@ func GetDialogue(name string) *Dialogue {
 
 // InitDialogue initializes a dialogue
 func InitDialogue(name string) {
-	texts = GetDialogue(name)
-	currentText = texts
-	InitText(currentText)
+	if dialogue.extraTick {
+		return
+	}
+
+	log.Printf("Initializing dialogue '%s' ...\n", name)
+	dialogue.texts = GetDialogue(name)
+	dialogue.currentText = dialogue.texts
+	dialogue.extraTick = false
+	InitText(dialogue.currentText)
 }
 
 func updateDialogue() {
-	if texts == nil {
+	if CurrentMap == nil {
+		dialogue = dialogueData{}
+		return
+	}
+
+	if dialogue.texts == nil {
+		if dialogue.extraTick {
+			dialogue.extraTick = system.IsKeyDown("use")
+		}
+		return
+	}
+
+	if !dialogue.extraTick {
+		dialogue.extraTick = system.IsKeyReleased("use")
 		return
 	}
 
 	CanSave = BitsSet(CanSave, IsInDialogue)
 
-	if dialogueMouseDoublePressTime > 0 {
-		dialogueMouseDoublePressTime -= int32(1000 * (system.FrameTime * float32(TimeScale)))
-	} else if dialogueMouseDoublePressTime < 0 {
-		dialogueMouseDoublePressTime = 0
+	if dialogue.mouseDoublePressTime > 0 {
+		dialogue.mouseDoublePressTime -= int32(1000 * (system.FrameTime * float32(TimeScale)))
+	} else if dialogue.mouseDoublePressTime < 0 {
+		dialogue.mouseDoublePressTime = 0
 	}
 
-	if len(currentText.Choices) > 0 {
+	if len(dialogue.currentText.Choices) > 0 {
 		if system.IsKeyPressed("up") {
-			selectedChoice--
+			dialogue.selectedChoice--
 
-			if selectedChoice < 0 {
-				selectedChoice = len(currentText.Choices) - 1
+			if dialogue.selectedChoice < 0 {
+				dialogue.selectedChoice = len(dialogue.currentText.Choices) - 1
 			}
 		}
 
 		if system.IsKeyPressed("down") {
-			selectedChoice++
+			dialogue.selectedChoice++
 
-			if selectedChoice >= len(currentText.Choices) {
-				selectedChoice = 0
+			if dialogue.selectedChoice >= len(dialogue.currentText.Choices) {
+				dialogue.selectedChoice = 0
 			}
 		}
 	}
 
-	if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && dialogueMouseDoublePressTime > 0) {
-		if dialogueMouseDoublePressTime > 0 {
-			dialogueMouseDoublePressTime = 0
+	if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && dialogue.mouseDoublePressTime > 0) {
+		if dialogue.mouseDoublePressTime > 0 {
+			dialogue.mouseDoublePressTime = 0
 		}
 
-		evnt := currentText.Event
-		evntArglist := currentText.EventArgs
+		evnt := dialogue.currentText.Event
+		evntArglist := dialogue.currentText.EventArgs
 		evntArgs := CompileEventArgs(evntArglist)
 
-		if len(currentText.Choices) > 0 {
-			currentText = currentText.Choices[selectedChoice].Next
+		if len(dialogue.currentText.Choices) > 0 {
+			dialogue.currentText = dialogue.currentText.Choices[dialogue.selectedChoice].Next
 		} else {
-			currentText = currentText.Next
+			dialogue.currentText = dialogue.currentText.Next
 		}
 
-		if currentText != nil && currentText.SkipPrompt {
-			evnt = currentText.Event
-			evntArglist = currentText.EventArgs
+		if dialogue.currentText != nil && dialogue.currentText.SkipPrompt {
+			evnt = dialogue.currentText.Event
+			evntArglist = dialogue.currentText.EventArgs
 			evntArgs = []string{evntArglist}
 
-			currentText = nil
+			dialogue.currentText = nil
 		}
 
-		if currentText == nil {
-			texts = nil
+		if dialogue.currentText == nil {
+			dialogue.texts = nil
+			dialogue.extraTick = true
 			CanSave = BitsClear(CanSave, IsInDialogue)
 		}
 
 		if evnt != "" {
 			FireEvent(evnt, evntArgs)
 		}
+	}
+}
+
+func drawDialogue() {
+	if dialogue.texts == nil {
+		return
+	}
+
+	var height int32 = 120
+	width := system.WindowWidth
+	start := system.ScreenHeight - height
+
+	rl.DrawRectangle(0, start, width, height, rl.NewColor(46, 46, 84, 255))
+	rl.DrawRectangle(5, start+5, 32, 32, rl.NewColor(53, 64, 59, 255))
+	rl.DrawRectangleLines(4, start+4, 34, 34, rl.NewColor(55, 148, 110, 255))
+
+	ot := dialogue.currentText
+
+	// Pos X: 5, Y: 5
+	// Scale W: 34, 35
+	if ot.AvatarFile != "" {
+		rl.DrawTexturePro(
+			*ot.Avatar,
+			rl.NewRectangle(0, 0, float32(ot.Avatar.Width), float32(ot.Avatar.Height)),
+			rl.NewRectangle(5, float32(start)+5, 32, 32),
+			rl.Vector2{},
+			0,
+			rl.White,
+		)
+	}
+
+	rl.DrawText(
+		ot.Name,
+		45,
+		start+16,
+		10,
+		rl.Orange,
+	)
+
+	rl.DrawText(
+		ot.Text,
+		5,
+		start+45,
+		10,
+		rl.White,
+	)
+
+	// choices
+	chsX := system.ScreenWidth - 220
+	chsY := start + 16
+
+	if len(ot.Choices) > 0 {
+		for idx, ch := range ot.Choices {
+			ypos := chsY + int32(idx)*15 - 2
+			if idx == dialogue.selectedChoice {
+				rl.DrawRectangle(chsX, ypos, 200, 15, rl.DarkPurple)
+			}
+
+			rl.DrawText(
+				fmt.Sprintf("%d. %s", idx+1, ch.Text),
+				chsX+5,
+				chsY+int32(idx)*15,
+				10,
+				rl.White,
+			)
+
+			if IsMouseInRectangle(chsX, ypos, 200, 15) {
+				if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+					rl.DrawRectangleLines(chsX, ypos, 200, 15, rl.Pink)
+				} else {
+					rl.DrawRectangleLines(chsX, ypos, 200, 15, rl.Purple)
+				}
+
+				if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+					dialogue.selectedChoice = idx
+
+					dialogue.mouseDoublePressTime = MouseDoublePress
+				}
+			}
+		}
+	} else {
+		rl.DrawRectangle(chsX, chsY-2, 200, 15, rl.DarkPurple)
+		rl.DrawText(
+			"Press E to continue...",
+			chsX+5,
+			chsY,
+			10,
+			rl.White,
+		)
 	}
 }

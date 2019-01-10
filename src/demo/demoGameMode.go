@@ -21,7 +21,6 @@ func (g *demoGameMode) Init() {
 
 	// test class
 	err := core.RegisterClass("demo_testclass", "TestClass", NewTestClass)
-	core.RegisterClass("talk_demo", "TalkDemo", NewTalkDemo)
 
 	// player class
 	core.RegisterClass("player", "Player", NewPlayer)
@@ -29,6 +28,8 @@ func (g *demoGameMode) Init() {
 	if err != nil {
 		fmt.Printf("Custom type registration has failed: %s", err.Error())
 	}
+
+	initLevels()
 
 	g.playState = stateMenu
 
@@ -58,11 +59,11 @@ func (g *demoGameMode) Update() {
 		g.textWave = int32(math.Round(math.Sin(float64(rl.GetTime()) * 10)))
 
 		if system.IsKeyPressed("use") {
-			core.LoadMap("start")
-			core.InitMap()
-
-			g.playState = statePlay
+			g.playState = stateLevelSelection
 		}
+
+	case stateLevelSelection:
+		g.updateLevelSelection()
 
 	case statePlay:
 		core.UpdateMaps()
@@ -115,6 +116,10 @@ func (g *demoGameMode) DrawUI() {
 		rl.DrawRectangle(0, 0, system.ScreenWidth, system.ScreenHeight, rl.Fade(rl.Black, 0.8))
 		core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20+g.textWave, 24, rl.RayWhite)
 		core.DrawTextCentered("Press ESC to unpause or E/ENTER to return to the menu", system.ScreenWidth/2, system.ScreenHeight/2+5+g.textWave, 14, rl.White)
+
+	case stateLevelSelection:
+		core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20+g.textWave, 24, rl.RayWhite)
+		drawLevelSelection()
 
 	case statePlay:
 		core.DrawMapUI()
@@ -183,10 +188,4 @@ func (g *demoGameMode) PostDraw() {
 		}
 	}
 
-}
-
-func (g *demoGameMode) LoadMap(mapName string) {
-	core.FlushMaps()
-	core.LoadMap(mapName)
-	core.InitMap()
 }

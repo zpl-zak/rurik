@@ -34,6 +34,7 @@ const (
 	stateMenu = iota
 	statePlay
 	statePaused
+	stateLevelSelection
 )
 
 func init() {
@@ -86,7 +87,8 @@ func updateInternals(g *demoGameMode) {
 	}
 
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
-		loadStartMap(g)
+		core.FlushMaps()
+		g.playState = stateLevelSelection
 		return
 	}
 

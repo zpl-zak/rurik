@@ -88,7 +88,12 @@ func initDefaultEvents() {
 	})
 
 	RegisterNative("initDialogue", func(in InvokeData) interface{} {
-		log.Println("Rework dialogue system first!")
+		var data struct {
+			File string
+		}
+		DecodeInvokeData(&data, in)
+		InitDialogue(data.File)
+
 		return nil
 	})
 

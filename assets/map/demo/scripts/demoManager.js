@@ -67,4 +67,8 @@
             Speed: 0.09
         })
     })
+
+    invoke("initDialogue", {
+        File: "intro.json"
+    })
 }

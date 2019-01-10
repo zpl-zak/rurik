@@ -89,7 +89,6 @@ type Object struct {
 	camera
 	wait
 	script
-	talk
 	anim
 	area
 	tile
@@ -108,7 +107,6 @@ func initObjectTypes() {
 		"target": "Target",
 		"wait":   "Wait",
 		"script": "Script",
-		"talk":   "Talk",
 		"anim":   "Anim",
 		"area":   "Area",
 		"tile":   "Tile",

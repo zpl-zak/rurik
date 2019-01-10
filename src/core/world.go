@@ -244,7 +244,7 @@ func (w *World) UpdateObjects() {
 	}
 
 	for _, o := range w.Objects {
-		updateObject(o, o)
+		w.updateObject(o, o)
 	}
 }
 
@@ -255,7 +255,7 @@ func (w *World) InitObjects() {
 	}
 }
 
-func updateObject(o, orig *Object) {
+func (w *World) updateObject(o, orig *Object) {
 	if o.WasUpdated {
 		return
 	}
@@ -267,7 +267,12 @@ func updateObject(o, orig *Object) {
 				return
 			}
 
-			updateObject(x, orig)
+			if x == nil {
+				log.Fatalf("Object '%s' depends on nil entity!\n", o.Name)
+				return
+			}
+
+			w.updateObject(x, orig)
 		}
 	}
 

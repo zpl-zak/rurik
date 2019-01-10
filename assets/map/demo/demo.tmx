@@ -2095,7 +2095,7 @@
   <object id="6" name="border_bottom" type="col" x="0" y="384" width="640" height="32"/>
   <object id="7" name="main_camera" type="cam" x="480" y="128">
    <properties>
-    <property name="depends" value="player;intro_cutscene"/>
+    <property name="depends" value="player"/>
     <property name="end" value="camera_end"/>
     <property name="follow" value="player"/>
     <property name="mode" value="follow"/>
@@ -2117,14 +2117,6 @@
    <properties>
     <property name="duration" type="int" value="2000"/>
     <property name="event" value="onFollowPlayer"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="14" name="intro_cutscene" type="talk" x="-83" y="379">
-   <properties>
-    <property name="autostart" value="1"/>
-    <property name="depends" value="player"/>
-    <property name="file" value="intro.json"/>
    </properties>
    <point/>
   </object>
@@ -2157,6 +2149,7 @@
   <object id="49" name="map_kernel" type="script" x="-132" y="208">
    <properties>
     <property name="autostart" value="1"/>
+    <property name="depends" value="player"/>
     <property name="file" value="demoManager.js"/>
    </properties>
    <point/>

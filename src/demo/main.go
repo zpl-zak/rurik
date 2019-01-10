@@ -45,7 +45,7 @@ func main() {
 	dbgMode := flag.Int("debug", 1, "Enable/disable debug mode. Works only in debug builds!")
 	musicVol := flag.Int("musicvol", 10, "Music volume.")
 	weatherTimeScale := flag.Float64("wtimescale", 1, "Weather time scale.")
-	mapName := flag.String("map", "start", "Map name to play.")
+	mapName := flag.String("map", "demo", "Map name to play.")
 	enableProfiler := flag.Bool("profile", false, "Enable profiling.")
 	forceMapLoad := flag.Bool("forceload", false, "Forces map load and skips the title screen.")
 	flag.Parse()

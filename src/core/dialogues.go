@@ -26,7 +26,11 @@ import (
 )
 
 var (
-	dialogues = make(map[string]Dialogue)
+	dialogues                    = make(map[string]Dialogue)
+	texts                        *Dialogue
+	currentText                  *Dialogue
+	selectedChoice               int
+	dialogueMouseDoublePressTime int32
 )
 
 // Dialogue defines connversation flow
@@ -85,4 +89,76 @@ func GetDialogue(name string) *Dialogue {
 
 	dialogues[name] = dia
 	return &dia
+}
+
+// InitDialogue initializes a dialogue
+func InitDialogue(name string) {
+	texts = GetDialogue(name)
+	currentText = texts
+	InitText(currentText)
+}
+
+func updateDialogue() {
+	if texts == nil {
+		return
+	}
+
+	CanSave = BitsSet(CanSave, IsInDialogue)
+
+	if dialogueMouseDoublePressTime > 0 {
+		dialogueMouseDoublePressTime -= int32(1000 * (system.FrameTime * float32(TimeScale)))
+	} else if dialogueMouseDoublePressTime < 0 {
+		dialogueMouseDoublePressTime = 0
+	}
+
+	if len(currentText.Choices) > 0 {
+		if system.IsKeyPressed("up") {
+			selectedChoice--
+
+			if selectedChoice < 0 {
+				selectedChoice = len(currentText.Choices) - 1
+			}
+		}
+
+		if system.IsKeyPressed("down") {
+			selectedChoice++
+
+			if selectedChoice >= len(currentText.Choices) {
+				selectedChoice = 0
+			}
+		}
+	}
+
+	if system.IsKeyPressed("use") || (rl.IsMouseButtonReleased(rl.MouseLeftButton) && dialogueMouseDoublePressTime > 0) {
+		if dialogueMouseDoublePressTime > 0 {
+			dialogueMouseDoublePressTime = 0
+		}
+
+		evnt := currentText.Event
+		evntArglist := currentText.EventArgs
+		evntArgs := CompileEventArgs(evntArglist)
+
+		if len(currentText.Choices) > 0 {
+			currentText = currentText.Choices[selectedChoice].Next
+		} else {
+			currentText = currentText.Next
+		}
+
+		if currentText != nil && currentText.SkipPrompt {
+			evnt = currentText.Event
+			evntArglist = currentText.EventArgs
+			evntArgs = []string{evntArglist}
+
+			currentText = nil
+		}
+
+		if currentText == nil {
+			texts = nil
+			CanSave = BitsClear(CanSave, IsInDialogue)
+		}
+
+		if evnt != "" {
+			FireEvent(evnt, evntArgs)
+		}
+	}
 }

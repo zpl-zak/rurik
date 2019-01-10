@@ -146,6 +146,8 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			CurrentGameMode.Update()
 			gameModeProfiler.StopInvocation()
 
+			updateDialogue()
+
 			UpdateMapUI()
 
 			FireEvent("onUpdate")

@@ -90,6 +90,7 @@ func updateInternals(g *demoGameMode) {
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF5) {
 		core.FlushMaps()
 		g.playState = stateLevelSelection
+		levelSelection.selectedChoice = 0
 		return
 	}
 

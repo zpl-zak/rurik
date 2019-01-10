@@ -101,7 +101,6 @@ func initDefaultEvents() {
 	})
 
 	if InitUserEvents != nil {
-		log.Println("Initializing custom natives...")
 		InitUserEvents()
 	}
 }

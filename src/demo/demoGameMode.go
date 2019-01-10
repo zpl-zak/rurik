@@ -52,7 +52,10 @@ func (g *demoGameMode) Update() {
 		}
 
 		if system.IsKeyPressed("use") {
-			loadStartMap(g)
+			core.FlushMaps()
+			g.playState = stateLevelSelection
+			levelSelection.selectedChoice = 0
+			return
 		}
 
 	case stateMenu:

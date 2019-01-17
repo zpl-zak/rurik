@@ -104,7 +104,7 @@ func (s *SaveSystem) SaveGame(slotIndex int, stateName string) bool {
 
 	data, _ := jsoniter.Marshal(s)
 
-	ioutil.WriteFile("gamesav.db", data, 0600)
+	ioutil.WriteFile("gamesav.db", data, 0755)
 	return true
 }
 

@@ -36,6 +36,10 @@ func initLevels() {
 			title:   "Stress test",
 			mapName: "stress",
 		},
+		level{
+			title:   "Exit demo",
+			mapName: "$exitGame",
+		},
 	}
 
 	levelSelection.banner = "Welcome to Rurik Framework!\nThis demo showcases the framework's possibilities and features.\nMake a selection, please!"
@@ -99,12 +103,19 @@ func (g *demoGameMode) updateLevelSelection() {
 	}
 
 	if system.IsKeyPressed("use") {
-		loadLevel(levelSelection.levels[levelSelection.selectedChoice].mapName)
+		mapName := levelSelection.levels[levelSelection.selectedChoice].mapName
+
+		if mapName == "$exitGame" {
+			core.CloseGame()
+			return
+		}
+
+		g.loadLevel(mapName)
 		g.playState = statePlay
 	}
 }
 
-func loadLevel(mapName string) {
+func (g *demoGameMode) loadLevel(mapName string) {
 	core.FlushMaps()
 	core.LoadMap(mapName)
 	core.InitMap()

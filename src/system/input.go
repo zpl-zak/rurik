@@ -23,7 +23,7 @@ import (
 )
 
 var (
-	keybindings = make(map[string]inputAction)
+	keybindings = make(map[string]InputAction)
 
 	// GamepadDeadZone movement threshold
 	GamepadDeadZone = 0.25
@@ -32,7 +32,8 @@ var (
 	GamepadID int32
 )
 
-type inputAction struct {
+// InputAction defines an action tagged by input
+type InputAction struct {
 	positiveKeys []int32
 	negativeKeys []int32
 	allKeys      []int32
@@ -41,7 +42,7 @@ type inputAction struct {
 }
 
 // BindInputAction registers a new input action used by the game
-func BindInputAction(name string, action inputAction) {
+func BindInputAction(name string, action InputAction) {
 	if action.allKeys == nil {
 		if action.positiveKeys == nil {
 			action.positiveKeys = []int32{}
@@ -61,29 +62,29 @@ func BindInputAction(name string, action inputAction) {
 func InitInput() {
 	GamepadID = 0
 
-	BindInputAction("horizontal", inputAction{
+	BindInputAction("horizontal", InputAction{
 		positiveKeys: []int32{rl.KeyD, rl.KeyRight},
 		negativeKeys: []int32{rl.KeyA, rl.KeyLeft},
 		joyAxis:      rl.GamepadXboxAxisLeftX,
 	})
 
-	BindInputAction("vertical", inputAction{
+	BindInputAction("vertical", InputAction{
 		positiveKeys: []int32{rl.KeyS, rl.KeyDown},
 		negativeKeys: []int32{rl.KeyW, rl.KeyUp},
 		joyAxis:      rl.GamepadXboxAxisLeftY,
 	})
 
-	BindInputAction("up", inputAction{
+	BindInputAction("up", InputAction{
 		allKeys:    []int32{rl.KeyW, rl.KeyUp},
 		joyButtons: []int32{rl.GamepadXboxButtonUp},
 	})
 
-	BindInputAction("down", inputAction{
+	BindInputAction("down", InputAction{
 		allKeys:    []int32{rl.KeyS, rl.KeyDown},
 		joyButtons: []int32{rl.GamepadXboxButtonDown},
 	})
 
-	BindInputAction("use", inputAction{
+	BindInputAction("use", InputAction{
 		allKeys:    []int32{rl.KeyE, rl.KeyEnter},
 		joyButtons: []int32{rl.GamepadXboxButtonA},
 	})

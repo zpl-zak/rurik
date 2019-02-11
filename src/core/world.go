@@ -32,9 +32,10 @@ var (
 	// Worlds are all the worlds loaded within the game
 	Worlds []*World
 
-	objTypes   map[string]string
-	worldIndex int
-	objCtors   = make(map[string]func(o *Object))
+	objTypes    map[string]string
+	worldIndex  int
+	objCtors    = make(map[string]func(o *Object))
+	drawObjects []*Object
 )
 
 // World represents the simulation region of the current map
@@ -283,27 +284,35 @@ func (w *World) updateObject(o, orig *Object) {
 // DrawObjects draws all drawable objects on the screen
 // It sorts all objects by Y position
 func (w *World) DrawObjects() {
+	cullRenderProfiler.StartInvocation()
+	drawObjects = []*Object{}
+
+	for _, v := range w.Objects {
+		if !v.Visible {
+			continue
+		}
+
+		rec := v.GetAABB(v)
+		orig := v.Position
+		orig.X += float32(rec.Width / 2.0)
+		orig.Y += float32(rec.Height / 2.0)
+
+		if !IsPointWithinFrustum(orig) && cullingEnabled {
+			continue
+		}
+
+		drawObjects = append(drawObjects, v)
+	}
+	cullRenderProfiler.StopInvocation()
+
 	sortRenderProfiler.StartInvocation()
-	drawObjects := make([]*Object, len(w.Objects))
-	copy(drawObjects, w.Objects)
 	sort.Slice(drawObjects, func(i, j int) bool {
 		return drawObjects[i].Position.Y < drawObjects[j].Position.Y
 	})
 	sortRenderProfiler.StopInvocation()
 
 	for _, o := range drawObjects {
-		if o.Visible {
-			rec := o.GetAABB(o)
-			orig := o.Position
-			orig.X += float32(rec.Width / 2.0)
-			orig.Y += float32(rec.Height / 2.0)
-
-			if !IsPointWithinFrustum(orig) && cullingEnabled {
-				continue
-			}
-
-			o.Draw(o)
-		}
+		o.Draw(o)
 	}
 }
 

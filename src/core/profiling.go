@@ -30,6 +30,7 @@ var (
 	gameModeProfiler   *system.Profiler
 	drawProfiler       *system.Profiler
 	sortRenderProfiler *system.Profiler
+	cullRenderProfiler *system.Profiler
 	lightingProfiler   *system.Profiler
 	scriptingProfiler  *system.Profiler
 
@@ -48,6 +49,7 @@ func InitGameProfilers() {
 	gameModeProfiler = system.NewProfiler("gameMode")
 	drawProfiler = system.NewProfiler("draw")
 	sortRenderProfiler = system.NewProfiler("sortRender")
+	cullRenderProfiler = system.NewProfiler("cullRender")
 	lightingProfiler = system.NewProfiler("lighting")
 	scriptingProfiler = system.NewProfiler("scripting")
 
@@ -87,6 +89,7 @@ func drawProfiling() {
 
 		if !drawProfiler.IsCollapsed {
 			pushEditorElement(renderNode, sortRenderProfiler.DisplayString, nil)
+			pushEditorElement(renderNode, cullRenderProfiler.DisplayString, nil)
 			pushEditorElement(renderNode, lightingProfiler.DisplayString, nil)
 		}
 	}

@@ -66,11 +66,7 @@ func (o *Object) NewTile() {
 		}
 	}
 
-	o.Update = func(o *Object, dt float32) {
-		// if rl.IsKeyDown(rl.KeyF) {
-		// 	o.Rotation++
-		// }
-	}
+	o.Update = func(o *Object, dt float32) {}
 
 	o.Draw = func(o *Object) {
 		var source rl.Rectangle

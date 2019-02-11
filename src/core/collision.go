@@ -102,6 +102,8 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 			b.isColliding = true
 		}
 
+		a.HandleCollision(&try, a, b)
+
 		return try, true
 	}
 

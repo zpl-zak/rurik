@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/zaklaus/rurik/src/core"
 
 	"github.com/solarlune/resolv/resolv"
@@ -110,6 +108,4 @@ func drawPlayer(p *core.Object) {
 	rl.DrawTexturePro(*p.Texture, source, dest, rl.Vector2{}, 0, core.SkyColor)
 }
 
-func handlePlayerCollision(res *resolv.Collision, p, other *core.Object) {
-	fmt.Println("Collision has happened!")
-}
+func handlePlayerCollision(res *resolv.Collision, p, other *core.Object) {}

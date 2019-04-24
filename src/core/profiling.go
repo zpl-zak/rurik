@@ -18,6 +18,7 @@ package core
 
 import (
 	"fmt"
+	"log"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
@@ -110,6 +111,17 @@ func drawProfiling() {
 		setUpButton(pauseStatsBtn, func() {
 			areFrameStatsPaused = !areFrameStatsPaused
 		})
+		pauseStatsBtn.isHorizontal = true
+
+		extraStatsButton := pushEditorElement(frameRateElement, "Random button", nil)
+		setUpButton(extraStatsButton, func() {
+			log.Println("This button has no purpose")
+		})
+		extraStatsButton.isHorizontal = true
+		/* extraStatsButton.padding = rl.RectangleInt32{
+			X: 5, Y: 5,
+			Width: 0, Height: 0,
+		} */
 
 		pushEditorElement(profilerNode, otherTimeString, nil)
 		updateNode := pushEditorElement(profilerNode, updateProfiler.DisplayString, &updateProfiler.IsCollapsed)
@@ -124,6 +136,7 @@ func drawProfiling() {
 
 		renderNode := pushEditorElement(profilerNode, drawProfiler.DisplayString, &drawProfiler.IsCollapsed)
 
+		renderNode.isHorizontal = true
 		if !drawProfiler.IsCollapsed {
 			pushEditorElement(renderNode, sortRenderProfiler.DisplayString, nil)
 			pushEditorElement(renderNode, cullRenderProfiler.DisplayString, nil)

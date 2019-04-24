@@ -40,10 +40,12 @@ const (
 )
 
 type editorElement struct {
-	text        string
-	isCollapsed *bool
-	children    []*editorElement
-	callback    func()
+	text         string
+	isCollapsed  *bool
+	isHorizontal bool
+	padding      rl.RectangleInt32
+	children     []*editorElement
+	callback     func()
 
 	// Graphs
 	graphEnabled bool
@@ -323,10 +325,16 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	return height + 5
 }
 
-func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
+func drawEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32) {
 	color := rl.White
 	var ext int32 = 10
 	var textWidth = rl.MeasureText(element.text, 10)
+	var ext2 = textWidth
+
+	offsetX += element.padding.X
+	offsetY += element.padding.Y
+	ext += element.padding.Height
+	ext2 += element.padding.Width
 
 	isInRectangle := IsMouseInRectangle(offsetX, offsetY, textWidth, 10)
 
@@ -343,7 +351,7 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 			element.callback()
 		}
 	} else if element.isButton {
-		offsetY += 2
+		offsetY += 5
 
 		if isInRectangle {
 			if rl.IsMouseButtonDown(rl.MouseLeftButton) {
@@ -378,6 +386,7 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 		}
 
 		ext += 8
+		ext2 += 5
 	}
 
 	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)
@@ -388,14 +397,30 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 	}
 
 	if element.isCollapsed != nil && *element.isCollapsed {
-		return ext
+		return ext, ext2
 	}
+
+	var lastChildWidth int32
+	var lastChildHeight int32
 
 	for _, v := range element.children {
-		ext += drawEditorElement(v, offsetX+5, offsetY+ext)
+		var extraOffsetX int32
+		var extraOffsetY int32
+		if v.isHorizontal {
+			extraOffsetX = lastChildWidth + 5
+			extraOffsetY = lastChildHeight
+		}
+		rext, rext2 := drawEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
+		if !v.isHorizontal {
+			ext += rext
+			lastChildWidth = rext2
+		} else {
+			lastChildWidth += rext2 + 5
+		}
+		lastChildHeight = rext
 	}
 
-	return ext
+	return ext, ext2
 }
 
 func flushEditorElement() {

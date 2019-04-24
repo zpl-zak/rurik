@@ -326,11 +326,12 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	return height + 5
 }
 
-func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32) {
+func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32, int32) {
 	color := rl.White
 	var ext int32 = 10
 	var textWidth = rl.MeasureText(element.text, 10)
 	var ext2 = textWidth
+	var totale2 = ext2 + offsetX - 5
 
 	offsetX += element.padding.X
 	offsetY += element.padding.Y
@@ -388,6 +389,7 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 
 		ext += 8
 		ext2 += 5
+		totale2 += 5
 	}
 
 	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)
@@ -398,7 +400,7 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 	}
 
 	if element.isCollapsed != nil && *element.isCollapsed {
-		return ext, ext2
+		return ext, ext2, totale2
 	}
 
 	var lastChildWidth int32
@@ -412,19 +414,24 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 
 			if v.isButton {
 				extraOffsetY = lastChildHeight
+			} else {
+				extraOffsetX = totale2
 			}
 		}
-		rext, rext2 := handleEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
+		rext, rext2, rtotal := handleEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
 		if !v.isHorizontal {
 			lastChildWidth = rext2
 			ext += rext
 		} else {
 			lastChildWidth += rext2 + 5
 		}
+		if rtotal > totale2 {
+			totale2 = rtotal
+		}
 		lastChildHeight = rext
 	}
 
-	return ext, ext2
+	return ext, ext2, totale2
 }
 
 func flushEditorElement() {

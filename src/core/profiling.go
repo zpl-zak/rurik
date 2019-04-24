@@ -92,16 +92,11 @@ func drawProfiling() {
 	if !isProfilerCollapsed {
 		frameRateElement := pushEditorElement(profilerNode, frameRateString, &isFrameRateGraphOpened)
 
-		if !areFrameStatsPaused {
-			frameRateStatsBack = frameRateStats
-		}
-
 		frameRateElement.graphEnabled = true
 		frameRateElement.lineColor = rl.Blue
 		frameRateElement.dataMargin = 5
 		frameRateElement.graphHeight = defaultGraphHeight
 		frameRateElement.graphWidth = defaultGraphWidth
-		frameRateElement.pointData = frameRateStatsBack
 		frameRateElement.useCurves = true
 		frameRateElement.ValueSuffix = "ms."
 		frameRateElement.dataMargin = int32(dataMarginZoom)
@@ -109,6 +104,8 @@ func drawProfiling() {
 		resetStatsBtn := pushEditorElement(frameRateElement, "Reset stats", nil)
 		setUpButton(resetStatsBtn, func() {
 			frameRateStats = []float64{}
+			frameRateStatsBack = []float64{}
+			dataMarginPan = math.MaxFloat64
 		})
 
 		pauseStatsBtn := pushEditorElement(frameRateElement, "Pause stats", nil)
@@ -124,7 +121,7 @@ func drawProfiling() {
 		if dataMarginPan == math.MaxFloat64 {
 			attachStatsBtn := pushEditorElement(frameRateElement, "Detach view", nil)
 			setUpButton(attachStatsBtn, func() {
-				dataMarginPan = float64(len(frameRateStats))
+				dataMarginPan = -float64(len(frameRateStats)) + 1
 			})
 		} else {
 			dataPanSlider := pushEditorElement(frameRateElement, "Pan:", nil)
@@ -136,9 +133,30 @@ func drawProfiling() {
 			})
 		}
 
+		if !areFrameStatsPaused {
+			frameRateStatsBack = frameRateStats
+			frameRateElement.pointData = frameRateStatsBack
+		}
+
+		if dataMarginPan != math.MaxFloat64 {
+			backupFrameRateStats := frameRateStatsBack
+			{
+				maxPanningCap := -len(frameRateStatsBack)
+
+				if int(dataMarginPan) < maxPanningCap {
+					dataMarginPan = float64(maxPanningCap) + 1
+				} else if dataMarginPan > 0 {
+					dataMarginPan = 0
+				}
+
+				backupFrameRateStats = backupFrameRateStats[:int(-dataMarginPan)]
+			}
+			frameRateElement.pointData = backupFrameRateStats
+		}
+
 		/* extraStatsButton := pushEditorElement(frameRateElement, "Random button", nil)
-		setUpButton(extraStatsButton, func() {
-			log.Println("This button has no purpose")
+			setUpButton(extraStatsButton, func() {
+				log.Println("This button has no purpose")
 		})
 		extraStatsButton.isHorizontal = true
 

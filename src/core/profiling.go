@@ -94,43 +94,53 @@ func drawProfiling() {
 
 		frameRateElement.graphEnabled = true
 		frameRateElement.lineColor = rl.Blue
-		frameRateElement.dataMargin = 5
 		frameRateElement.graphHeight = defaultGraphHeight
 		frameRateElement.graphWidth = defaultGraphWidth
 		frameRateElement.useCurves = true
 		frameRateElement.ValueSuffix = "ms."
 		frameRateElement.dataMargin = int32(dataMarginZoom)
 
-		resetStatsBtn := pushEditorElement(frameRateElement, "Reset stats", nil)
-		setUpButton(resetStatsBtn, func() {
-			frameRateStats = []float64{}
-			frameRateStatsBack = []float64{}
-			dataMarginPan = math.MaxFloat64
-		})
+		setUpButton(
+			pushEditorElement(frameRateElement, "Reset stats", nil),
+			func() {
+				frameRateStats = []float64{}
+				frameRateStatsBack = []float64{}
+				dataMarginPan = math.MaxFloat64
+			},
+			false,
+		)
 
-		pauseStatsBtn := pushEditorElement(frameRateElement, "Pause stats", nil)
-		setUpButton(pauseStatsBtn, func() {
-			areFrameStatsPaused = !areFrameStatsPaused
-		})
-		pauseStatsBtn.isHorizontal = true
+		setUpButton(
+			pushEditorElement(frameRateElement, "Pause stats", nil),
+			func() {
+				areFrameStatsPaused = !areFrameStatsPaused
+			},
+			true,
+		)
 
 		dataMarginSlider := pushEditorElement(frameRateElement, "Zoom:", nil)
 		setUpSlider(dataMarginSlider, &dataMarginZoom, 1, 25)
 		dataMarginSlider.sliderValueRounding = 0
 
 		if dataMarginPan == math.MaxFloat64 {
-			attachStatsBtn := pushEditorElement(frameRateElement, "Detach view", nil)
-			setUpButton(attachStatsBtn, func() {
-				dataMarginPan = -float64(len(frameRateStats)) + 1
-			})
+			setUpButton(
+				pushEditorElement(frameRateElement, "Detach view", nil),
+				func() {
+					dataMarginPan = -float64(len(frameRateStats)) + 1
+				},
+				false,
+			)
 		} else {
 			dataPanSlider := pushEditorElement(frameRateElement, "Pan:", nil)
 			setUpSlider(dataPanSlider, &dataMarginPan, 0, 0)
 			dataPanSlider.sliderValueRounding = 0
-			attachStatsBtn := pushEditorElement(frameRateElement, "Attach view", nil)
-			setUpButton(attachStatsBtn, func() {
-				dataMarginPan = math.MaxFloat64
-			})
+			setUpButton(
+				pushEditorElement(frameRateElement, "Attach view", nil),
+				func() {
+					dataMarginPan = math.MaxFloat64
+				},
+				false,
+			)
 		}
 
 		if !areFrameStatsPaused {

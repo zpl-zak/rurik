@@ -88,11 +88,13 @@ func updateDebugMenu() {
 	debugMenu.isHorizontal = true
 
 	if *debugMenu.isCollapsed == false {
-		exitGameBtn := pushEditorElement(debugMenu, "Exit Game", nil)
-		//exitGameBtn.isHorizontal = true
-		setUpButton(exitGameBtn, func() {
-			CloseGame()
-		})
+		setUpButton(
+			pushEditorElement(debugMenu, "Exit Game", nil),
+			func() {
+				CloseGame()
+			},
+			false,
+		)
 	}
 }
 

@@ -110,11 +110,12 @@ func pushEditorElementEx(element *editorElement, text string, isCollapsed *bool,
 	return child
 }
 
-func setUpButton(element *editorElement, callback func()) {
+func setUpButton(element *editorElement, callback func(), isHorizontal bool) {
 	element.class = elementTypeButton
 	element.buttonColor = rl.DarkPurple
 	element.buttonHoverColor = rl.Purple
 	element.buttonPressColor = rl.Pink
+	element.isHorizontal = isHorizontal
 	element.callback = callback
 }
 

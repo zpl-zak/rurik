@@ -90,11 +90,17 @@ func drawProfiling() {
 
 		frameRateElement.graphEnabled = isFrameRateGraphOpened
 		frameRateElement.lineColor = rl.Blue
-		frameRateElement.dataMargin = 10
+		frameRateElement.dataMargin = 5
 		frameRateElement.graphHeight = defaultGraphHeight
 		frameRateElement.graphWidth = defaultGraphWidth
 		frameRateElement.pointData = frameRateStats
 		frameRateElement.useCurves = true
+		frameRateElement.ValueSuffix = "ms."
+
+		resetStatsBtn := pushEditorElement(frameRateElement, "Reset stats", nil)
+		setUpButton(resetStatsBtn, func() {
+			frameRateStats = []float64{}
+		})
 
 		pushEditorElement(profilerNode, otherTimeString, nil)
 		updateNode := pushEditorElement(profilerNode, updateProfiler.DisplayString, &updateProfiler.IsCollapsed)

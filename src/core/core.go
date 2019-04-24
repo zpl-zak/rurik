@@ -126,7 +126,7 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			setupDefaultCamera()
 		}
 
-		if frameCounter > 1 {
+		if frameCounter > 0.5 {
 			updateProfiling(frameCounter, float64(frames))
 
 			frames = 0

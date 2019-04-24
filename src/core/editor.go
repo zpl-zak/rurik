@@ -21,6 +21,7 @@ import (
 	"math"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (
@@ -52,6 +53,13 @@ type editorElement struct {
 	graphWidth   int32
 	pointData    []float64
 	useCurves    bool
+	ValueSuffix  string
+
+	// Buttons
+	isButton         bool
+	buttonColor      rl.Color
+	buttonHoverColor rl.Color
+	buttonPressColor rl.Color
 }
 
 func pushEditorElement(element *editorElement, text string, isCollapsed *bool) *editorElement {
@@ -68,6 +76,14 @@ func pushEditorElementEx(element *editorElement, text string, isCollapsed *bool,
 	element.children = append(element.children, child)
 
 	return child
+}
+
+func setUpButton(element *editorElement, callback func()) {
+	element.isButton = true
+	element.buttonColor = rl.DarkPurple
+	element.buttonHoverColor = rl.Purple
+	element.buttonPressColor = rl.Pink
+	element.callback = callback
 }
 
 // DrawEditor draws debug UI
@@ -170,22 +186,75 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 			}
 		}
 
-		isInRectangle := IsMouseInRectangle(offsetX-graphXTreshold+(int32(x)*element.dataMargin)-2, offsetY+height-scaledValue-2, 4, 4)
+		oldValue = scaledValue
+	}
 
-		if isInRectangle {
-			txt := fmt.Sprintf("%.02f", v)
+	isInRectangle := IsMouseInRectangle(
+		offsetX,
+		offsetY,
+		width,
+		height,
+	)
 
-			rl.DrawRectangle(offsetX-graphXTreshold+8+(int32(x)*element.dataMargin), offsetY+height-scaledValue-2, rl.MeasureText(txt, 10)+2, 12, rl.NewColor(30, 30, 30, 120))
-
-			rl.DrawText(txt, offsetX-graphXTreshold+10+(int32(x)*element.dataMargin), offsetY+height-scaledValue, 10, rl.RayWhite)
+	// shows specific approximation of a value on a graph
+	if isInRectangle {
+		mo := rl.GetMousePosition()
+		m := [2]int32{
+			int32(mo.X) / system.ScaleRatio,
+			int32(mo.Y) / system.ScaleRatio,
 		}
 
-		oldValue = scaledValue
+		// horizontal line
+		rl.DrawLine(
+			m[0],
+			offsetY,
+			m[0],
+			offsetY+height,
+			rl.Red,
+		)
+
+		var closestPointPastX int
+		var skippedNodes int
+
+		for x := range element.pointData {
+			if (x*int(element.dataMargin) - int(graphXTreshold)) < int(m[0]-offsetX) {
+				closestPointPastX = x
+			} else {
+				break
+			}
+		}
+
+		adjustment := 1
+
+		if len(element.pointData) == closestPointPastX+1 {
+			adjustment = 0
+		}
+
+		y0 := float32(element.pointData[closestPointPastX])
+		y1 := float32(element.pointData[closestPointPastX+adjustment])
+		x0 := float32(closestPointPastX-skippedNodes) * float32(element.dataMargin)
+		x1 := float32(closestPointPastX+adjustment-skippedNodes)*float32(element.dataMargin) + 1
+		t := (float32(m[0]-offsetX) - x0) / (x1 - x0)
+
+		finalY := float64(ScalarLerp(y0, y1, t))
+		scaledFinalY := int32(float64(finalY-smallestValue) * float64(scaleY))
+
+		// vertical line
+		rl.DrawLine(
+			offsetX,
+			offsetY+height-scaledFinalY,
+			offsetX+width,
+			offsetY+height-scaledFinalY,
+			rl.Red,
+		)
+
+		txt := fmt.Sprintf("%.02f %s", finalY, element.ValueSuffix)
+		rl.DrawText(txt, m[0]+2, m[1]-10, 10, rl.RayWhite)
 	}
 
 	// Maxima
 	rl.DrawText(
-		fmt.Sprintf("%.02f", biggestValue),
+		fmt.Sprintf("%.02f %s", biggestValue, element.ValueSuffix),
 		offsetX+width+5,
 		offsetY-10,
 		10,
@@ -194,7 +263,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 	// Minima
 	rl.DrawText(
-		fmt.Sprintf("%.02f", smallestValue),
+		fmt.Sprintf("%.02f %s", smallestValue, element.ValueSuffix),
 		offsetX+width+5,
 		offsetY+height-10,
 		10,
@@ -203,7 +272,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 	// Average
 	rl.DrawText(
-		fmt.Sprintf("avg. %.02f", avgValue),
+		fmt.Sprintf("avg. %.02f %s", avgValue, element.ValueSuffix),
 		offsetX+width+5,
 		offsetY+(height/2)-10,
 		10,
@@ -211,9 +280,9 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	)
 
 	scaledAvgValue := int32(float32(avgValue-smallestValue) * scaleY)
-	scaledAvgY := offsetY + scaledAvgValue
+	scaledAvgY := scaledAvgValue
 
-	rl.DrawLine(offsetX, scaledAvgY, offsetX+width, scaledAvgY, rl.RayWhite)
+	rl.DrawLine(offsetX, offsetY+height-scaledAvgY, offsetX+width, offsetY+height-scaledAvgY, rl.RayWhite)
 
 	return height + 5
 }
@@ -221,8 +290,9 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 	color := rl.White
 	var ext int32 = 10
+	var textWidth = rl.MeasureText(element.text, 10)
 
-	isInRectangle := IsMouseInRectangle(offsetX, offsetY, rl.MeasureText(element.text, 10), 10)
+	isInRectangle := IsMouseInRectangle(offsetX, offsetY, textWidth, 10)
 
 	if element.isCollapsed != nil && isInRectangle {
 		color = rl.Red
@@ -230,12 +300,46 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			*element.isCollapsed = !*element.isCollapsed
 		}
-	} else if isInRectangle && element.callback != nil {
+	} else if isInRectangle && element.callback != nil && element.isButton == false {
 		color = rl.Yellow
 
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			element.callback()
 		}
+	} else if element.isButton {
+		if isInRectangle {
+			if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+				rl.DrawRectangle(
+					offsetX-2,
+					offsetY-2,
+					textWidth+4,
+					14,
+					element.buttonPressColor,
+				)
+			} else {
+				rl.DrawRectangle(
+					offsetX-2,
+					offsetY-2,
+					textWidth+4,
+					14,
+					element.buttonHoverColor,
+				)
+			}
+
+			if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+				element.callback()
+			}
+		} else {
+			rl.DrawRectangle(
+				offsetX-2,
+				offsetY-2,
+				textWidth+4,
+				14,
+				element.buttonColor,
+			)
+		}
+
+		ext += 2
 	}
 
 	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)

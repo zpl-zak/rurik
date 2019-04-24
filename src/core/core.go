@@ -48,6 +48,8 @@ var (
 
 	// DebugShowAll shows all visible debug elements
 	DebugShowAll = false
+
+	isDebugMenuCollapsed = true
 )
 
 const (
@@ -79,6 +81,19 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 // CloseGame exits the game gracefully
 func CloseGame() {
 	IsRunning = false
+}
+
+func updateDebugMenu() {
+	debugMenu := pushEditorElement(rootElement, "Debug", &isDebugMenuCollapsed)
+	debugMenu.isHorizontal = true
+
+	if *debugMenu.isCollapsed == false {
+		exitGameBtn := pushEditorElement(debugMenu, "Exit Game", nil)
+		//exitGameBtn.isHorizontal = true
+		setUpButton(exitGameBtn, func() {
+			CloseGame()
+		})
+	}
 }
 
 // Run executes the main game loop
@@ -137,6 +152,7 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		for unprocessedTime > float64(system.FrameTime) {
 			system.UpdateInput()
 			UpdateEditor()
+			updateDebugMenu()
 
 			updateProfiler.StartInvocation()
 			musicProfiler.StartInvocation()

@@ -18,7 +18,7 @@ package core
 
 import (
 	"fmt"
-	"log"
+	"math"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
@@ -39,7 +39,8 @@ var (
 	isProfilerCollapsed    = true
 	isFrameRateGraphOpened = true
 	areFrameStatsPaused    bool
-	testSliderValue        float64 = 120
+	dataMarginZoom         float64 = 5
+	dataMarginPan                  = math.MaxFloat64
 
 	frameRateString = ""
 	otherTimeString = ""
@@ -103,6 +104,7 @@ func drawProfiling() {
 		frameRateElement.pointData = frameRateStatsBack
 		frameRateElement.useCurves = true
 		frameRateElement.ValueSuffix = "ms."
+		frameRateElement.dataMargin = int32(dataMarginZoom)
 
 		resetStatsBtn := pushEditorElement(frameRateElement, "Reset stats", nil)
 		setUpButton(resetStatsBtn, func() {
@@ -115,20 +117,40 @@ func drawProfiling() {
 		})
 		pauseStatsBtn.isHorizontal = true
 
-		extraStatsButton := pushEditorElement(frameRateElement, "Random button", nil)
+		dataMarginSlider := pushEditorElement(frameRateElement, "Zoom:", nil)
+		setUpSlider(dataMarginSlider, &dataMarginZoom, 1, 25)
+		dataMarginSlider.sliderValueRounding = 0
+
+		if dataMarginPan == math.MaxFloat64 {
+			attachStatsBtn := pushEditorElement(frameRateElement, "Detach view", nil)
+			setUpButton(attachStatsBtn, func() {
+				dataMarginPan = float64(len(frameRateStats))
+			})
+		} else {
+			dataPanSlider := pushEditorElement(frameRateElement, "Pan:", nil)
+			setUpSlider(dataPanSlider, &dataMarginPan, 0, 0)
+			dataPanSlider.sliderValueRounding = 0
+			attachStatsBtn := pushEditorElement(frameRateElement, "Attach view", nil)
+			setUpButton(attachStatsBtn, func() {
+				dataMarginPan = math.MaxFloat64
+			})
+		}
+
+		/* extraStatsButton := pushEditorElement(frameRateElement, "Random button", nil)
 		setUpButton(extraStatsButton, func() {
 			log.Println("This button has no purpose")
 		})
 		extraStatsButton.isHorizontal = true
 
+		pushEditorElement(frameRateElement, "Random string 2", nil)
+
 		extraStatsSlider := pushEditorElement(frameRateElement, "Some slider:", nil)
-		setUpSlider(extraStatsSlider, &testSliderValue, 0, 1)
-		//extraStatsSlider.sliderValueRounding = 0
-		//extraStatsSlider.isHorizontal = true
-		/* extraStatsButton.padding = rl.RectangleInt32{
-			X: 5, Y: 5,
-			Width: 0, Height: 0,
-		} */
+		setUpSlider(extraStatsSlider, &dataMarginZoom, 0, 1)
+
+		extraStatsSlider2 := pushEditorElement(frameRateElement, "Some slider 2:", nil)
+		setUpSlider(extraStatsSlider2, &dataMarginZoom2, -30, 350)
+
+		pushEditorElement(frameRateElement, "Random string 2", nil) */
 
 		pushEditorElement(profilerNode, otherTimeString, nil)
 		updateNode := pushEditorElement(profilerNode, updateProfiler.DisplayString, &updateProfiler.IsCollapsed)

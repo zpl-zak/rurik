@@ -85,10 +85,11 @@ type editorElement struct {
 	buttonPressColor rl.Color
 
 	// Sliders
-	sliderValue         *float64
-	sliderValueMin      float64
-	sliderValueMax      float64
-	sliderValueRounding int64
+	sliderValue          *float64
+	sliderValueMin       float64
+	sliderValueMax       float64
+	sliderValueRounding  int64
+	sliderValueLimitless bool
 }
 
 func pushEditorElement(element *editorElement, text string, isCollapsed *bool) *editorElement {
@@ -120,8 +121,12 @@ func setUpButton(element *editorElement, callback func()) {
 func setUpSlider(element *editorElement, value *float64, min, max float64) {
 	element.class = elementTypeSlider
 	element.sliderValue = value
-	element.sliderValueMax = max
-	element.sliderValueMin = min
+	if min != max {
+		element.sliderValueMax = max
+		element.sliderValueMin = min
+	} else {
+		element.sliderValueLimitless = true
+	}
 	element.sliderValueRounding = 2
 }
 
@@ -411,26 +416,33 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 		rl.RayWhite,
 	)
 
-	rl.DrawText(
-		fmt.Sprintf("%.02f", element.sliderValueMin),
-		offsetX,
-		offsetY,
-		10,
-		rl.DarkPurple,
-	)
+	if !element.sliderValueLimitless {
+		rl.DrawText(
+			fmt.Sprintf("%.02f", element.sliderValueMin),
+			offsetX,
+			offsetY,
+			10,
+			rl.DarkPurple,
+		)
 
-	maxTxt := fmt.Sprintf("%.02f", element.sliderValueMax)
-	maxTxtWidth := rl.MeasureText(maxTxt, 10)
-	rl.DrawText(
-		maxTxt,
-		offsetX+defaultSliderWidth-maxTxtWidth,
-		offsetY,
-		10,
-		rl.DarkPurple,
-	)
+		maxTxt := fmt.Sprintf("%.02f", element.sliderValueMax)
+		maxTxtWidth := rl.MeasureText(maxTxt, 10)
+		rl.DrawText(
+			maxTxt,
+			offsetX+defaultSliderWidth-maxTxtWidth,
+			offsetY,
+			10,
+			rl.DarkPurple,
+		)
+	}
 
-	scaleX := float64(defaultSliderWidth) / float64(element.sliderValueMax-element.sliderValueMin)
-	scaledPositionX := float64((*element.sliderValue - element.sliderValueMin) * scaleX)
+	scaledPositionX := float64(defaultSliderWidth / 2)
+	scaleX := 1.0
+
+	if !element.sliderValueLimitless {
+		scaleX = float64(defaultSliderWidth) / float64(element.sliderValueMax-element.sliderValueMin)
+		scaledPositionX = float64((*element.sliderValue - element.sliderValueMin) * scaleX)
+	}
 
 	isInRectangle := IsMouseInRectangle(
 		offsetX+int32(scaledPositionX)-defaultSliderHandleWidth-defaultSliderHandleVisualWidth/8,
@@ -455,8 +467,16 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 		}
 
 		if element.ID == sliderHandleID {
-			m := system.GetMousePosition()
-			scaledPositionX = float64(m[0]-offsetX) + defaultSliderHandleVisualWidth/4
+			if element.sliderValueLimitless {
+				m := system.MouseDelta
+				scaledPositionX = *element.sliderValue + float64(m[0])
+				*element.sliderValue = scaledPositionX
+			} else {
+				m := system.GetMousePosition()
+				scaledPositionX = float64(m[0]-offsetX) + defaultSliderHandleVisualWidth/4
+				*element.sliderValue = scaledPositionX - (defaultSliderWidth / 2)
+			}
+
 		}
 	} else {
 		rl.DrawRectangle(
@@ -468,11 +488,13 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 		)
 	}
 
-	*element.sliderValue = scaledPositionX/scaleX + element.sliderValueMin
-	if *element.sliderValue < element.sliderValueMin {
-		*element.sliderValue = element.sliderValueMin
-	} else if *element.sliderValue > element.sliderValueMax {
-		*element.sliderValue = element.sliderValueMax
+	if !element.sliderValueLimitless {
+		*element.sliderValue = scaledPositionX/scaleX + element.sliderValueMin
+		if *element.sliderValue < element.sliderValueMin {
+			*element.sliderValue = element.sliderValueMin
+		} else if *element.sliderValue > element.sliderValueMax {
+			*element.sliderValue = element.sliderValueMax
+		}
 	}
 
 	minSteps := []float64{1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001}
@@ -540,7 +562,7 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 	var lastChildWidth int32
 	var lastChildHeight int32
 
-	for _, v := range element.children {
+	for x, v := range element.children {
 		var extraOffsetX int32
 		var extraOffsetY int32
 		if v.isHorizontal {
@@ -549,8 +571,14 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 			if v.class != elementTypeStandard {
 				extraOffsetY = lastChildHeight
 			} else {
-				extraOffsetX = totale2
+				extraOffsetX = 0
+				if x != 0 && element.children[x-1].isHorizontal {
+					extraOffsetX = totale2
+				}
 			}
+		} else {
+			extraOffsetX = 0
+			extraOffsetY = 0
 		}
 		rext, rext2, rtotal := handleEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
 		if !v.isHorizontal {

@@ -40,13 +40,12 @@ const (
 )
 
 type editorElement struct {
-	text              string
-	isCollapsed       *bool
-	hasSingleSelector bool
-	isHorizontal      bool
-	padding           rl.RectangleInt32
-	children          []*editorElement
-	callback          func()
+	text         string
+	isCollapsed  *bool
+	isHorizontal bool
+	padding      rl.RectangleInt32
+	children     []*editorElement
+	callback     func()
 
 	// Graphs
 	graphEnabled bool

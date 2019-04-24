@@ -452,14 +452,6 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 	)
 
 	if isInRectangle || sliderHandleID == element.ID {
-		rl.DrawRectangle(
-			offsetX+int32(scaledPositionX)-defaultSliderHandleVisualWidth/4,
-			offsetY,
-			defaultSliderHandleVisualWidth/4,
-			defaultSliderHandleHeight,
-			rl.Pink,
-		)
-
 		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
 			sliderHandleID = element.ID
 		} else if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
@@ -478,6 +470,20 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 			}
 
 		}
+
+		var extraSliderOffset int32
+
+		if element.sliderValueLimitless && sliderHandleID != 0 {
+			extraSliderOffset = +defaultSliderHandleVisualWidth/4 + defaultSliderWidth/2
+		}
+
+		rl.DrawRectangle(
+			offsetX+int32(scaledPositionX)-defaultSliderHandleVisualWidth/4+extraSliderOffset,
+			offsetY,
+			defaultSliderHandleVisualWidth/4,
+			defaultSliderHandleHeight,
+			rl.Pink,
+		)
 	} else {
 		rl.DrawRectangle(
 			offsetX+int32(scaledPositionX)-defaultSliderHandleVisualWidth/4,

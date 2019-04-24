@@ -570,6 +570,10 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 	var lastChildHeight int32
 
 	for x, v := range element.children {
+		if x == 0 && v.isHorizontal && v.class != elementTypeStandard {
+			v.isHorizontal = false
+		}
+
 		var extraOffsetX int32
 		var extraOffsetY int32
 		if v.isHorizontal {

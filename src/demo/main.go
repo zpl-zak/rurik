@@ -147,7 +147,7 @@ func updateInternals(g *demoGameMode) {
 	}
 
 	if core.WindowWasResized {
-		initShaders()
+		/* initShaders() */
 	}
 }
 

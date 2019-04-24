@@ -107,7 +107,7 @@ func drawProfiling() {
 				frameRateStatsBack = []float64{}
 				dataMarginPan = math.MaxFloat64
 			},
-			false,
+			true,
 		)
 
 		setUpButton(

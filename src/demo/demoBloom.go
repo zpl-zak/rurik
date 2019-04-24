@@ -15,18 +15,19 @@ type bloomProg struct {
 
 func newBloom() *bloomProg {
 	b := &bloomProg{
-		TresholdTexture: system.CreateRenderTarget(screenW, screenH),
+		TresholdTexture: system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
 		ExtractColors:   system.NewProgram("", "assets/shaders/extractColors.fs"),
 	}
 
-	b.ExtractColors.SetShaderValue("size", []float32{screenW, screenH}, 2)
+	b.ExtractColors.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)
 
 	return b
 }
 
 func (b *bloomProg) Apply() {
 	if core.WindowWasResized {
-		b.TresholdTexture = system.CreateRenderTarget(screenW, screenH)
+		rl.UnloadRenderTexture(b.TresholdTexture)
+		b.TresholdTexture = system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight)
 		b.ExtractColors.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)
 	}
 

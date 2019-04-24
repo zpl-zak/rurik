@@ -135,8 +135,9 @@ func drawProfiling() {
 
 		if !areFrameStatsPaused {
 			frameRateStatsBack = frameRateStats
-			frameRateElement.pointData = frameRateStatsBack
 		}
+
+		frameRateElement.pointData = frameRateStatsBack
 
 		if dataMarginPan != math.MaxFloat64 {
 			backupFrameRateStats := frameRateStatsBack

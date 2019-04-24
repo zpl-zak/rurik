@@ -19,6 +19,7 @@ package core
 import (
 	"fmt"
 
+	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -34,10 +35,14 @@ var (
 	lightingProfiler   *system.Profiler
 	scriptingProfiler  *system.Profiler
 
-	isProfilerCollapsed bool
+	isProfilerCollapsed    bool
+	isFrameRateGraphOpened = true
 
 	frameRateString = ""
 	otherTimeString = ""
+
+	frameRateStats             = []float64{}
+	profilerWarmupTime float32 = 3
 )
 
 // InitGameProfilers initializes all game profilers used within the engine
@@ -67,13 +72,30 @@ func updateProfiling(frameCounter, frames float64) {
 
 	frameRateString = fmt.Sprintf("total time: %.02f ms (%.02f FPS)", totalTime, 1000/totalTime)
 	otherTimeString = fmt.Sprintf("measured time: %.02f ms", totalMeasuredTime)
+
+	if profilerWarmupTime < 0 {
+		frameRateStats = append(frameRateStats, totalTime)
+	} else {
+		profilerWarmupTime -= 1000 * system.FrameTime
+	}
 }
 
 func drawProfiling() {
 	profilerNode := pushEditorElement(rootElement, "profiler", &isProfilerCollapsed)
 
 	if !isProfilerCollapsed {
-		pushEditorElement(profilerNode, frameRateString, nil)
+		frameRateElement := pushEditorElementEx(profilerNode, frameRateString, nil, func() {
+			isFrameRateGraphOpened = !isFrameRateGraphOpened
+		})
+
+		frameRateElement.graphEnabled = isFrameRateGraphOpened
+		frameRateElement.lineColor = rl.Blue
+		frameRateElement.dataMargin = 10
+		frameRateElement.graphHeight = defaultGraphHeight
+		frameRateElement.graphWidth = defaultGraphWidth
+		frameRateElement.pointData = frameRateStats
+		frameRateElement.useCurves = true
+
 		pushEditorElement(profilerNode, otherTimeString, nil)
 		updateNode := pushEditorElement(profilerNode, updateProfiler.DisplayString, &updateProfiler.IsCollapsed)
 

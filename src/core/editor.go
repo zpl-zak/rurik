@@ -132,7 +132,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 		)
 	}
 
-	if len(element.pointData) < 1 {
+	if element.pointData == nil || (element.pointData != nil && len(element.pointData) < 1) {
 		return height + 5
 	}
 
@@ -377,7 +377,7 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 			)
 		}
 
-		ext += 4
+		ext += 8
 	}
 
 	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)

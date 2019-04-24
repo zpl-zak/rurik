@@ -37,11 +37,13 @@ var (
 
 	isProfilerCollapsed    bool
 	isFrameRateGraphOpened = true
+	areFrameStatsPaused    bool
 
 	frameRateString = ""
 	otherTimeString = ""
 
 	frameRateStats             = []float64{}
+	frameRateStatsBack         = []float64{}
 	profilerWarmupTime float32 = 3
 )
 
@@ -86,18 +88,27 @@ func drawProfiling() {
 	if !isProfilerCollapsed {
 		frameRateElement := pushEditorElement(profilerNode, frameRateString, &isFrameRateGraphOpened)
 
+		if !areFrameStatsPaused {
+			frameRateStatsBack = frameRateStats
+		}
+
 		frameRateElement.graphEnabled = true
 		frameRateElement.lineColor = rl.Blue
 		frameRateElement.dataMargin = 5
 		frameRateElement.graphHeight = defaultGraphHeight
 		frameRateElement.graphWidth = defaultGraphWidth
-		frameRateElement.pointData = frameRateStats
+		frameRateElement.pointData = frameRateStatsBack
 		frameRateElement.useCurves = true
 		frameRateElement.ValueSuffix = "ms."
 
 		resetStatsBtn := pushEditorElement(frameRateElement, "Reset stats", nil)
 		setUpButton(resetStatsBtn, func() {
 			frameRateStats = []float64{}
+		})
+
+		pauseStatsBtn := pushEditorElement(frameRateElement, "Pause stats", nil)
+		setUpButton(pauseStatsBtn, func() {
+			areFrameStatsPaused = !areFrameStatsPaused
 		})
 
 		pushEditorElement(profilerNode, otherTimeString, nil)

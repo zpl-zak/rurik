@@ -84,11 +84,9 @@ func drawProfiling() {
 	profilerNode := pushEditorElement(rootElement, "profiler", &isProfilerCollapsed)
 
 	if !isProfilerCollapsed {
-		frameRateElement := pushEditorElementEx(profilerNode, frameRateString, nil, func() {
-			isFrameRateGraphOpened = !isFrameRateGraphOpened
-		})
+		frameRateElement := pushEditorElement(profilerNode, frameRateString, &isFrameRateGraphOpened)
 
-		frameRateElement.graphEnabled = isFrameRateGraphOpened
+		frameRateElement.graphEnabled = true
 		frameRateElement.lineColor = rl.Blue
 		frameRateElement.dataMargin = 5
 		frameRateElement.graphHeight = defaultGraphHeight

@@ -108,6 +108,30 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 	rl.DrawRectangle(offsetX, offsetY, width, height, rl.NewColor(40, 40, 40, 140))
 
+	// draw grid
+	gridColumns := int(width / element.dataMargin)
+	for x := 0; x < gridColumns; x++ {
+		posX := int32(x * int(element.dataMargin))
+		rl.DrawLine(
+			offsetX+posX,
+			offsetY,
+			offsetX+posX,
+			offsetY+height,
+			rl.NewColor(255, 255, 255, 40),
+		)
+	}
+	gridRows := int(height / element.dataMargin)
+	for x := 0; x < gridRows; x++ {
+		posY := int32(x * int(element.dataMargin))
+		rl.DrawLine(
+			offsetX,
+			offsetY+posY,
+			offsetX+width,
+			offsetY+posY,
+			rl.NewColor(255, 255, 255, 40),
+		)
+	}
+
 	if len(element.pointData) < 1 {
 		return height + 5
 	}
@@ -214,7 +238,6 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 		)
 
 		var closestPointPastX int
-		var skippedNodes int
 
 		for x := range element.pointData {
 			if (x*int(element.dataMargin) - int(graphXTreshold)) < int(m[0]-offsetX) {
@@ -232,20 +255,33 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 		y0 := float32(element.pointData[closestPointPastX])
 		y1 := float32(element.pointData[closestPointPastX+adjustment])
-		x0 := float32(closestPointPastX-skippedNodes) * float32(element.dataMargin)
-		x1 := float32(closestPointPastX+adjustment-skippedNodes)*float32(element.dataMargin) + 1
-		t := (float32(m[0]-offsetX) - x0) / (x1 - x0)
+		x0 := float32(closestPointPastX) * float32(element.dataMargin)
+		x1 := float32(closestPointPastX+adjustment)*float32(element.dataMargin) + 1
+		t := (float32(m[0]-offsetX) + float32(graphXTreshold) - x0) / (x1 - x0)
+		if t > 1 {
+			t = 1
+		} else if t < 0 {
+			t = 0
+		}
 
 		finalY := float64(ScalarLerp(y0, y1, t))
 		scaledFinalY := int32(float64(finalY-smallestValue) * float64(scaleY))
 
-		// vertical line
+		// vertical line (fixed)
 		rl.DrawLine(
 			offsetX,
 			offsetY+height-scaledFinalY,
 			offsetX+width,
 			offsetY+height-scaledFinalY,
 			rl.Red,
+		)
+		// vertical line (free)
+		rl.DrawLine(
+			offsetX,
+			m[1],
+			offsetX+width,
+			m[1],
+			rl.NewColor(255, 0, 0, 140),
 		)
 
 		txt := fmt.Sprintf("%.02f %s", finalY, element.ValueSuffix)
@@ -307,6 +343,8 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 			element.callback()
 		}
 	} else if element.isButton {
+		offsetY += 2
+
 		if isInRectangle {
 			if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 				rl.DrawRectangle(
@@ -339,13 +377,13 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) int32 {
 			)
 		}
 
-		ext += 2
+		ext += 4
 	}
 
 	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)
 	rl.DrawText(element.text, offsetX, offsetY, 10, color)
 
-	if element.graphEnabled {
+	if element.graphEnabled && element.isCollapsed != nil && *element.isCollapsed == false {
 		ext += drawGraph(element, offsetX+5, offsetY+ext)
 	}
 

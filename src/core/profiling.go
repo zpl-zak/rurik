@@ -36,9 +36,10 @@ var (
 	lightingProfiler   *system.Profiler
 	scriptingProfiler  *system.Profiler
 
-	isProfilerCollapsed    bool
+	isProfilerCollapsed    = true
 	isFrameRateGraphOpened = true
 	areFrameStatsPaused    bool
+	testSliderValue        float64 = 120
 
 	frameRateString = ""
 	otherTimeString = ""
@@ -120,11 +121,10 @@ func drawProfiling() {
 		})
 		extraStatsButton.isHorizontal = true
 
-		extraStatsButton2 := pushEditorElement(frameRateElement, "Random button 2", nil)
-		setUpButton(extraStatsButton2, func() {
-			log.Println("This button has no purpose")
-		})
-		extraStatsButton2.isHorizontal = true
+		extraStatsSlider := pushEditorElement(frameRateElement, "Some slider:", nil)
+		setUpSlider(extraStatsSlider, &testSliderValue, 0, 1)
+		//extraStatsSlider.sliderValueRounding = 0
+		//extraStatsSlider.isHorizontal = true
 		/* extraStatsButton.padding = rl.RectangleInt32{
 			X: 5, Y: 5,
 			Width: 0, Height: 0,

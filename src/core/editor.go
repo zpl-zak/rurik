@@ -25,21 +25,43 @@ import (
 )
 
 var (
-	rootIsCollapsed = true
+	rootIsCollapsed = false
 	rootElement     = &editorElement{
 		text:        "editor",
 		isCollapsed: &rootIsCollapsed,
 		children:    []*editorElement{},
 	}
+
+	editorElementCounter uint64
+
+	sliderHandleID uint64
 )
 
 const (
 	defaultGraphHeight     = 50
 	defaultGraphWidth      = 200
 	defaultGraphDataMargin = 5
+
+	defaultSliderWidth             = 100
+	defaultSliderHeight            = 10
+	defaultSliderHandleWidth       = 10
+	defaultSliderHandleVisualWidth = 10
+	defaultSliderHandleHeight      = 10
+
+	defaultSliderValueMin  = 0
+	defaultSliderValueMax  = 100
+	defaultSliderValueStep = 1
+)
+
+const (
+	elementTypeStandard = iota
+	elementTypeButton
+	elementTypeSlider
 )
 
 type editorElement struct {
+	ID           uint64
+	class        uint8
 	text         string
 	isCollapsed  *bool
 	isHorizontal bool
@@ -58,10 +80,15 @@ type editorElement struct {
 	ValueSuffix  string
 
 	// Buttons
-	isButton         bool
 	buttonColor      rl.Color
 	buttonHoverColor rl.Color
 	buttonPressColor rl.Color
+
+	// Sliders
+	sliderValue         *float64
+	sliderValueMin      float64
+	sliderValueMax      float64
+	sliderValueRounding int64
 }
 
 func pushEditorElement(element *editorElement, text string, isCollapsed *bool) *editorElement {
@@ -69,7 +96,9 @@ func pushEditorElement(element *editorElement, text string, isCollapsed *bool) *
 }
 
 func pushEditorElementEx(element *editorElement, text string, isCollapsed *bool, callback func()) *editorElement {
+	editorElementCounter++
 	child := &editorElement{
+		ID:          editorElementCounter,
 		text:        text,
 		isCollapsed: isCollapsed,
 		children:    []*editorElement{},
@@ -81,11 +110,19 @@ func pushEditorElementEx(element *editorElement, text string, isCollapsed *bool,
 }
 
 func setUpButton(element *editorElement, callback func()) {
-	element.isButton = true
+	element.class = elementTypeButton
 	element.buttonColor = rl.DarkPurple
 	element.buttonHoverColor = rl.Purple
 	element.buttonPressColor = rl.Pink
 	element.callback = callback
+}
+
+func setUpSlider(element *editorElement, value *float64, min, max float64) {
+	element.class = elementTypeSlider
+	element.sliderValue = value
+	element.sliderValueMax = max
+	element.sliderValueMin = min
+	element.sliderValueRounding = 2
 }
 
 // DrawEditor draws debug UI
@@ -224,11 +261,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 	// shows specific approximation of a value on a graph
 	if isInRectangle {
-		mo := rl.GetMousePosition()
-		m := [2]int32{
-			int32(mo.X) / system.ScaleRatio,
-			int32(mo.Y) / system.ScaleRatio,
-		}
+		m := system.GetMousePosition()
 
 		// horizontal line
 		rl.DrawLine(
@@ -325,6 +358,134 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	return height + 5
 }
 
+func drawButton(element *editorElement, offsetX, offsetY, textWidth int32, isInRectangle bool) {
+	if isInRectangle {
+		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
+			rl.DrawRectangle(
+				offsetX-2,
+				offsetY-2,
+				textWidth+4,
+				14,
+				element.buttonPressColor,
+			)
+		} else {
+			rl.DrawRectangle(
+				offsetX-2,
+				offsetY-2,
+				textWidth+4,
+				14,
+				element.buttonHoverColor,
+			)
+		}
+
+		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+			element.callback()
+		}
+	} else {
+		rl.DrawRectangle(
+			offsetX-2,
+			offsetY-2,
+			textWidth+4,
+			14,
+			element.buttonColor,
+		)
+	}
+}
+
+func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32) {
+	offsetX += textWidth + 3
+
+	rl.DrawRectangle(
+		offsetX,
+		offsetY,
+		defaultSliderWidth,
+		defaultSliderHeight,
+		rl.NewColor(80, 40, 80, 200),
+	)
+
+	rl.DrawText(
+		fmt.Sprintf("%.02f", *element.sliderValue),
+		offsetX+defaultSliderWidth+3,
+		offsetY,
+		10,
+		rl.RayWhite,
+	)
+
+	rl.DrawText(
+		fmt.Sprintf("%.02f", element.sliderValueMin),
+		offsetX,
+		offsetY,
+		10,
+		rl.DarkPurple,
+	)
+
+	maxTxt := fmt.Sprintf("%.02f", element.sliderValueMax)
+	maxTxtWidth := rl.MeasureText(maxTxt, 10)
+	rl.DrawText(
+		maxTxt,
+		offsetX+defaultSliderWidth-maxTxtWidth,
+		offsetY,
+		10,
+		rl.DarkPurple,
+	)
+
+	scaleX := float64(defaultSliderWidth) / float64(element.sliderValueMax-element.sliderValueMin)
+	scaledPositionX := float64((*element.sliderValue - element.sliderValueMin) * scaleX)
+
+	isInRectangle := IsMouseInRectangle(
+		offsetX+int32(scaledPositionX)-defaultSliderHandleWidth-defaultSliderHandleVisualWidth/8,
+		offsetY,
+		defaultSliderHandleWidth*2,
+		defaultSliderHandleHeight,
+	)
+
+	if isInRectangle || sliderHandleID == element.ID {
+		rl.DrawRectangle(
+			offsetX+int32(scaledPositionX)-defaultSliderHandleVisualWidth/4,
+			offsetY,
+			defaultSliderHandleVisualWidth/4,
+			defaultSliderHandleHeight,
+			rl.Pink,
+		)
+
+		if rl.IsMouseButtonPressed(rl.MouseLeftButton) {
+			sliderHandleID = element.ID
+		} else if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+			sliderHandleID = 0
+		}
+
+		if element.ID == sliderHandleID {
+			m := system.GetMousePosition()
+			scaledPositionX = float64(m[0]-offsetX) + defaultSliderHandleVisualWidth/4
+		}
+	} else {
+		rl.DrawRectangle(
+			offsetX+int32(scaledPositionX)-defaultSliderHandleVisualWidth/4,
+			offsetY,
+			defaultSliderHandleVisualWidth/4,
+			defaultSliderHandleHeight,
+			rl.Purple,
+		)
+	}
+
+	*element.sliderValue = scaledPositionX/scaleX + element.sliderValueMin
+	if *element.sliderValue < element.sliderValueMin {
+		*element.sliderValue = element.sliderValueMin
+	} else if *element.sliderValue > element.sliderValueMax {
+		*element.sliderValue = element.sliderValueMax
+	}
+
+	minSteps := []float64{1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001}
+	var decimalPrecision float64
+	if element.sliderValueRounding >= 0 && element.sliderValueRounding < 10 {
+		decimalPrecision = minSteps[element.sliderValueRounding]
+	} else {
+		decimalPrecision = math.Pow10(int(-element.sliderValueRounding))
+	}
+
+	*element.sliderValue = math.Round(*element.sliderValue/decimalPrecision) * decimalPrecision
+}
+
 func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32, int32) {
 	color := rl.White
 	var ext int32 = 10
@@ -345,47 +506,21 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			*element.isCollapsed = !*element.isCollapsed
 		}
-	} else if isInRectangle && element.callback != nil && element.isButton == false {
+	} else if isInRectangle && element.callback != nil && element.class == elementTypeStandard {
 		color = rl.Yellow
 
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
 			element.callback()
 		}
-	} else if element.isButton {
+	} else if element.class == elementTypeButton {
 		offsetY += 5
-
-		if isInRectangle {
-			if rl.IsMouseButtonDown(rl.MouseLeftButton) {
-				rl.DrawRectangle(
-					offsetX-2,
-					offsetY-2,
-					textWidth+4,
-					14,
-					element.buttonPressColor,
-				)
-			} else {
-				rl.DrawRectangle(
-					offsetX-2,
-					offsetY-2,
-					textWidth+4,
-					14,
-					element.buttonHoverColor,
-				)
-			}
-
-			if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-				element.callback()
-			}
-		} else {
-			rl.DrawRectangle(
-				offsetX-2,
-				offsetY-2,
-				textWidth+4,
-				14,
-				element.buttonColor,
-			)
-		}
-
+		drawButton(element, offsetX, offsetY, textWidth, isInRectangle)
+		ext += 8
+		ext2 += 5
+		totale2 += 5
+	} else if element.class == elementTypeSlider {
+		offsetY += 5
+		drawSlider(element, offsetX, offsetY, textWidth)
 		ext += 8
 		ext2 += 5
 		totale2 += 5
@@ -411,7 +546,7 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 		if v.isHorizontal {
 			extraOffsetX = lastChildWidth + 5
 
-			if v.isButton {
+			if v.class != elementTypeStandard {
 				extraOffsetY = lastChildHeight
 			} else {
 				extraOffsetX = totale2
@@ -439,4 +574,6 @@ func flushEditorElement() {
 		isCollapsed: &rootIsCollapsed,
 		children:    []*editorElement{},
 	}
+
+	editorElementCounter = 0
 }

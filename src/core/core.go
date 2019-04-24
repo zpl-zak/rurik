@@ -135,6 +135,7 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		updateWindow()
 
 		for unprocessedTime > float64(system.FrameTime) {
+			system.UpdateInput()
 			UpdateEditor()
 
 			updateProfiler.StartInvocation()

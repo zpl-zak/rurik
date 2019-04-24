@@ -30,6 +30,11 @@ var (
 
 	// GamepadID represents the controller index
 	GamepadID int32
+
+	// MouseDelta contains last mouse movement
+	MouseDelta [2]int32
+
+	lastMousePosition [2]int32
 )
 
 // InputAction defines an action tagged by input
@@ -39,6 +44,17 @@ type InputAction struct {
 	allKeys      []int32
 	joyAxis      int32
 	joyButtons   []int32
+}
+
+// UpdateInput updates the user input
+func UpdateInput() {
+	// Update MouseDelta
+	newMousePosition := GetMousePosition()
+	MouseDelta = [2]int32{
+		newMousePosition[0] - lastMousePosition[0],
+		newMousePosition[1] - lastMousePosition[1],
+	}
+	lastMousePosition = newMousePosition
 }
 
 // BindInputAction registers a new input action used by the game
@@ -164,4 +180,15 @@ func GetAxis(action string) (rate float32) {
 	}
 
 	return
+}
+
+// GetMousePosition returns a fixed mouse position
+func GetMousePosition() [2]int32 {
+	mo := rl.GetMousePosition()
+	m := [2]int32{
+		int32(mo.X) / ScaleRatio,
+		int32(mo.Y) / ScaleRatio,
+	}
+
+	return m
 }

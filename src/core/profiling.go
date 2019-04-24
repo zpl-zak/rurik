@@ -85,6 +85,7 @@ func updateProfiling(frameCounter, frames float64) {
 
 func drawProfiling() {
 	profilerNode := pushEditorElement(rootElement, "profiler", &isProfilerCollapsed)
+	profilerNode.isHorizontal = true
 
 	if !isProfilerCollapsed {
 		frameRateElement := pushEditorElement(profilerNode, frameRateString, &isFrameRateGraphOpened)
@@ -118,6 +119,12 @@ func drawProfiling() {
 			log.Println("This button has no purpose")
 		})
 		extraStatsButton.isHorizontal = true
+
+		extraStatsButton2 := pushEditorElement(frameRateElement, "Random button 2", nil)
+		setUpButton(extraStatsButton2, func() {
+			log.Println("This button has no purpose")
+		})
+		extraStatsButton2.isHorizontal = true
 		/* extraStatsButton.padding = rl.RectangleInt32{
 			X: 5, Y: 5,
 			Width: 0, Height: 0,
@@ -136,7 +143,6 @@ func drawProfiling() {
 
 		renderNode := pushEditorElement(profilerNode, drawProfiler.DisplayString, &drawProfiler.IsCollapsed)
 
-		renderNode.isHorizontal = true
 		if !drawProfiler.IsCollapsed {
 			pushEditorElement(renderNode, sortRenderProfiler.DisplayString, nil)
 			pushEditorElement(renderNode, cullRenderProfiler.DisplayString, nil)

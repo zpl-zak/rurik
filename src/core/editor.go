@@ -40,12 +40,13 @@ const (
 )
 
 type editorElement struct {
-	text         string
-	isCollapsed  *bool
-	isHorizontal bool
-	padding      rl.RectangleInt32
-	children     []*editorElement
-	callback     func()
+	text              string
+	isCollapsed       *bool
+	hasSingleSelector bool
+	isHorizontal      bool
+	padding           rl.RectangleInt32
+	children          []*editorElement
+	callback          func()
 
 	// Graphs
 	graphEnabled bool
@@ -91,7 +92,7 @@ func setUpButton(element *editorElement, callback func()) {
 // DrawEditor draws debug UI
 func DrawEditor() {
 	if DebugMode {
-		drawEditorElement(rootElement, 5, 5)
+		handleEditorElement(rootElement, 5, 5)
 	}
 }
 
@@ -325,7 +326,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	return height + 5
 }
 
-func drawEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32) {
+func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32) {
 	color := rl.White
 	var ext int32 = 10
 	var textWidth = rl.MeasureText(element.text, 10)
@@ -408,12 +409,15 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) (int32, i
 		var extraOffsetY int32
 		if v.isHorizontal {
 			extraOffsetX = lastChildWidth + 5
-			extraOffsetY = lastChildHeight
+
+			if v.isButton {
+				extraOffsetY = lastChildHeight
+			}
 		}
-		rext, rext2 := drawEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
+		rext, rext2 := handleEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
 		if !v.isHorizontal {
-			ext += rext
 			lastChildWidth = rext2
+			ext += rext
 		} else {
 			lastChildWidth += rext2 + 5
 		}
@@ -425,8 +429,9 @@ func drawEditorElement(element *editorElement, offsetX, offsetY int32) (int32, i
 
 func flushEditorElement() {
 	rootElement = &editorElement{
-		text:        "editor",
-		isCollapsed: &rootIsCollapsed,
-		children:    []*editorElement{},
+		text:              "editor",
+		isCollapsed:       &rootIsCollapsed,
+		hasSingleSelector: true,
+		children:          []*editorElement{},
 	}
 }

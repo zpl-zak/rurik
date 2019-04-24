@@ -213,6 +213,7 @@ func UpdateMapUI() {
 		}
 
 		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
+		mapNode.isHorizontal = true
 
 		if !mapNodeIsCollapsed {
 			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.Name), nil)

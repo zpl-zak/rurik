@@ -435,9 +435,8 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 
 func flushEditorElement() {
 	rootElement = &editorElement{
-		text:              "editor",
-		isCollapsed:       &rootIsCollapsed,
-		hasSingleSelector: true,
-		children:          []*editorElement{},
+		text:        "editor",
+		isCollapsed: &rootIsCollapsed,
+		children:    []*editorElement{},
 	}
 }

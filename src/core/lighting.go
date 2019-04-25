@@ -94,7 +94,7 @@ func populateMultiplicativeLight() {
 
 	rl.BeginTextureMode(multiplicativeLightTexture)
 	{
-		rl.ClearBackground(SkyColor)
+		rl.ClearBackground(rl.Black) //Vec3ToColor(LerpColor(ColorToVec3(SkyColor), ColorToVec3(rl.Black), 0.8)))
 
 		rl.BeginBlendMode(rl.BlendAdditive)
 		{
@@ -119,5 +119,5 @@ func populateMultiplicativeLight() {
 		rl.EndBlendMode()
 	}
 	rl.EndTextureMode()
-	BlurRenderTarget(multiplicativeLightTexture, 32)
+	BlurRenderTarget(multiplicativeLightTexture, 16)
 }

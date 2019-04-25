@@ -3,8 +3,8 @@
  <tileset firstgid="1" source="../tilesets/MageCity.tsx"/>
  <object gid="86" width="32" height="32">
   <properties>
-   <property name="atten" type="float" value="128"/>
-   <property name="color" type="color" value="#ffd02326"/>
+   <property name="atten" type="float" value="156"/>
+   <property name="color" type="color" value="#fffc2a31"/>
    <property name="fullbright" type="int" value="1"/>
    <property name="light" value="1"/>
    <property name="radius" type="float" value="16"/>

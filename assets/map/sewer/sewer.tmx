@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="28">
+ <properties>
+  <property name="skyColor" type="color" value="#ffb9f4ff"/>
+ </properties>
+ <tileset firstgid="1" source="../../tilesets/Sewer.tsx"/>
+ <tileset firstgid="353" source="../../tilesets/MageCity.tsx"/>
+ <layer id="4" name="Tile Layer 3" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJxjYBjZQJvK5lkAsSURtCEQG2Gh0YEHEHvipxtAtCMQO2Gh0QEuewnRxlCMDnDZi482xmMeyF8RROAYII4F4jgkvflYzGskAldi0RcGxOFUMC8VGD9AzOAMxOlUdB86KCTBvHI85hCjHxumRC8pGADoaD8U
+  </data>
+ </layer>
+ <layer id="7" name="Tile Layer 6" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo2DwgAgg9iACEwuMiMTUBOmD3LyhDABNlgWj
+  </data>
+ </layer>
+ <layer id="5" name="Tile Layer 4" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFQxUYY8Hk6CEF0xp4EKkuAogbgTiSCLWmRNCkmEdt9xEDMqDmZVLJPAaoeUMNAABL/wrq
+  </data>
+ </layer>
+ <layer id="2" name="Tile Layer 1" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJxjYBjZQBGIlcjEyjRyEyMQMwExM5XMEwRiISBWBWI1Ms0wBGIjKBsUZioMEP+bAbE6EGsAsSYRbJgbHIHYCclsEyTzg4igQ4E4DIjD0dwAAy4k+i8VSqcDsQUSJhcgm2eMhKlhXjASJheUQukSIC5EwuSCRiBuQqKbgbiFBuYBAOVvFws=
+  </data>
+ </layer>
+ <layer id="3" name="Tile Layer 2" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFo4AwMIZiGOCgonnuQCwJxG4k6I8B4lggjkMSy6fAPTlAnAvEeRSYMVBgIho9nAEAc9cFag==
+  </data>
+ </layer>
+ <layer id="6" name="Tile Layer 5" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJyTYWBgkKESlqWiWfQwT46BYYEOkCYX60LNgfG1GRgSjIE0JRhoTgIDEqC2eZQCWpvnwsBwgBiMzzxDIG0CxIYkuCOdgaEBSoOBG5J5xlDzjEkwDx+gtnkg4EJFswYzAADHqiLY
+  </data>
+ </layer>
+ <layer id="8" name="Tile Layer 7" width="20" height="15">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFQwW4IbHdcYi74hAfKcCSDD3peOSs0PhVZJhPjHk1SBgGeokwLxCKYexaKEYGxJiDC6CbhcyvYaAeINYsAD7UCdQ=
+  </data>
+ </layer>
+ <objectgroup id="9" name="Object Layer 1">
+  <object id="1" name="player" type="player" x="190.25" y="223.75">
+   <point/>
+  </object>
+  <object id="2" name="main_camera" type="cam" x="144" y="214">
+   <point/>
+  </object>
+  <object id="15" template="../../templates/potion_hp.tx" x="571" y="282"/>
+ </objectgroup>
+ <objectgroup id="11" name="Object Layer 3">
+  <object id="13" x="34" y="286">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffe38a0e"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="17" x="94" y="286">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffe38a0e"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="18" x="225" y="190">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffe38a0e"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="19" x="320" y="189">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffe38a0e"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="20" x="418" y="191">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffe38a0e"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="21" x="511" y="187">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffe38a0e"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="22" x="609" y="186">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffce7a0c"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="23" x="576" y="315">
+   <properties>
+    <property name="atten" type="float" value="175"/>
+    <property name="color" type="color" value="#ffce7a0c"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="1"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="12" name="Object Layer 4">
+  <object id="24" x="56" y="454">
+   <properties>
+    <property name="atten" type="float" value="256"/>
+    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="25" x="202" y="457">
+   <properties>
+    <property name="atten" type="float" value="256"/>
+    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="26" x="354" y="458">
+   <properties>
+    <property name="atten" type="float" value="256"/>
+    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="0"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="27" x="511" y="459">
+   <properties>
+    <property name="atten" type="float" value="256"/>
+    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="light" value="1"/>
+    <property name="offset" value="0 0"/>
+    <property name="radius" type="float" value="32"/>
+    <property name="specular" value="0"/>
+   </properties>
+   <point/>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="cols" locked="1">
+  <properties>
+   <property name="col" value="1"/>
+  </properties>
+  <object id="3" x="186" y="128" width="454" height="89"/>
+  <object id="4" x="576" y="188" width="64" height="68"/>
+  <object id="5" x="0" y="128" width="128" height="32"/>
+  <object id="6" x="-32" y="160" width="64" height="128"/>
+  <object id="7" x="32" y="243" width="96" height="141"/>
+  <object id="8" x="128" y="256" width="320" height="64"/>
+  <object id="9" x="448" y="256" width="96" height="64"/>
+  <object id="10" x="544" y="288" width="96" height="96">
+   <properties>
+    <property name="skyColor" type="color" value="#ff4a6d51"/>
+   </properties>
+  </object>
+  <object id="11" x="128" y="128" width="64" height="81"/>
+ </objectgroup>
+</map>

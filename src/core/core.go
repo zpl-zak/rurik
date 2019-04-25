@@ -84,7 +84,7 @@ func CloseGame() {
 }
 
 func updateDebugMenu() {
-	debugMenu := pushEditorElement(rootElement, "Debug", &isDebugMenuCollapsed)
+	debugMenu := pushEditorElement(rootElement, "debug", &isDebugMenuCollapsed)
 	debugMenu.isHorizontal = true
 
 	if *debugMenu.isCollapsed == false {

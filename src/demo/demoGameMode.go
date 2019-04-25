@@ -11,8 +11,9 @@ import (
 )
 
 type demoGameMode struct {
-	playState int
-	textWave  int32
+	playState      int
+	textWave       int32
+	showHelpScreen bool
 }
 
 func (g *demoGameMode) Init() {
@@ -84,6 +85,10 @@ func (g *demoGameMode) Update() {
 		if rl.IsKeyPressed(rl.KeyEscape) && core.CurrentMap.Name != "start" {
 			g.playState = statePaused
 		}
+
+		if rl.IsKeyPressed(rl.KeyF1) {
+			g.showHelpScreen = !g.showHelpScreen
+		}
 	}
 
 	updateInternals(g)
@@ -141,10 +146,14 @@ func (g *demoGameMode) DrawUI() {
 		if core.CurrentMap.Name != "start" {
 			var xoffs int32 = 15
 			yoffs := system.ScreenHeight - 120
-			rl.DrawText("Press F5 at any time to go back to the menu.", xoffs, yoffs-40, 12, rl.RayWhite)
-			rl.DrawText("Press F2 to save and F3 to load a game state.", xoffs, yoffs-52, 12, rl.RayWhite)
-			rl.DrawText("Press F9 to spawn a light object.", xoffs, yoffs-64, 12, rl.RayWhite)
-			rl.DrawText("Use your mousewheel to zoom in/out.", xoffs, yoffs-76, 12, rl.RayWhite)
+			if g.showHelpScreen {
+				rl.DrawText("Press F5 at any time to go back to the menu.", xoffs, yoffs-40, 12, rl.RayWhite)
+				rl.DrawText("Press F2 to save and F3 to load a game state.", xoffs, yoffs-52, 12, rl.RayWhite)
+				rl.DrawText("Press F9 to spawn a light object.", xoffs, yoffs-64, 12, rl.RayWhite)
+				rl.DrawText("Use your mousewheel to zoom in/out.", xoffs, yoffs-76, 12, rl.RayWhite)
+			} else {
+				rl.DrawText("Press F1 for help.", xoffs-10, system.ScreenHeight-20, 12, rl.RayWhite)
+			}
 		} else {
 			core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/3, 24, rl.RayWhite)
 		}

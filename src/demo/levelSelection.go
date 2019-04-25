@@ -33,6 +33,10 @@ func initLevels() {
 			mapName: "village",
 		},
 		level{
+			title:   "Lighting",
+			mapName: "sewer",
+		},
+		level{
 			title:   "Stress test",
 			mapName: "stress",
 		},

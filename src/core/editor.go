@@ -526,8 +526,15 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 	offsetY += element.padding.Y
 	ext += element.padding.Height
 	ext2 += element.padding.Width
+	var buttonWidth int32
+	var buttonHeight int32
 
-	isInRectangle := IsMouseInRectangle(offsetX, offsetY, textWidth, 10)
+	if element.class == elementTypeButton {
+		buttonWidth = 4
+		buttonHeight = 8
+	}
+
+	isInRectangle := IsMouseInRectangle(offsetX-buttonWidth, offsetY, textWidth+buttonWidth, 10+buttonHeight)
 
 	if element.isCollapsed != nil && isInRectangle {
 		color = rl.Red

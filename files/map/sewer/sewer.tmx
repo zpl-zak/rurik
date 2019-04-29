@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="32" tileheight="32" infinite="0" nextlayerid="13" nextobjectid="28">
+<map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="20" height="15" tilewidth="32" tileheight="32" infinite="0" nextlayerid="14" nextobjectid="30">
  <properties>
-  <property name="skyColor" type="color" value="#ff2d322c"/>
+  <property name="skyColor" type="color" value="#ff000000"/>
  </properties>
  <tileset firstgid="1" source="../../tilesets/Sewer.tsx"/>
  <tileset firstgid="353" source="../../tilesets/MageCity.tsx"/>
@@ -47,7 +47,7 @@
   <object id="2" name="main_camera" type="cam" x="144" y="214">
    <point/>
   </object>
-  <object id="15" template="../../templates/potion_hp.tx" x="571" y="282"/>
+  <object id="15" template="../../templates/potion_hp.tx" x="71" y="405"/>
  </objectgroup>
  <objectgroup id="11" name="Object Layer 3">
   <object id="13" x="34" y="286">
@@ -140,21 +140,10 @@
   </object>
  </objectgroup>
  <objectgroup id="12" name="Object Layer 4">
-  <object id="24" x="56" y="454">
-   <properties>
-    <property name="atten" type="float" value="256"/>
-    <property name="color" type="color" value="#ff7be7ff"/>
-    <property name="light" value="1"/>
-    <property name="offset" value="0 0"/>
-    <property name="radius" type="float" value="32"/>
-    <property name="specular" value="0"/>
-   </properties>
-   <point/>
-  </object>
   <object id="25" x="202" y="457">
    <properties>
     <property name="atten" type="float" value="256"/>
-    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="color" type="color" value="#ff74ffc5"/>
     <property name="light" value="1"/>
     <property name="offset" value="0 0"/>
     <property name="radius" type="float" value="32"/>
@@ -165,7 +154,7 @@
   <object id="26" x="354" y="458">
    <properties>
     <property name="atten" type="float" value="256"/>
-    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="color" type="color" value="#ff74ffc5"/>
     <property name="light" value="1"/>
     <property name="offset" value="0 0"/>
     <property name="radius" type="float" value="32"/>
@@ -176,7 +165,7 @@
   <object id="27" x="511" y="459">
    <properties>
     <property name="atten" type="float" value="256"/>
-    <property name="color" type="color" value="#ff7be7ff"/>
+    <property name="color" type="color" value="#ff74ffc5"/>
     <property name="light" value="1"/>
     <property name="offset" value="0 0"/>
     <property name="radius" type="float" value="32"/>
@@ -185,7 +174,15 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="10" name="cols" locked="1">
+ <objectgroup id="13" name="Object Layer 5">
+  <object id="28" name="stairs" type="stairs" x="123" y="204" width="52" height="50">
+   <properties>
+    <property name="angle" value="45"/>
+    <property name="dir" value="-1 0"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup id="10" name="cols" visible="0" locked="1">
   <properties>
    <property name="col" value="1"/>
   </properties>

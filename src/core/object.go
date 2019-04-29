@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"reflect"
 
-	goaseprite "github.com/solarlune/GoAseprite"
+	goaseprite "github.com/zaklaus/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"

@@ -17,27 +17,220 @@
 package system
 
 import (
+	"bytes"
+	"encoding/gob"
 	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
+	"path"
+	"strings"
 
-	goaseprite "github.com/solarlune/GoAseprite"
+	jsoniter "github.com/json-iterator/go"
+
+	goaseprite "github.com/zaklaus/GoAseprite"
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 var (
-	textures = make(map[string]rl.Texture2D)
-	animData = make(map[string]goaseprite.File)
-	fileData = make(map[string][]byte)
+	textures   = make(map[string]rl.Texture2D)
+	animData   = make(map[string]goaseprite.File)
+	fileData   = make(map[string][]byte)
+	isDBLoaded bool
 
 	// MapName represents the currently loaded map name
 	MapName string
+
+	// AssetDatabase contains all the parsed data we use in game
+	AssetDatabase AssetArchive
 )
+
+const (
+	fileTypeUnknown = iota
+	fileTypeSprite
+	fileTypeAseprite
+	fileTypeMap
+	fileTypeDialogue
+	fileTypeTileset
+	fileTypeScript
+	fileTypeTemplate
+)
+
+type annotationChunk struct {
+	IsHeader    bool   `json:"$head"`
+	FileName    string `json:"file"`
+	Name        string `json:"name"`
+	Author      string `json:"author"`
+	Description string `json:"desc"`
+	Type        string `json:"type"`
+}
+
+type annotationData struct {
+	Name        string `json:"name"`
+	Author      string `json:"author"`
+	Version     string `json:"version"`
+	Description string `json:"desc"`
+
+	Chunks []annotationChunk `json:"chunks"`
+}
+
+// AssetChunk describes an asset file
+type AssetChunk struct {
+	FileName    string
+	Name        string
+	Author      string
+	Description string
+	Type        uint16
+	Data        []byte
+}
+
+// AssetArchive describes the game data
+type AssetArchive struct {
+	Name        string
+	Author      string
+	Version     string
+	Description string
+
+	Chunks []AssetChunk
+}
+
+// InitAssets initializes all asset info
+func InitAssets(archiveName string, isDebugMode bool) {
+	gob.Register(goaseprite.File{})
+	gob.Register(AssetChunk{})
+	gob.Register(AssetArchive{})
+	gob.Register(rl.Texture2D{})
+
+	if isDebugMode {
+		tagFileName := fmt.Sprintf("tags/%s.rtag", strings.Split(path.Base(archiveName), ".")[0])
+
+		if _, err := os.Stat(tagFileName); os.IsNotExist(err) {
+			log.Fatalf("Can't load tag file %s!", tagFileName)
+		}
+
+		tagData, _ := ioutil.ReadFile(tagFileName)
+		tags := parseAnnotationFile(tagData)
+		buildAssetStorage(archiveName, tags)
+	}
+
+	archiveName = fmt.Sprintf("assets/%s", archiveName)
+
+	if _, err := os.Stat(archiveName); os.IsNotExist(err) {
+		log.Fatalf("Could not load game data from %s!", archiveName)
+	}
+
+	dat, _ := ioutil.ReadFile(archiveName)
+	ch := new(bytes.Buffer)
+	ch.Write(dat)
+	enc := gob.NewDecoder(ch)
+	enc.Decode(&AssetDatabase)
+
+	isDBLoaded = true
+}
+
+func parseAnnotationFile(data []byte) annotationData {
+	var tags annotationData
+	err := jsoniter.Unmarshal(data, &tags)
+
+	if err != nil {
+		log.Fatalf("Can't parse tag file! Syntax error detected.")
+	}
+
+	return tags
+}
+
+func mapFileTypeStringToID(class string) uint16 {
+	switch class {
+	case "gfx":
+		fallthrough
+	case "sprite":
+		{
+			return fileTypeSprite
+		}
+
+	case "anim":
+		{
+			return fileTypeAseprite
+		}
+
+	default:
+		{
+			return fileTypeUnknown
+		}
+	}
+}
+
+func buildAssetStorage(filePath string, an annotationData) {
+	var a AssetArchive
+	a.Name = an.Name
+	a.Author = an.Author
+	a.Description = an.Description
+	a.Version = an.Version
+	a.Chunks = []AssetChunk{}
+
+	lastName := a.Name
+	lastAuthor := a.Author
+	lastDescription := a.Description
+
+	for _, v := range an.Chunks {
+		if v.IsHeader {
+			setPropertyIfSet(&lastName, v.Name, lastName)
+			setPropertyIfSet(&lastAuthor, v.Author, lastAuthor)
+			setPropertyIfSet(&lastDescription, v.Description, lastDescription)
+		} else {
+			var ac AssetChunk
+
+			setPropertyIfSet(&ac.Name, v.Name, lastName)
+			setPropertyIfSet(&ac.Author, v.Author, lastAuthor)
+			setPropertyIfSet(&ac.Description, v.Description, lastDescription)
+			ac.FileName = v.FileName
+
+			ac.Type = mapFileTypeStringToID(v.Type)
+
+			var err error
+			ac.Data, err = ioutil.ReadFile(fmt.Sprintf("files/%s", v.FileName))
+
+			if err != nil {
+				log.Fatalf("File %s could not be loaded!\n", v.FileName)
+			}
+
+			a.Chunks = append(a.Chunks, ac)
+		}
+	}
+
+	ach := new(bytes.Buffer)
+	enc := gob.NewEncoder(ach)
+	err := enc.Encode(a)
+
+	if err != nil {
+		log.Fatalf("Error creating asset database! %v", err)
+	}
+
+	ioutil.WriteFile(fmt.Sprintf("assets/%s", filePath), ach.Bytes(), 0644)
+}
+
+func setPropertyIfSet(src *string, value, fallback string) {
+	if value == "" {
+		*src = fallback
+	} else {
+		*src = value
+	}
+}
+
+// FindAsset looks for asset by filename
+func FindAsset(fileName string) *AssetChunk {
+	for _, v := range AssetDatabase.Chunks {
+		if fileName == v.FileName {
+			return &v
+		}
+	}
+
+	return nil
+}
 
 // GetTexture retrieves a cached texture from disk
 func GetTexture(texturePath string) *rl.Texture2D {
-	texturePath = fmt.Sprintf("assets/gfx/%s", texturePath)
+	texturePath = fmt.Sprintf("gfx/%s.png", texturePath)
 
 	tx, ok := textures[texturePath]
 
@@ -54,7 +247,7 @@ func GetTexture(texturePath string) *rl.Texture2D {
 
 // GetAnimData retrieves a cached Aseprite anim data from a disk
 func GetAnimData(animPath string) goaseprite.File {
-	animPath = fmt.Sprintf("assets/gfx/%s.json", animPath)
+	animPath = fmt.Sprintf("files/gfx/%s.json", animPath)
 
 	ani, ok := animData[animPath]
 
@@ -62,7 +255,13 @@ func GetAnimData(animPath string) goaseprite.File {
 		return ani
 	}
 
-	ani = goaseprite.Load(animPath)
+	dat := goaseprite.Load(animPath)
+
+	if dat == nil {
+		// TODO: err
+	}
+
+	ani = *dat
 	animData[animPath] = ani
 	return ani
 }
@@ -70,7 +269,7 @@ func GetAnimData(animPath string) goaseprite.File {
 // GetFile retrieves a file from a disk
 func GetFile(path string, checkGlobalDir bool) []byte {
 	if checkGlobalDir {
-		if _, err := os.Stat(fmt.Sprintf("assets/%s", path)); !os.IsNotExist(err) {
+		if _, err := os.Stat(fmt.Sprintf("files/%s", path)); !os.IsNotExist(err) {
 			return GetRootFile(path)
 		}
 	}
@@ -80,7 +279,7 @@ func GetFile(path string, checkGlobalDir bool) []byte {
 
 // GetRootFile retrieves a file inside of game root from a disk
 func GetRootFile(path string) []byte {
-	path = fmt.Sprintf("assets/%s", path)
+	path = fmt.Sprintf("files/%s", path)
 
 	data, ok := fileData[path]
 

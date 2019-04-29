@@ -1,6 +1,9 @@
 all:
 	go build -o build/rurik.exe src/demo/*.go
 
+archive:
+	go build -o build/archives.exe src/archives/*.go
+
 rel:
 	go build -ldflags "-s -w" -o build/rurik.exe src/demo/*.go
 

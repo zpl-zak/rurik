@@ -35,6 +35,9 @@ var (
 	// DebugMode switch
 	DebugMode = true
 
+	// GameAssetsArchiveName represents the file name game data is stored in
+	GameAssetsArchiveName = "default.dta"
+
 	// TimeScale is game update time scale
 	TimeScale = 1
 
@@ -71,6 +74,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	UITexture = system.CreateRenderTarget(screenW, screenH)
 	NullTexture = system.CreateRenderTarget(screenW, screenH)
 	finalRenderTexture = system.CreateRenderTarget(screenW, screenH)
+	system.InitAssets(GameAssetsArchiveName, DebugMode)
 	system.InitInput()
 	rl.InitAudioDevice()
 

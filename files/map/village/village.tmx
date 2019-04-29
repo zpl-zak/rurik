@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="76">
  <properties>
-  <property name="skyColor" type="color" value="#ff15151f"/>
+  <property name="skyColor" type="color" value="#ff3e3f5b"/>
  </properties>
  <tileset firstgid="1" source="../../tilesets/MageCity.tsx"/>
  <tileset firstgid="361" source="../../tilesets/Forest.tsx"/>
@@ -434,7 +434,7 @@
   </object>
   <object id="7" gid="55" x="1344" y="1521.75" width="32" height="32">
    <properties>
-    <property name="atten" type="float" value="256"/>
+    <property name="atten" type="float" value="128"/>
     <property name="color" type="color" value="#ffdd7b02"/>
     <property name="light" value="1"/>
     <property name="offset" value="0 8"/>
@@ -444,7 +444,7 @@
   </object>
   <object id="8" gid="55" x="1473" y="1523" width="32" height="32">
    <properties>
-    <property name="atten" type="float" value="256"/>
+    <property name="atten" type="float" value="128"/>
     <property name="color" type="color" value="#ffdd7b02"/>
     <property name="light" value="1"/>
     <property name="offset" value="0 8"/>
@@ -487,19 +487,8 @@
    </properties>
   </object>
   <object id="67" template="../../templates/potion_hp.tx" x="1151.5" y="1619.25"/>
-  <object id="74" x="1440" y="1684">
-   <properties>
-    <property name="atten" type="float" value="4096"/>
-    <property name="color" type="color" value="#ff58757d"/>
-    <property name="light" value="1"/>
-    <property name="offset" value="0 4"/>
-    <property name="radius" type="float" value="32"/>
-    <property name="specular" value="0"/>
-   </properties>
-   <point/>
-  </object>
  </objectgroup>
- <objectgroup id="6" name="Cols" opacity="0.8">
+ <objectgroup id="6" name="Cols" visible="0" locked="1" opacity="0.8">
   <properties>
    <property name="col" value="1"/>
   </properties>

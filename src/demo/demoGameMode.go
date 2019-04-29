@@ -204,7 +204,7 @@ func (g *demoGameMode) PostDraw() {
 		// Generates and applies the lightmaps
 		core.UpdateLightingSolution()
 
-		if core.CurrentMap.Name == "village" {
+		if core.CurrentMap.Name == "village" || core.CurrentMap.Name == "sewer" {
 			bloom.Apply()
 			minimap.Apply()
 			shadertoy.Apply()

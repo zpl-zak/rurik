@@ -440,7 +440,7 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 				rl.NewRectangle(tilePos.X, tilePos.Y, tileW, tileH),
 				rl.NewVector2(tileW/2, tileH/2),
 				rot,
-				SkyColor,
+				rl.White,
 			)
 		}
 	}

@@ -173,7 +173,7 @@ func updateCamera(c *Object, dt float32) {
 			CanSave = BitsClear(CanSave, IsSequenceHappening)
 		}
 
-		dest = c.Follow.Position
+		dest = Vector2Lerp(c.Position, c.Follow.Position, 0.1)
 	} else if c.Mode == CameraModeLerp {
 		if c.Start == nil || c.End == nil {
 			log.Println("Camera object lerps between nil references.")

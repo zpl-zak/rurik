@@ -82,6 +82,6 @@ func (o *Object) NewAnim() {
 			DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 		}
 
-		rl.DrawTexturePro(*o.Texture, source, dest, rl.Vector2{}, o.Rotation, SkyColor)
+		rl.DrawTexturePro(*o.Texture, source, dest, rl.Vector2{}, o.Rotation, rl.White)
 	}
 }

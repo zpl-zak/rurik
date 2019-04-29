@@ -18,6 +18,8 @@ const (
 	// Apply 2x upscaling
 	windowW = screenW * 2
 	windowH = screenH * 2
+
+	defaultCameraZoom = 1.79
 )
 
 var (

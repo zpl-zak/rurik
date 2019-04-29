@@ -88,6 +88,19 @@ func updateDebugMenu() {
 	debugMenu.isHorizontal = true
 
 	if *debugMenu.isCollapsed == false {
+		cameraMenu := pushEditorElement(debugMenu, "camera", &isCameraMenuCollapsed)
+
+		if *cameraMenu.isCollapsed == false {
+			pushEditorElement(cameraMenu, fmt.Sprintf("pos: %.02f %.02f", MainCamera.Position.X, MainCamera.Position.Y), nil)
+			pushEditorElement(cameraMenu, fmt.Sprintf("offset: %v", RenderCamera.Offset), nil)
+			pushEditorElement(cameraMenu, fmt.Sprintf("zoom: %.02f", RenderCamera.Zoom), nil)
+			pushEditorElement(cameraMenu, fmt.Sprintf("target zoom: %.02f", MainCamera.TargetZoom), nil)
+			pushEditorElement(cameraMenu, fmt.Sprintf("rot: %v", RenderCamera.Rotation), nil)
+			pushEditorElement(cameraMenu, fmt.Sprintf("scale ratio: %d", system.ScaleRatio), nil)
+		}
+
+		// actions
+
 		setUpButton(
 			pushEditorElement(debugMenu, "Exit Game", nil),
 			func() {

@@ -115,9 +115,9 @@ func (o *Object) NewTile() {
 		var tint rl.Color
 
 		if o.TintColor == rl.Blank {
-			tint = SkyColor
+			tint = rl.White
 		} else {
-			tint = MixColor(o.TintColor, SkyColor)
+			tint = MixColor(o.TintColor, rl.White)
 		}
 
 		if o.Fullbright {

@@ -38,7 +38,7 @@ func NewPlayer(p *core.Object) {
 func updatePlayer(p *core.Object, dt float32) {
 	p.Ase.Update(dt)
 
-	var moveSpeed float32 = 120
+	var moveSpeed float32 = 45
 
 	p.Movement.X = 0
 	p.Movement.Y = 0
@@ -105,7 +105,7 @@ func drawPlayer(p *core.Object) {
 		core.DrawTextCentered(p.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 	}
 
-	rl.DrawTexturePro(*p.Texture, source, dest, rl.Vector2{}, 0, core.SkyColor)
+	rl.DrawTexturePro(*p.Texture, source, dest, rl.Vector2{}, 0, rl.White)
 }
 
 func handlePlayerCollision(res *resolv.Collision, p, other *core.Object) {}

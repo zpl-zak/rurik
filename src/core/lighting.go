@@ -65,7 +65,7 @@ func populateAdditiveLayer() {
 		rl.BeginMode2D(RenderCamera)
 		{
 			for _, o := range objs {
-				if !o.HasSpecularLight {
+				if !o.HasSpecularLight || !o.Visible {
 					continue
 				}
 
@@ -94,14 +94,14 @@ func populateMultiplicativeLight() {
 
 	rl.BeginTextureMode(multiplicativeLightTexture)
 	{
-		rl.ClearBackground(rl.Black) //Vec3ToColor(LerpColor(ColorToVec3(SkyColor), ColorToVec3(rl.Black), 0.8)))
+		rl.ClearBackground(SkyColor) //Vec3ToColor(LerpColor(ColorToVec3(SkyColor), ColorToVec3(rl.Black), 0.8)))
 
 		rl.BeginBlendMode(rl.BlendAdditive)
 		{
 			rl.BeginMode2D(RenderCamera)
 			{
 				for _, o := range objs {
-					if !o.HasLight {
+					if !o.HasLight || !o.Visible {
 						continue
 					}
 
@@ -119,5 +119,5 @@ func populateMultiplicativeLight() {
 		rl.EndBlendMode()
 	}
 	rl.EndTextureMode()
-	BlurRenderTarget(multiplicativeLightTexture, 16)
+	BlurRenderTarget(multiplicativeLightTexture, 32)
 }

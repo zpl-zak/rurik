@@ -46,14 +46,11 @@ var (
 )
 
 const (
-	fileTypeUnknown = iota
+	fileTypeGeneric = iota
 	fileTypeSprite
 	fileTypeAseprite
 	fileTypeMap
-	fileTypeDialogue
-	fileTypeTileset
-	fileTypeScript
-	fileTypeTemplate
+	fileTypeMusic
 )
 
 type annotationChunk struct {
@@ -113,7 +110,7 @@ func InitAssets(archiveName string, isDebugMode bool) {
 		buildAssetStorage(archiveName, tags)
 	}
 
-	archiveName = fmt.Sprintf("assets/%s", archiveName)
+	archiveName = fmt.Sprintf("data/%s", archiveName)
 
 	if _, err := os.Stat(archiveName); os.IsNotExist(err) {
 		log.Fatalf("Could not load game data from %s!", archiveName)
@@ -153,9 +150,19 @@ func mapFileTypeStringToID(class string) uint16 {
 			return fileTypeAseprite
 		}
 
+	case "map":
+		{
+			return fileTypeMap
+		}
+
+	case "music":
+		{
+			return fileTypeMusic
+		}
+
 	default:
 		{
-			return fileTypeUnknown
+			return fileTypeGeneric
 		}
 	}
 }
@@ -188,7 +195,7 @@ func buildAssetStorage(filePath string, an annotationData) {
 			ac.Type = mapFileTypeStringToID(v.Type)
 
 			var err error
-			ac.Data, err = ioutil.ReadFile(fmt.Sprintf("files/%s", v.FileName))
+			ac.Data, err = ioutil.ReadFile(fmt.Sprintf("assets/%s", v.FileName))
 
 			if err != nil {
 				log.Fatalf("File %s could not be loaded!\n", v.FileName)
@@ -206,7 +213,7 @@ func buildAssetStorage(filePath string, an annotationData) {
 		log.Fatalf("Error creating asset database! %v", err)
 	}
 
-	ioutil.WriteFile(fmt.Sprintf("assets/%s", filePath), ach.Bytes(), 0644)
+	ioutil.WriteFile(fmt.Sprintf("data/%s", filePath), ach.Bytes(), 0644)
 }
 
 func setPropertyIfSet(src *string, value, fallback string) {
@@ -230,15 +237,22 @@ func FindAsset(fileName string) *AssetChunk {
 
 // GetTexture retrieves a cached texture from disk
 func GetTexture(texturePath string) *rl.Texture2D {
-	texturePath = fmt.Sprintf("gfx/%s.png", texturePath)
-
 	tx, ok := textures[texturePath]
 
 	if ok {
 		return &tx
 	}
 
-	tx = rl.LoadTexture(texturePath)
+	a := FindAsset(texturePath)
+
+	if a == nil {
+		log.Fatalf("Could not open texture: %s!\n", texturePath)
+		return nil
+	}
+
+	txImage := rl.LoadImageFromMemory(string(a.Data))
+	tx = rl.LoadTextureFromImage(txImage)
+	rl.UnloadImage(txImage)
 
 	textures[texturePath] = tx
 
@@ -247,15 +261,20 @@ func GetTexture(texturePath string) *rl.Texture2D {
 
 // GetAnimData retrieves a cached Aseprite anim data from a disk
 func GetAnimData(animPath string) goaseprite.File {
-	animPath = fmt.Sprintf("files/gfx/%s.json", animPath)
-
 	ani, ok := animData[animPath]
 
 	if ok {
 		return ani
 	}
 
-	dat := goaseprite.Load(animPath)
+	a := FindAsset(animPath)
+
+	if a == nil {
+		log.Fatalf("Could not open aseprite file: %s!\n", animPath)
+		return goaseprite.File{}
+	}
+
+	dat := goaseprite.Load(string(a.Data))
 
 	if dat == nil {
 		// TODO: err
@@ -269,8 +288,8 @@ func GetAnimData(animPath string) goaseprite.File {
 // GetFile retrieves a file from a disk
 func GetFile(path string, checkGlobalDir bool) []byte {
 	if checkGlobalDir {
-		if _, err := os.Stat(fmt.Sprintf("files/%s", path)); !os.IsNotExist(err) {
-			return GetRootFile(path)
+		if asset := FindAsset(path); asset != nil {
+			return asset.Data
 		}
 	}
 
@@ -279,21 +298,20 @@ func GetFile(path string, checkGlobalDir bool) []byte {
 
 // GetRootFile retrieves a file inside of game root from a disk
 func GetRootFile(path string) []byte {
-	path = fmt.Sprintf("files/%s", path)
-
 	data, ok := fileData[path]
 
 	if ok {
 		return data
 	}
 
-	newData, err := ioutil.ReadFile(path)
+	a := FindAsset(path)
 
-	if err != nil {
-		log.Fatalf("Could not load file %s\n", path)
+	if a == nil {
+		log.Fatalf("Could not open file: %s!\n", path)
 		return nil
 	}
 
+	newData := a.Data
 	fileData[path] = newData
 	return newData
 }

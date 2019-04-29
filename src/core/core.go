@@ -36,7 +36,7 @@ var (
 	DebugMode = true
 
 	// GameAssetsArchiveName represents the file name game data is stored in
-	GameAssetsArchiveName = "default.dta"
+	GameAssetsArchiveName = "demo.dta"
 
 	// TimeScale is game update time scale
 	TimeScale = 1

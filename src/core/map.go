@@ -17,11 +17,10 @@
 package core
 
 import (
+	"bytes"
 	"encoding/xml"
 	"fmt"
-	"io/ioutil"
 	"log"
-	"os"
 	"path"
 
 	tiled "github.com/zaklaus/go-tiled"
@@ -91,10 +90,14 @@ func LoadMap(name string) *Map {
 		return m
 	}
 
+	mapAsset := system.FindAsset(fmt.Sprintf("map/%s/%s.tmx", name, name))
+	mapData := mapAsset.Data
+	mapReader := bytes.NewReader(mapData)
+
 	cmap := &Map{}
 	var err error
 	cmap.tilesets = make(map[string]*tilesetData)
-	cmap.tilemap, err = tiled.LoadFromFile(fmt.Sprintf("assets/map/%s/%s.tmx", name, name))
+	cmap.tilemap, err = tiled.LoadFromReader("", mapReader)
 
 	if err != nil {
 		log.Fatalf("Map %s could not be loaded: %s\n", name, err.Error())
@@ -282,23 +285,25 @@ func (m *Map) loadMapTilesetData(tilesetName string) *tilesetData {
 }
 
 func loadTilesetData(tilesetName string) *tilesetData {
-	data, err := ioutil.ReadFile(fmt.Sprintf("assets/tilesets/%s", tilesetName))
+	tilesetAsset := system.FindAsset(fmt.Sprintf("tilesets/%s", tilesetName))
 
-	if err != nil {
+	if tilesetAsset == nil {
 		log.Fatalf("Tileset data %s could not be loaded!\n", tilesetName)
 		return nil
 	}
 
+	data := tilesetAsset.Data
+
 	loadedTileset := &tilesetData{}
 
-	err = xml.Unmarshal(data, loadedTileset)
+	err := xml.Unmarshal(data, loadedTileset)
 
 	if err != nil {
 		log.Fatalf("Tileset data %s could not be parsed:\n\t %s!\n", tilesetName, err.Error())
 		return nil
 	}
 
-	loadedTileset.Image = system.GetTexture(fmt.Sprintf("../tilesets/%s", loadedTileset.ImageInfo.Source))
+	loadedTileset.Image = system.GetTexture(fmt.Sprintf("tilesets/%s", path.Base(loadedTileset.ImageInfo.Source)))
 	loadedTileset.IsCollapsed = true
 
 	return loadedTileset
@@ -321,15 +326,9 @@ func (m *Map) CreateObjects(w *World) {
 			var possibleTileset tiled.Tileset
 
 			if object.Template != "" {
-				object.Template = path.Join("assets", "templates", path.Base(object.Template))
+				object.Template = path.Join("templates", path.Base(object.Template))
 
-				_, err := os.Stat(object.Template)
-				if os.IsNotExist(err) {
-					log.Fatalf("Could not load template %s!\n", object.Template)
-					return
-				}
-
-				tplData, _ := ioutil.ReadFile(object.Template)
+				tplData := system.GetFile(object.Template, true)
 
 				var tpl objectTemplate
 				xml.Unmarshal(tplData, &tpl)

@@ -154,7 +154,7 @@ func updateInternals(g *demoGameMode) {
 }
 
 func drawBackground() {
-	bgImage := system.GetTexture("bg.png")
+	bgImage := system.GetTexture("gfx/bg.png")
 
 	rows := int(system.ScreenWidth/bgImage.Width) + 1
 	cols := int(system.ScreenHeight/bgImage.Height) + 1

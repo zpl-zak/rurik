@@ -15,9 +15,9 @@ type player struct{}
 
 // NewPlayer player
 func NewPlayer(p *core.Object) {
-	aseData := system.GetAnimData("player")
+	aseData := system.GetAnimData("gfx/player.json")
 	p.Ase = &aseData
-	p.Texture = system.GetTexture("player.png")
+	p.Texture = system.GetTexture("gfx/player.png")
 	p.Size = []int32{p.Ase.FrameWidth, p.Ase.FrameHeight}
 	p.Update = updatePlayer
 	p.Draw = drawPlayer

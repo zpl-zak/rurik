@@ -16,7 +16,7 @@ type bloomProg struct {
 func newBloom() *bloomProg {
 	b := &bloomProg{
 		TresholdTexture: system.CreateRenderTarget(system.ScreenWidth, system.ScreenHeight),
-		ExtractColors:   system.NewProgram("", "assets/shaders/extractColors.fs"),
+		ExtractColors:   system.NewProgram("", "shaders/extractColors.fs"),
 	}
 
 	b.ExtractColors.SetShaderValue("size", []float32{float32(system.ScreenWidth), float32(system.ScreenHeight)}, 2)

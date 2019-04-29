@@ -17,7 +17,6 @@
 package system
 
 import (
-	"io/ioutil"
 	"log"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -36,12 +35,25 @@ type ShaderPipeline interface {
 
 // NewProgram creates a new shader program
 func NewProgram(vsFileName, fsFileName string) Program {
-	vsCode, _ := ioutil.ReadFile(vsFileName)
-	fsCode, err := ioutil.ReadFile(fsFileName)
-	if err != nil {
+	vsCodeAsset := FindAsset(vsFileName)
+	if vsCodeAsset == nil && vsFileName != "" {
+		log.Fatalf("Shader %s was not found!\n", vsFileName)
+		return Program{}
+	}
+
+	var vsCode string
+
+	if vsFileName != "" {
+		vsCode = string(vsCodeAsset.Data)
+	}
+
+	fsCodeAsset := FindAsset(fsFileName)
+	if fsCodeAsset == nil {
 		log.Fatalf("Shader %s was not found!\n", fsFileName)
 		return Program{}
 	}
+
+	fsCode := string(fsCodeAsset.Data)
 	shader := rl.LoadShaderCode(string(vsCode), string(fsCode))
 
 	return Program{

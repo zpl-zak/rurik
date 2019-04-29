@@ -18,13 +18,12 @@ package core
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
-	"os"
 	"strings"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/rurik/src/system"
 )
 
 var (
@@ -42,14 +41,7 @@ func LoadPlaylist(name string) {
 	trackNames = []string{}
 	tracks = make(map[string]rl.Music)
 
-	data, err := ioutil.ReadFile(fmt.Sprintf("assets/music/%s", name))
-
-	if err != nil {
-		log.Fatalf("Cannot load playlist '%s': \n\t%s\n", name, err.Error())
-		return
-	}
-
-	txt := string(data)
+	txt := string(system.GetFile(fmt.Sprintf("music/%s", name), true))
 
 	trackNames = strings.Split(txt, "\n")
 
@@ -78,13 +70,8 @@ func LoadNextTrack() {
 	st, ok := tracks[trackName]
 
 	if !ok {
-		fln := fmt.Sprintf("assets/music/%s", trackName)
-
-		if _, err := os.Stat(fln); os.IsNotExist(err) {
-			log.Printf("Music track %s not found!\n", trackName)
-			return
-		}
-		tr := rl.LoadMusicStream(fmt.Sprintf("assets/music/%s", trackName))
+		fln := fmt.Sprintf("music/%s", trackName)
+		tr := rl.LoadMusicStreamFromMemory(string(system.GetFile(fln, true)))
 		log.Printf("Loading track: %s!", trackName)
 		tracks[trackName] = tr
 		st = tr

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
 )
@@ -28,8 +27,7 @@ func main() {
 
 	rl.SetTargetFPS(60)
 
-	avatar := system.FindAsset("gfx/avatar.png")
-	spew.Dump(avatar)
+	avatar := system.GetTexture("gfx/avatar.png")
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -37,6 +35,14 @@ func main() {
 		rl.ClearBackground(rl.RayWhite)
 
 		rl.DrawText("Congrats! You created your first window!", 190, 200, 20, rl.LightGray)
+		rl.DrawTexturePro(
+			*avatar,
+			rl.NewRectangle(0, 0, float32(avatar.Width), float32(avatar.Height)),
+			rl.NewRectangle(0, 0, 200, 200),
+			rl.Vector2{},
+			0,
+			rl.White,
+		)
 
 		rl.EndDrawing()
 	}

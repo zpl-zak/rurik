@@ -101,13 +101,11 @@ func InitAssets(archiveName string, isDebugMode bool) {
 	if isDebugMode {
 		tagFileName := fmt.Sprintf("tags/%s.rtag", strings.Split(path.Base(archiveName), ".")[0])
 
-		if _, err := os.Stat(tagFileName); os.IsNotExist(err) {
-			log.Fatalf("Can't load tag file %s!", tagFileName)
+		if _, err := os.Stat(tagFileName); !os.IsNotExist(err) {
+			tagData, _ := ioutil.ReadFile(tagFileName)
+			tags := parseAnnotationFile(tagData)
+			buildAssetStorage(archiveName, tags)
 		}
-
-		tagData, _ := ioutil.ReadFile(tagFileName)
-		tags := parseAnnotationFile(tagData)
-		buildAssetStorage(archiveName, tags)
 	}
 
 	archiveName = fmt.Sprintf("data/%s", archiveName)

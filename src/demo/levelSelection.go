@@ -116,6 +116,8 @@ func (g *demoGameMode) updateLevelSelection() {
 
 		g.loadLevel(mapName)
 		g.playState = statePlay
+
+		core.MainCamera.SetCameraZoom(defaultCameraZoom)
 	}
 }
 

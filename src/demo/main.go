@@ -19,7 +19,7 @@ const (
 	windowW = screenW * 2
 	windowH = screenH * 2
 
-	defaultCameraZoom = 1.79
+	defaultCameraZoom = 1.43
 )
 
 var (

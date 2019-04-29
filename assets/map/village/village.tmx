@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.2" tiledversion="1.2.3" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="32" tileheight="32" infinite="0" nextlayerid="9" nextobjectid="76">
  <properties>
-  <property name="skyColor" type="color" value="#ff676896"/>
+  <property name="skyColor" type="color" value="#ff15151f"/>
  </properties>
  <tileset firstgid="1" source="../../tilesets/MageCity.tsx"/>
  <tileset firstgid="361" source="../../tilesets/Forest.tsx"/>

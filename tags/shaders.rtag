@@ -1,0 +1,20 @@
+{
+    "name": "Rurik demo assets",
+    "author": "Dominik Madarász",
+    "version": "v1.0.0",
+    "desc": "Demo shaders",
+    "chunks": [
+        {
+            "$head": true,
+            "author": "various"
+        },
+
+        {
+            "file": "shaders/extractColors.fs"
+        },
+       
+        {
+            "$head": true
+        }
+    ]
+}

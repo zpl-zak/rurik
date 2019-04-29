@@ -1,0 +1,33 @@
+{
+    "name": "Rurik demo assets",
+    "author": "Dominik Madarász",
+    "version": "v1.0.0",
+    "desc": "Demo asset files for Rurik game engine",
+    "chunks": [
+        {
+            "$head": true,
+            "author": "Dominik Madarász"
+        },
+        
+        {
+            "file": "map/sewer/sewer.tmx",
+            "type": "map"
+        },
+        {
+            "file": "map/demo/demo.tmx",
+            "type": "map"
+        },
+        {
+            "file": "map/stress/stress.tmx",
+            "type": "map"
+        },
+        {
+            "file": "map/village/village.tmx",
+            "type": "map"
+        },
+       
+        {
+            "$head": true
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "name": "Rurik demo assets",
+    "author": "Dominik Madarász",
+    "version": "v1.0.0",
+    "desc": "Demo scripts",
+    "chunks": [
+        {
+            "$head": true,
+            "author": "various"
+        },
+
+        
+        {
+            "file": "map/demo/scripts/demoManager.js"
+        },
+        {
+            "file": "map/stress/scripts/spawnSprites.js"
+        },
+        {
+            "file": "scripts/eventDemo.js"
+        },
+        {
+            "file": "scripts/pulsatingLights.js"
+        },
+        
+        {
+            "$head": true
+        }
+    ]
+}

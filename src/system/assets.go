@@ -42,7 +42,7 @@ var (
 	MapName string
 
 	// AssetDatabase contains all the parsed data we use in game
-	AssetDatabase AssetArchive
+	AssetDatabase []AssetArchive
 )
 
 const (
@@ -92,34 +92,34 @@ type AssetArchive struct {
 }
 
 // InitAssets initializes all asset info
-func InitAssets(archiveName string, isDebugMode bool) {
-	gob.Register(goaseprite.File{})
-	gob.Register(AssetChunk{})
-	gob.Register(AssetArchive{})
-	gob.Register(rl.Texture2D{})
+func InitAssets(archiveNames []string, isDebugMode bool) {
+	for _, v := range archiveNames {
+		if isDebugMode {
+			tagFileName := fmt.Sprintf("tags/%s.rtag", strings.Split(path.Base(v), ".")[0])
 
-	if isDebugMode {
-		tagFileName := fmt.Sprintf("tags/%s.rtag", strings.Split(path.Base(archiveName), ".")[0])
-
-		if _, err := os.Stat(tagFileName); !os.IsNotExist(err) {
-			tagData, _ := ioutil.ReadFile(tagFileName)
-			tags := parseAnnotationFile(tagData)
-			buildAssetStorage(archiveName, tags)
+			if _, err := os.Stat(tagFileName); !os.IsNotExist(err) {
+				tagData, _ := ioutil.ReadFile(tagFileName)
+				tags := parseAnnotationFile(tagData)
+				buildAssetStorage(v, tags)
+			}
 		}
+
+		v = fmt.Sprintf("data/%s", v)
+
+		if _, err := os.Stat(v); os.IsNotExist(err) {
+			log.Fatalf("Could not load game data from %s!", v)
+		}
+
+		var db AssetArchive
+
+		dat, _ := ioutil.ReadFile(v)
+		ch := new(bytes.Buffer)
+		ch.Write(dat)
+		enc := gob.NewDecoder(ch)
+		enc.Decode(&db)
+
+		AssetDatabase = append(AssetDatabase, db)
 	}
-
-	archiveName = fmt.Sprintf("data/%s", archiveName)
-
-	if _, err := os.Stat(archiveName); os.IsNotExist(err) {
-		log.Fatalf("Could not load game data from %s!", archiveName)
-	}
-
-	dat, _ := ioutil.ReadFile(archiveName)
-	ch := new(bytes.Buffer)
-	ch.Write(dat)
-	enc := gob.NewDecoder(ch)
-	enc.Decode(&AssetDatabase)
-
 	isDBLoaded = true
 }
 
@@ -224,9 +224,11 @@ func setPropertyIfSet(src *string, value, fallback string) {
 
 // FindAsset looks for asset by filename
 func FindAsset(fileName string) *AssetChunk {
-	for _, v := range AssetDatabase.Chunks {
-		if fileName == v.FileName {
-			return &v
+	for _, a := range AssetDatabase {
+		for _, v := range a.Chunks {
+			if fileName == v.FileName {
+				return &v
+			}
 		}
 	}
 

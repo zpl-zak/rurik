@@ -1,0 +1,23 @@
+{
+    "name": "Rurik demo assets",
+    "author": "Dominik Madarász",
+    "version": "v1.0.0",
+    "desc": "Demo asset files for Rurik game engine",
+    "chunks": [
+        {
+            "$head": true,
+            "author": "Dominik Madarász"
+        },
+
+        {
+            "file": "templates/lantern.tx"
+        },
+        {
+            "file": "templates/potion_hp.tx"
+        },
+       
+        {
+            "$head": true
+        }
+    ]
+}

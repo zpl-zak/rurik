@@ -1,0 +1,24 @@
+{
+    "name": "Rurik demo assets",
+    "author": "Dominik Madarász",
+    "version": "v1.0.0",
+    "desc": "Demo asset files for Rurik game engine",
+    "chunks": [
+        {
+            "$head": true,
+            "author": "various"
+        },
+
+        
+        {
+            "file": "map/demo/texts/bouncingBall.json"
+        },
+        {
+            "file": "map/demo/texts/intro.json"
+        },
+        
+        {
+            "$head": true
+        }
+    ]
+}

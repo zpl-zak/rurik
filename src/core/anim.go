@@ -48,7 +48,7 @@ func (o *Object) NewAnim() {
 	}
 
 	o.Finish = func(o *Object) {
-		o.Texture = system.GetTexture(o.FileName + ".png")
+		o.Texture = system.GetTexture("gfx/" + o.FileName + ".png")
 
 		if o.Proxy != nil {
 			o.Ase = o.Proxy.Ase
@@ -57,7 +57,7 @@ func (o *Object) NewAnim() {
 				o.AnimTag = o.Meta.Properties.GetString("tag")
 			}
 
-			aseData := system.GetAnimData(o.FileName)
+			aseData := system.GetAnimData("gfx/" + o.FileName + ".json")
 			o.Ase = &aseData
 		}
 

@@ -49,7 +49,7 @@ type Choice struct {
 // InitText initializes the dialogue's text
 func InitText(t *Dialogue) {
 	if t.AvatarFile != "" {
-		t.Avatar = system.GetTexture(t.AvatarFile)
+		t.Avatar = system.GetTexture("gfx/" + t.AvatarFile)
 	}
 
 	if t.Next != nil {

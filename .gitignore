@@ -2,6 +2,8 @@
 build
 package
 gamesav.db
+data/
+!data/authors.txt
 
 # Android
 platforms/android/android/libs

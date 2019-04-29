@@ -46,6 +46,7 @@ type camera struct {
 	Zoom       float32
 	TargetZoom float32
 	ZoomSpeed  float32
+	Smoothing  float32
 	Mode       int
 	First      bool
 	FollowName string
@@ -59,6 +60,7 @@ type cameraData struct {
 	Progress   float32
 	TargetZoom float32
 	ZoomSpeed  float32
+	Smoothing  float32
 	Mode       int
 	First      bool
 }
@@ -70,6 +72,7 @@ func (c *Object) NewCamera() {
 	c.Zoom = 1
 	c.TargetZoom = c.Zoom
 	c.ZoomSpeed = 0.8
+	c.Smoothing = 0.8
 	c.DebugVisible = false
 	c.First = true
 	followName := c.Meta.Properties.GetString("follow")
@@ -98,6 +101,7 @@ func (c *Object) NewCamera() {
 			Progress:   o.Progress,
 			TargetZoom: o.TargetZoom,
 			ZoomSpeed:  o.ZoomSpeed,
+			Smoothing:  o.Smoothing,
 			Mode:       o.Mode,
 			First:      o.First,
 		})
@@ -116,6 +120,7 @@ func (c *Object) NewCamera() {
 		o.Progress = dat.Progress
 		o.TargetZoom = dat.TargetZoom
 		o.ZoomSpeed = dat.ZoomSpeed
+		o.Smoothing = dat.Smoothing
 		o.Mode = dat.Mode
 		o.First = dat.First
 		o.FollowName = dat.Follow
@@ -173,7 +178,7 @@ func updateCamera(c *Object, dt float32) {
 			CanSave = BitsClear(CanSave, IsSequenceHappening)
 		}
 
-		dest = Vector2Lerp(c.Position, c.Follow.Position, 0.1)
+		dest = Vector2Lerp(c.Position, c.Follow.Position, c.Smoothing)
 	} else if c.Mode == CameraModeLerp {
 		if c.Start == nil || c.End == nil {
 			log.Println("Camera object lerps between nil references.")

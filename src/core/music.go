@@ -41,7 +41,7 @@ func LoadPlaylist(name string) {
 	trackNames = []string{}
 	tracks = make(map[string]rl.Music)
 
-	txt := string(system.GetFile(fmt.Sprintf("music/%s", name), true))
+	txt := string(system.GetRootFile(fmt.Sprintf("music/%s", name)))
 
 	trackNames = strings.Split(txt, "\n")
 
@@ -71,7 +71,7 @@ func LoadNextTrack() {
 
 	if !ok {
 		fln := fmt.Sprintf("music/%s", trackName)
-		tr := rl.LoadMusicStreamFromMemory(string(system.GetFile(fln, true)))
+		tr := rl.LoadMusicStreamFromMemory(string(system.GetRootFile(fln)))
 		log.Printf("Loading track: %s!", trackName)
 		tracks[trackName] = tr
 		st = tr

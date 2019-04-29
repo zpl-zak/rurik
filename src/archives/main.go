@@ -21,7 +21,7 @@ func init() {
 }
 
 func main() {
-	system.InitAssets("default.dta", true)
+	system.InitAssets([]string{"gfx.dta"}, true)
 
 	rl.InitWindow(800, 450, "raylib [core] example - basic window")
 

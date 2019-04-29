@@ -17,9 +17,12 @@
 package core // github.com/zaklaus/rurik
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
+	"path"
 	"runtime/pprof"
+	"strings"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/system"
@@ -35,8 +38,8 @@ var (
 	// DebugMode switch
 	DebugMode = true
 
-	// GameAssetsArchiveName represents the file name game data is stored in
-	GameAssetsArchiveName = "demo.dta"
+	// GameAssetsArchiveNames represents the file name game data is stored in
+	GameAssetsArchiveNames = []string{"*"}
 
 	// TimeScale is game update time scale
 	TimeScale = 1
@@ -74,7 +77,25 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	UITexture = system.CreateRenderTarget(screenW, screenH)
 	NullTexture = system.CreateRenderTarget(screenW, screenH)
 	finalRenderTexture = system.CreateRenderTarget(screenW, screenH)
-	system.InitAssets(GameAssetsArchiveName, DebugMode)
+
+	if GameAssetsArchiveNames[0] == "*" {
+		tags, err := ioutil.ReadDir("tags")
+
+		if err != nil {
+			tags, err = ioutil.ReadDir("data")
+		}
+
+		GameAssetsArchiveNames = []string{}
+
+		for _, v := range tags {
+			p := path.Ext(v.Name())
+			if p == ".rtag" || p == ".dta" {
+				GameAssetsArchiveNames = append(GameAssetsArchiveNames, strings.Replace(v.Name(), ".rtag", ".dta", 1))
+			}
+		}
+	}
+
+	system.InitAssets(GameAssetsArchiveNames, DebugMode)
 	system.InitInput()
 	rl.InitAudioDevice()
 

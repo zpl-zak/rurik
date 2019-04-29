@@ -1,0 +1,27 @@
+{
+    "name": "Rurik demo assets",
+    "author": "Dominik Madarász",
+    "version": "v1.0.0",
+    "desc": "Demo asset files for Rurik game engine",
+    "chunks": [
+        {
+            "$head": true,
+            "author": "Loyalty Freak Music (CC0 1.0)"
+        },
+
+
+        {
+            "file": "music/Loyalty_Freak_Music_-_01_-_Monster_Parade.ogg",
+            "type": "music"
+        },
+
+        {
+            "file": "music/tracklist.txt",
+            "author": "Dominik Madarász"
+        },
+        
+        {
+            "$head": true
+        }
+    ]
+}

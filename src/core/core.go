@@ -16,6 +16,7 @@
 
 package core // github.com/zaklaus/rurik
 import (
+	"fmt"
 	"log"
 	"os"
 	"runtime/pprof"
@@ -49,7 +50,8 @@ var (
 	// DebugShowAll shows all visible debug elements
 	DebugShowAll = false
 
-	isDebugMenuCollapsed = true
+	isDebugMenuCollapsed  = true
+	isCameraMenuCollapsed = true
 )
 
 const (

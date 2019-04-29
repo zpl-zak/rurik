@@ -12,6 +12,7 @@ Rurik Frammework consists of the following key features:
 - Robust scripting backend, which offers an ability to flexibly alternate the game world or introduce scripted sequences.
 - Adaptive save system with ability to extend it's support onto custom game data which needs to be kept persistent.
 - Music manager for your musical needs.
+- Simple asset virtual filesystem, where data gets stored automatically according to the annotation files.
 - Basic AABB collision detection and resolution.
 - Fast frustum-culled renderer offering great performance under heavier loads.
 - Various built-in entity classes encapsulating stereotypes, such as trigger zones, collision areas, timers or even dialogue emitters.

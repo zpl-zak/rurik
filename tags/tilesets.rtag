@@ -41,7 +41,7 @@
             "type": "map"
         },
         {
-            "file": "tilesets/Utility.png",
+            "file": "tilesets/utility.png",
             "type": "gfx"
         },
         

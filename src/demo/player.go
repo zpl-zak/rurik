@@ -40,7 +40,7 @@ func NewPlayer(p *core.Object) {
 func updatePlayer(p *core.Object, dt float32) {
 	p.Ase.Update(dt)
 
-	var moveSpeed float32 = 45
+	var moveSpeed float32 = 85
 
 	p.Movement.X = 0
 	p.Movement.Y = 0

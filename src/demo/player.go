@@ -82,6 +82,9 @@ func updatePlayer(p *core.Object, dt float32) {
 	p.Movement.X *= dt
 	p.Movement.Y *= dt
 
+	p.Movement.X = float32(math.RoundToEven(float64(p.Movement.X)))
+	p.Movement.Y = float32(math.RoundToEven(float64(p.Movement.Y)))
+
 	resX, okX := core.CheckForCollision(p, int32(p.Movement.X), 0)
 	resY, okY := core.CheckForCollision(p, 0, int32(p.Movement.Y))
 
@@ -93,8 +96,8 @@ func updatePlayer(p *core.Object, dt float32) {
 		p.Movement.Y = float32(resY.ResolveY)
 	}
 
-	p.Position.X += float32(math.Round(float64(p.Movement.X)))
-	p.Position.Y += float32(math.Round(float64(p.Movement.Y)))
+	p.Position.X += p.Movement.X
+	p.Position.Y += p.Movement.Y
 }
 
 func drawPlayer(p *core.Object) {

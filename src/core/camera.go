@@ -19,6 +19,7 @@ package core
 import (
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 
 	jsoniter "github.com/json-iterator/go"
@@ -193,6 +194,9 @@ func updateCamera(c *Object, dt float32) {
 	} else {
 		dest = c.Position
 	}
+
+	dest.X = float32(math.Round(float64(dest.X)))
+	dest.Y = float32(math.Round(float64(dest.Y)))
 
 	if !c.First || c.Mode == CameraModeLerp {
 		t := c.Speed

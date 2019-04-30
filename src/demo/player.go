@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	"github.com/zaklaus/rurik/src/core"
 
 	"github.com/solarlune/resolv/resolv"
@@ -91,8 +93,8 @@ func updatePlayer(p *core.Object, dt float32) {
 		p.Movement.Y = float32(resY.ResolveY)
 	}
 
-	p.Position.X += p.Movement.X
-	p.Position.Y += p.Movement.Y
+	p.Position.X += float32(math.Round(float64(p.Movement.X)))
+	p.Position.Y += float32(math.Round(float64(p.Movement.Y)))
 }
 
 func drawPlayer(p *core.Object) {

@@ -45,6 +45,9 @@
    <point/>
   </object>
   <object id="2" name="main_camera" type="cam" x="144" y="214">
+   <properties>
+    <property name="depends" value="player"/>
+   </properties>
    <point/>
   </object>
   <object id="15" template="../../templates/potion_hp.tx" x="71" y="405"/>

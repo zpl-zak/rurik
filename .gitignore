@@ -14,3 +14,6 @@ platforms/android/android/project.properties
 platforms/android/android/.gradle
 platforms/android/android/.idea
 platforms/android/local.properties
+src/tagEditor/bin/
+src/.vs/
+src/tagEditor/obj/

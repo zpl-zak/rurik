@@ -48,6 +48,8 @@ type InputAction struct {
 
 // UpdateInput updates the user input
 func UpdateInput() {
+	rl.PollInputEvents()
+
 	// Update MouseDelta
 	newMousePosition := GetMousePosition()
 	MouseDelta = [2]int32{

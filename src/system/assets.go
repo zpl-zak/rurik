@@ -29,6 +29,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"os"
 	"path"
 	"strings"
@@ -53,6 +54,9 @@ var (
 
 	// ArchiveEncryptionKey is the key we use to access our assets
 	ArchiveEncryptionKey = "letmein123"
+
+	// RegisteredTags contains a list of all tags usable for assets
+	RegisteredTags = []string{"none"}
 )
 
 const (
@@ -63,13 +67,20 @@ const (
 	fileTypeMusic
 )
 
+type annotationTag struct {
+	Name  string  `json:"name"`
+	Value float32 `json:"value"`
+}
+
 type annotationChunk struct {
-	IsHeader    bool   `json:"$head"`
-	FileName    string `json:"file"`
-	Name        string `json:"name"`
-	Author      string `json:"author"`
-	Description string `json:"desc"`
-	Type        string `json:"type"`
+	IsHeader    bool            `json:"$head"`
+	FileName    string          `json:"file"`
+	Name        string          `json:"name"`
+	Author      string          `json:"author"`
+	Description string          `json:"desc"`
+	Type        string          `json:"type"`
+	Tags        []annotationTag `json:"tags"`
+	ExtraData   string          `json:"extra"`
 }
 
 type annotationData struct {
@@ -89,6 +100,9 @@ type AssetChunk struct {
 	Description string
 	Type        uint16
 	Data        []byte
+	Tags        []uint64
+	TagValues   []float64
+	ExtraData   []byte
 }
 
 // AssetArchive describes the game data
@@ -99,6 +113,12 @@ type AssetArchive struct {
 	Description string
 
 	Chunks []AssetChunk
+}
+
+// MatchVector specifies matching tags and their weights for asset lookup
+type MatchVector struct {
+	Tags    []uint64
+	Weights []float64
 }
 
 // InitAssets initializes all asset info
@@ -179,6 +199,12 @@ func mapFileTypeStringToID(class string) uint16 {
 	}
 }
 
+// PushTag registers a tag
+func PushTag(tag string) uint64 {
+	RegisteredTags = append(RegisteredTags, tag)
+	return uint64(len(RegisteredTags))
+}
+
 func buildAssetStorage(filePath string, an annotationData) {
 	var a AssetArchive
 	a.Name = an.Name
@@ -212,6 +238,28 @@ func buildAssetStorage(filePath string, an annotationData) {
 			if err != nil {
 				log.Fatalf("File %s could not be loaded!\n", v.FileName)
 			}
+
+			ac.Tags = []uint64{}
+			ac.TagValues = []float64{}
+
+			for _, vt := range v.Tags {
+				found := false
+				for x, vta := range RegisteredTags {
+					if vta == vt.Name {
+						ac.Tags = append(ac.Tags, uint64(x))
+						ac.TagValues = append(ac.TagValues, float64(vt.Value))
+						found = true
+						break
+					}
+				}
+
+				if !found {
+					ac.Tags = append(ac.Tags, 0)
+					ac.TagValues = append(ac.TagValues, 0.0)
+				}
+			}
+
+			ac.ExtraData = []byte(v.ExtraData)
 
 			a.Chunks = append(a.Chunks, ac)
 		}
@@ -252,6 +300,39 @@ func FindAsset(fileName string) *AssetChunk {
 	}
 
 	return nil
+}
+
+// GetBestAsset retrieves an asset closest to the MatchVector's description
+func GetBestAsset(vec MatchVector) *AssetChunk {
+	var res *AssetChunk
+	var bestMatch float64
+
+	for _, db := range AssetDatabase {
+		for _, v := range db.Chunks {
+			var totalMatch float64
+			for x, t := range v.Tags {
+				a := float64(vec.Tags[t])
+				var neg float64 = 1
+				if a < 1 {
+					neg = -1
+				}
+				b := v.TagValues[x]
+				d0 := math.Abs(float64(a - b))
+				d1 := math.Abs((a - 1000000*neg) - b)
+				diff := 1 - math.Min(d0, d1)
+
+				w := vec.Weights[t] * diff
+				totalMatch += w
+			}
+
+			if bestMatch < totalMatch {
+				bestMatch = totalMatch
+				res = &v
+			}
+		}
+	}
+
+	return res
 }
 
 // GetTexture retrieves a cached texture from disk

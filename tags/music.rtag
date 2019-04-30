@@ -7,6 +7,12 @@
         {
             "file": "music/Loyalty_Freak_Music_-_01_-_Monster_Parade.ogg",
             "author": "Loyalty Freak Music (CC0 1.0)",
+            "tags": [
+                {
+                    "name": "chase",
+                    "value": 1.0
+                }
+            ],
             "type": "music"
         },
 

@@ -16,10 +16,11 @@ type level struct {
 }
 
 var levelSelection struct {
-	selectedChoice int
-	levels         []level
-	waveTime       int32
-	banner         string
+	selectedChoice       int
+	levels               []level
+	waveTime             int32
+	banner               string
+	mouseDoublePressTime int32
 }
 
 func initLevels() {
@@ -49,7 +50,7 @@ func initLevels() {
 	levelSelection.banner = "Welcome to Rurik Framework!\nThis demo showcases the framework's possibilities and features.\nMake a selection, please!"
 }
 
-func drawLevelSelection() {
+func (g *demoGameMode) drawLevelSelection() {
 	levelSelection.waveTime = int32(math.Round(math.Sin(float64(rl.GetTime()) * 40)))
 
 	width := system.ScreenWidth
@@ -62,6 +63,12 @@ func drawLevelSelection() {
 	chsY := start + 40
 
 	rl.DrawRectangle(chsX-120+levelSelection.waveTime, chsY-20, 240+levelSelection.waveTime, int32(len(levelSelection.levels))*15+40, rl.Fade(rl.Black, 0.25))
+
+	if levelSelection.mouseDoublePressTime > 0 {
+		levelSelection.mouseDoublePressTime -= int32(1000 * (system.FrameTime * float32(core.TimeScale)))
+	} else if levelSelection.mouseDoublePressTime < 0 {
+		levelSelection.mouseDoublePressTime = 0
+	}
 
 	if len(levelSelection.levels) > 0 {
 		for idx, ch := range levelSelection.levels {
@@ -78,9 +85,17 @@ func drawLevelSelection() {
 				rl.White,
 			)
 
-			if core.IsMouseInRectangle(chsX, ypos, 200, 15) {
+			if core.IsMouseInRectangle(chsX-100, ypos, 200, 15) {
 				if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 					rl.DrawRectangleLines(chsX-100, ypos, 200, 15, rl.Pink)
+				} else if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
+					levelSelection.selectedChoice = idx
+
+					if levelSelection.mouseDoublePressTime > 0 {
+						g.playLevelSelection()
+					} else {
+						levelSelection.mouseDoublePressTime = MouseDoublePress
+					}
 				} else {
 					rl.DrawRectangleLines(chsX-100, ypos, 200, 15, rl.Purple)
 				}
@@ -107,15 +122,7 @@ func (g *demoGameMode) updateLevelSelection() {
 	}
 
 	if system.IsKeyPressed("use") {
-		mapName := levelSelection.levels[levelSelection.selectedChoice].mapName
-
-		if mapName == "$exitGame" {
-			core.CloseGame()
-			return
-		}
-
-		g.loadLevel(mapName)
-		g.playState = statePlay
+		g.playLevelSelection()
 	}
 }
 
@@ -123,4 +130,16 @@ func (g *demoGameMode) loadLevel(mapName string) {
 	core.FlushMaps()
 	core.LoadMap(mapName)
 	core.InitMap()
+}
+
+func (g *demoGameMode) playLevelSelection() {
+	mapName := levelSelection.levels[levelSelection.selectedChoice].mapName
+
+	if mapName == "$exitGame" {
+		core.CloseGame()
+		return
+	}
+
+	g.loadLevel(mapName)
+	g.playState = statePlay
 }

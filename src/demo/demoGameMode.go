@@ -137,7 +137,7 @@ func (g *demoGameMode) DrawUI() {
 
 	case stateLevelSelection:
 		core.DrawTextCentered("Rurik Framework", system.ScreenWidth/2, system.ScreenHeight/2-20+g.textWave, 24, rl.RayWhite)
-		drawLevelSelection()
+		g.drawLevelSelection()
 
 	case statePlay:
 		core.DrawMapUI()

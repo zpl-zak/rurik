@@ -93,6 +93,10 @@ func (c *Object) NewCamera() {
 		spd = 1
 	}
 
+	if MainCamera == nil {
+		MainCamera = c
+	}
+
 	c.Serialize = func(o *Object) string {
 		val, _ := jsoniter.MarshalToString(&cameraData{
 			Follow:     o.FollowName,
@@ -129,8 +133,6 @@ func (c *Object) NewCamera() {
 
 	c.Speed = float32(spd)
 
-	MainCamera = c
-
 	c.Draw = func(o *Object) {
 		if !DebugMode || !o.DebugVisible {
 			return
@@ -146,8 +148,21 @@ func (c *Object) NewCamera() {
 		}
 
 		rl.DrawCircle(int32(o.Position.X), int32(o.Position.Y), 2, rl.White)
-		DrawTextCentered(fmt.Sprintf("%s", o.Name), int32(o.Position.X), int32(o.Position.Y)+5, 10, rl.White)
-		DrawTextCentered(fmt.Sprintf("Mode: %s", mode), int32(o.Position.X), int32(o.Position.Y)+15, 10, rl.White)
+		DrawTextCentered(
+			fmt.Sprintf("%s", o.Name),
+			int32(o.Position.X),
+			int32(o.Position.Y)+5,
+			10,
+			rl.White,
+		)
+
+		DrawTextCentered(
+			fmt.Sprintf("Mode: %s", mode),
+			int32(o.Position.X),
+			int32(o.Position.Y)+15,
+			10,
+			rl.White,
+		)
 	}
 }
 

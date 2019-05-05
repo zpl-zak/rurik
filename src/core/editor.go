@@ -192,7 +192,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	actualGraphWidth := int32(len(element.pointData)) * element.dataMargin
 
 	if actualGraphWidth > width {
-		graphXTreshold = actualGraphWidth - width
+		graphXTreshold = actualGraphWidth - width - element.dataMargin
 	}
 
 	for x, v := range element.pointData {

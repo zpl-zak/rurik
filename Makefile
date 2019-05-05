@@ -22,6 +22,9 @@ clean:
 ship: rel
 	./ship.sh
 
+ship_win:
+	./ship_win.sh
+
 play:
 	./play.sh
 

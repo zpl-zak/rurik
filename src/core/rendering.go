@@ -80,7 +80,6 @@ func renderGame() {
 		{
 			rl.ClearBackground(rl.Blank)
 			CurrentGameMode.DrawUI()
-			drawNotifications()
 			DrawEditor()
 		}
 		rl.EndTextureMode()

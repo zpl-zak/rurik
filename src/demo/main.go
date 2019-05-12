@@ -103,7 +103,7 @@ func updateInternals(g *demoGameMode) {
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF2) {
 		if g.playState == statePlay {
 			if core.CurrentSaveSystem.SaveGame(0, "demo") {
-				core.PushNotificationEx("Game has been saved!", 2, rl.RayWhite)
+				PushNotificationEx("Game has been saved!", 2, rl.RayWhite)
 			}
 		}
 	}
@@ -111,7 +111,7 @@ func updateInternals(g *demoGameMode) {
 	if core.DebugMode && rl.IsKeyPressed(rl.KeyF3) {
 		if g.playState == statePlay {
 			if core.CurrentSaveSystem.LoadGame(0) {
-				core.PushNotificationEx("Game has been loaded!", 2, rl.RayWhite)
+				PushNotificationEx("Game has been loaded!", 2, rl.RayWhite)
 			}
 		}
 	}

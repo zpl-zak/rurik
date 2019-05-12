@@ -210,8 +210,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			FireEvent("onUpdate")
 			updateProfiler.StopInvocation()
 
-			updateNotifications()
-
 			shouldRender = true
 
 			if MainCamera != nil {

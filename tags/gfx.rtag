@@ -1,53 +1,26 @@
-{
-    "name": "Rurik demo assets",
-    "author": "Dominik Madarász",
-    "version": "v1.0.0",
-    "desc": "Demo graphics assets",
-    "chunks": [
-        {
-            "$head": true,
-            "author": "Dominik Madarász"
-        },
-
-        {
-            "file": "gfx/player.json",
-            "type": "anim"
-        },
-        {
-            "file": "gfx/player.png",
-            "type": "gfx"
-        },
-        {
-            "file": "gfx/avatar.png",
-            "type": "gfx"
-        },
-        {
-            "file": "gfx/bg.png",
-            "type": "gfx"
-        },
-        {
-            "file": "gfx/ulrich.png",
-            "type": "gfx"
-        },
-        {
-            "file": "gfx/ulrich_angry.png",
-            "type": "gfx"
-        },
-        {
-            "file": "gfx/ball.png",
-            "type": "gfx"
-        },
-        {
-            "file": "gfx/ball.json",
-            "type": "anim"
-        },
-        {
-            "file": "gfx/chat_banner.png",
-            "type": "gfx"
-        },
-       
-        {
-            "$head": true
-        }
-    ]
-}
+---
+name: Rurik demo assets
+author: Dominik Madarász
+version: v1.0.0
+desc: Demo graphics assets
+chunks:
+- default: true
+  author: Dominik Madarász
+- file: gfx/player.json
+  type: anim
+- file: gfx/player.png
+  type: gfx
+- file: gfx/avatar.png
+  type: gfx
+- file: gfx/bg.png
+  type: gfx
+- file: gfx/ulrich.png
+  type: gfx
+- file: gfx/ulrich_angry.png
+  type: gfx
+- file: gfx/ball.png
+  type: gfx
+- file: gfx/ball.json
+  type: anim
+- file: gfx/chat_banner.png
+  type: gfx

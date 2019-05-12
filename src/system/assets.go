@@ -34,10 +34,10 @@ import (
 	"path"
 	"strings"
 
-	jsoniter "github.com/json-iterator/go"
-
+	"github.com/davecgh/go-spew/spew"
 	goaseprite "github.com/zaklaus/GoAseprite"
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"gopkg.in/yaml.v2"
 )
 
 var (
@@ -68,28 +68,28 @@ const (
 )
 
 type annotationTag struct {
-	Name  string  `json:"name"`
-	Value float32 `json:"value"`
+	Name  string  `yaml:"name"`
+	Value float32 `yaml:"value"`
 }
 
 type annotationChunk struct {
-	IsHeader    bool            `json:"$head"`
-	FileName    string          `json:"file"`
-	Name        string          `json:"name"`
-	Author      string          `json:"author"`
-	Description string          `json:"desc"`
-	Type        string          `json:"type"`
-	Tags        []annotationTag `json:"tags"`
-	ExtraData   string          `json:"extra"`
+	IsHeader    bool            `yaml:"default"`
+	FileName    string          `yaml:"file"`
+	Name        string          `yaml:"name"`
+	Author      string          `yaml:"author"`
+	Description string          `yaml:"desc"`
+	Type        string          `yaml:"type"`
+	Tags        []annotationTag `yaml:"tags"`
+	ExtraData   string          `yaml:"extra"`
 }
 
 type annotationData struct {
-	Name        string `json:"name"`
-	Author      string `json:"author"`
-	Version     string `json:"version"`
-	Description string `json:"desc"`
+	Name        string `yaml:"name"`
+	Author      string `yaml:"author"`
+	Version     string `yaml:"version"`
+	Description string `yaml:"desc"`
 
-	Chunks []annotationChunk `json:"chunks"`
+	Chunks []annotationChunk `yaml:"chunks"`
 }
 
 // AssetChunk describes an asset file
@@ -130,6 +130,17 @@ func InitAssets(archiveNames []string, isDebugMode bool) {
 			if _, err := os.Stat(tagFileName); !os.IsNotExist(err) {
 				tagData, _ := ioutil.ReadFile(tagFileName)
 				tags := parseAnnotationFile(tagData)
+
+				log.Printf(
+					"Archive '%s' has been loaded!\n-- Author: %s\n-- Version: %s\n-- Description: %s\n",
+					tags.Name,
+					tags.Version,
+					tags.Author,
+					tags.Description,
+				)
+
+				spew.Dump(tags)
+
 				buildAssetStorage(v, tags)
 			}
 		}
@@ -159,7 +170,7 @@ func InitAssets(archiveNames []string, isDebugMode bool) {
 
 func parseAnnotationFile(data []byte) annotationData {
 	var tags annotationData
-	err := jsoniter.Unmarshal(data, &tags)
+	err := yaml.Unmarshal(data, &tags)
 
 	if err != nil {
 		log.Fatalf("Can't parse tag file! Syntax error detected.")

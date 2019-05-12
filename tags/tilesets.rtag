@@ -1,72 +1,33 @@
-{
-    "name": "Rurik demo assets",
-    "author": "Dominik Madarász",
-    "version": "v1.0.0",
-    "desc": "Demo asset files for Rurik game engine",
-    "chunks": [
-        {
-            "$head": true,
-            "author": "various"
-        },
-
-        {
-            "file": "tilesets/MageCity.tsx",
-            "type": "map"
-        },
-        {
-            "file": "tilesets/magecity.png",
-            "type": "gfx"
-        },
-        
-        {
-            "file": "tilesets/Forest.tsx",
-            "type": "map"
-        },
-        {
-            "file": "tilesets/Forest.png",
-            "type": "gfx"
-        },
-        
-        {
-            "file": "tilesets/TestSet.tsx",
-            "type": "map"
-        },
-        {
-            "file": "tilesets/TestSet.png",
-            "type": "gfx"
-        },
-        
-        {
-            "file": "tilesets/Utility.tsx",
-            "type": "map"
-        },
-        {
-            "file": "tilesets/utility.png",
-            "type": "gfx"
-        },
-        
-        
-        {
-            "file": "tilesets/Street.tsx",
-            "type": "map"
-        },
-        {
-            "file": "tilesets/Street.png",
-            "type": "gfx"
-        },
-
-        {
-            "file": "tilesets/Sewer.tsx",
-            "author": "MrBeast (CC-BY 3.0)",
-            "type": "map"
-        },
-        {
-            "file": "tilesets/Sewer.png",
-            "type": "gfx"
-        },
-       
-        {
-            "$head": true
-        }
-    ]
-}
+---
+name: Rurik demo assets
+author: Dominik Madarász
+version: v1.0.0
+desc: Demo asset files for Rurik game engine
+chunks:
+- default: true
+  author: various
+- file: tilesets/MageCity.tsx
+  type: map
+- file: tilesets/magecity.png
+  type: gfx
+- file: tilesets/Forest.tsx
+  type: map
+- file: tilesets/Forest.png
+  type: gfx
+- file: tilesets/TestSet.tsx
+  type: map
+- file: tilesets/TestSet.png
+  type: gfx
+- file: tilesets/Utility.tsx
+  type: map
+- file: tilesets/utility.png
+  type: gfx
+- file: tilesets/Street.tsx
+  type: map
+- file: tilesets/Street.png
+  type: gfx
+- file: tilesets/Sewer.tsx
+  author: MrBeast (CC-BY 3.0)
+  type: map
+- file: tilesets/Sewer.png
+  type: gfx

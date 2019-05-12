@@ -17,9 +17,9 @@
 package core
 
 import (
+	"encoding/gob"
 	"log"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -71,18 +71,16 @@ func (o *Object) NewScript() {
 		o.WasExecuted = true
 	}
 
-	o.Serialize = func(o *Object) string {
-		val, _ := jsoniter.MarshalToString(&scriptData{
+	o.Serialize = func(o *Object, enc *gob.Encoder) {
+		enc.Encode(&scriptData{
 			WasExecuted: o.WasExecuted,
 			CanRepeat:   o.CanRepeat,
 		})
-
-		return val
 	}
 
-	o.Deserialize = func(o *Object, v string) {
+	o.Deserialize = func(o *Object, dec *gob.Decoder) {
 		var dat scriptData
-		jsoniter.UnmarshalFromString(v, &dat)
+		dec.Decode(&dat)
 		o.WasExecuted = dat.WasExecuted
 		o.CanRepeat = dat.CanRepeat
 	}

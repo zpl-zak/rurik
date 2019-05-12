@@ -16,6 +16,8 @@
 
 package core
 
+import "encoding/gob"
+
 // GameMode describes main game rules and subsystems
 type GameMode interface {
 	Init()
@@ -24,6 +26,6 @@ type GameMode interface {
 	Draw()
 	DrawUI()
 	PostDraw()
-	Serialize() string
-	Deserialize(data string)
+	Serialize(enc *gob.Encoder)
+	Deserialize(dec *gob.Decoder)
 }

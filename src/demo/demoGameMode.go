@@ -1,10 +1,10 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 	"math"
 
-	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
@@ -95,18 +95,17 @@ func (g *demoGameMode) Update() {
 	updateInternals(g)
 }
 
-func (g *demoGameMode) Serialize() string {
+func (g *demoGameMode) Serialize(enc *gob.Encoder) {
 	data := demoGameSaveData{
 		ObjectCounter: dynobjCounter,
 	}
 
-	ret, _ := jsoniter.MarshalToString(data)
-	return ret
+	enc.Encode(data)
 }
 
-func (g *demoGameMode) Deserialize(data string) {
+func (g *demoGameMode) Deserialize(dec *gob.Decoder) {
 	var saveData demoGameSaveData
-	jsoniter.UnmarshalFromString(data, &saveData)
+	dec.Decode(&saveData)
 
 	dynobjCounter = saveData.ObjectCounter
 }

@@ -17,12 +17,12 @@
 package core
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"math"
 	"strconv"
 
-	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/raylib-go/raymath"
 )
@@ -97,8 +97,8 @@ func (c *Object) NewCamera() {
 		MainCamera = c
 	}
 
-	c.Serialize = func(o *Object) string {
-		val, _ := jsoniter.MarshalToString(&cameraData{
+	c.Serialize = func(o *Object, enc *gob.Encoder) {
+		enc.Encode(&cameraData{
 			Follow:     o.FollowName,
 			Start:      "",
 			End:        "",
@@ -110,13 +110,11 @@ func (c *Object) NewCamera() {
 			Mode:       o.Mode,
 			First:      o.First,
 		})
-
-		return val
 	}
 
-	c.Deserialize = func(o *Object, v string) {
+	c.Deserialize = func(o *Object, dec *gob.Decoder) {
 		var dat cameraData
-		jsoniter.UnmarshalFromString(v, &dat)
+		dec.Decode(&dat)
 
 		/* o.Follow = dat.Follow
 		o.Start = dat.Start

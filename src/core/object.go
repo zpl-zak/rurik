@@ -17,11 +17,12 @@
 package core
 
 import (
+	"encoding/gob"
 	"fmt"
 	"reflect"
 
-	goaseprite "github.com/zaklaus/GoAseprite"
 	"github.com/solarlune/resolv/resolv"
+	goaseprite "github.com/zaklaus/GoAseprite"
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
@@ -81,8 +82,8 @@ type Object struct {
 	HandleCollision func(res *resolv.Collision, o, other *Object)
 	InsideArea      func(o, a *Object) bool
 	GetAABB         func(o *Object) rl.RectangleInt32
-	Serialize       func(o *Object) string
-	Deserialize     func(o *Object, data string)
+	Serialize       func(o *Object, enc *gob.Encoder)
+	Deserialize     func(o *Object, dec *gob.Decoder)
 
 	// Specialized data
 	collision
@@ -96,8 +97,8 @@ type Object struct {
 
 // ObjectUserData describes custom data used by game's classes
 type ObjectUserData interface {
-	Serialize() string
-	Deserialize(input string)
+	Serialize(enc *gob.Encoder)
+	Deserialize(dec *gob.Decoder)
 }
 
 func initObjectTypes() {

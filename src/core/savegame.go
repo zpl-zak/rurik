@@ -17,10 +17,12 @@
 package core
 
 import (
+	"bytes"
+	"encoding/base64"
+	"encoding/gob"
 	"io/ioutil"
 	"log"
 
-	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
@@ -63,12 +65,17 @@ type GameState struct {
 
 // InitSaveSystem initializes the game state system
 func (s *SaveSystem) InitSaveSystem() {
-	dat, err := ioutil.ReadFile("gamesav.db")
+	rdat, err := ioutil.ReadFile("gamesav.db")
+	dat, _ := base64.StdEncoding.DecodeString(string(rdat))
+
 	hasFailed := false
 
 	if err == nil {
 		var sav SaveSystem
-		err = jsoniter.Unmarshal(dat, &sav)
+		buf := bytes.NewBuffer(dat)
+		dec := gob.NewDecoder(buf)
+		err = dec.Decode(&sav)
+		//err = jsoniter.Unmarshal(dat, &sav)
 
 		if err != nil {
 			log.Printf("Gamesav.db is broken, ignoring...\n")
@@ -102,9 +109,14 @@ func (s *SaveSystem) SaveGame(slotIndex int, stateName string) bool {
 
 	s.States[slotIndex] = state
 
-	data, _ := jsoniter.Marshal(s)
+	//data, _ := jsoniter.Marshal(s)
+	var buf bytes.Buffer
+	enc := gob.NewEncoder(&buf)
+	enc.Encode(s)
 
-	ioutil.WriteFile("gamesav.db", data, 0755)
+	dat := base64.StdEncoding.EncodeToString(buf.Bytes())
+
+	ioutil.WriteFile("gamesav.db", []byte(dat), 0755)
 	return true
 }
 
@@ -128,7 +140,7 @@ type defaultSaveData struct {
 	saveData
 	CurrentMap   string           `json:"active"`
 	Maps         []defaultMapData `json:"maps"`
-	GameModeData string           `json:"gameMode"`
+	GameModeData []byte           `json:"gameMode"`
 }
 
 type defaultMapData struct {
@@ -145,17 +157,20 @@ type defaultObjectData struct {
 	Position    rl.Vector2
 	Movement    rl.Vector2
 	Facing      rl.Vector2
-	Custom      string   `json:"custom"`
+	Custom      []byte   `json:"custom"`
 	Color       rl.Color `json:"color"`
 	Attenuation float32  `json:"atten"`
 	Radius      float32  `json:"rad"`
 }
 
 func defaultSaveProvider(state *GameState) defaultSaveData {
+	var gbuf bytes.Buffer
+	genc := gob.NewEncoder(&gbuf)
+	CurrentGameMode.Serialize(genc)
 	save := defaultSaveData{
 		CurrentMap:   CurrentMap.Name,
 		Maps:         []defaultMapData{},
-		GameModeData: CurrentGameMode.Serialize(),
+		GameModeData: gbuf.Bytes(),
 	}
 
 	for _, v := range Maps {
@@ -170,6 +185,10 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 				continue
 			}
 
+			var buf bytes.Buffer
+			enc := gob.NewEncoder(&buf)
+			b.Serialize(b, enc)
+
 			obj := defaultObjectData{
 				Name:        b.Name,
 				Type:        b.Class,
@@ -179,7 +198,7 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 				Color:       b.Color,
 				Attenuation: b.Attenuation,
 				Radius:      b.Radius,
-				Custom:      b.Serialize(b),
+				Custom:      buf.Bytes(),
 			}
 
 			mapData.Objects = append(mapData.Objects, obj)
@@ -196,7 +215,10 @@ func defaultLoadProvider(state *GameState) {
 	CanSave = 0
 	FlushMaps()
 	LoadMap(data.CurrentMap)
-	CurrentGameMode.Deserialize(data.GameModeData)
+
+	gbuf := bytes.NewBuffer(data.GameModeData)
+	gdec := gob.NewDecoder(gbuf)
+	CurrentGameMode.Deserialize(gdec)
 
 	for _, mapData := range data.Maps {
 		m := LoadMap(mapData.MapName)
@@ -222,7 +244,10 @@ func defaultLoadProvider(state *GameState) {
 			o.Color = wo.Color
 			o.Attenuation = wo.Attenuation
 			o.Radius = wo.Radius
-			o.Deserialize(o, wo.Custom)
+
+			buf := bytes.NewBuffer(wo.Custom)
+			dec := gob.NewDecoder(buf)
+			o.Deserialize(o, dec)
 		}
 
 		cam, _ := CurrentMap.World.FindObject("main_camera")

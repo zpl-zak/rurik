@@ -1,9 +1,9 @@
 package main
 
 import (
+	"encoding/gob"
 	"fmt"
 
-	jsoniter "github.com/json-iterator/go"
 	"github.com/zaklaus/rurik/src/core"
 )
 
@@ -12,13 +12,12 @@ type demoClassData struct {
 	Bar string
 }
 
-func (d *demoClassData) Serialize() string {
-	r, _ := jsoniter.MarshalToString(*d)
-	return r
+func (d *demoClassData) Serialize(enc *gob.Encoder) {
+	enc.Encode(d)
 }
 
-func (d *demoClassData) Deserialize(input string) {
-	jsoniter.UnmarshalFromString(input, d)
+func (d *demoClassData) Deserialize(dec *gob.Decoder) {
+	dec.Decode(&d)
 }
 
 // NewTestClass is a custom type

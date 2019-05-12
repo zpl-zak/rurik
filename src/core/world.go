@@ -17,6 +17,7 @@
 package core
 
 import (
+	"encoding/gob"
 	"fmt"
 	"log"
 	"sort"
@@ -113,8 +114,8 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
 		InsideArea:      func(o, a *Object) bool { return false },
 		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
-		Serialize:       func(o *Object) string { return "{}" },
-		Deserialize:     func(o *Object, data string) {},
+		Serialize:       func(o *Object, enc *gob.Encoder) {},
+		Deserialize:     func(o *Object, dec *gob.Decoder) {},
 	}
 }
 

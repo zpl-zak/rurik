@@ -143,9 +143,9 @@ func BuildObject(w *World, o *tiled.Object, savegameData *defaultObjectData) (*O
 
 	className := "Unknown"
 
-	if o != nil {
+	if o != nil && o.Type != "" {
 		className = o.Type
-	} else if savegameData != nil {
+	} else if savegameData != nil && savegameData.Type != "" {
 		className = savegameData.Type
 	}
 
@@ -155,8 +155,8 @@ func BuildObject(w *World, o *tiled.Object, savegameData *defaultObjectData) (*O
 		// custom type check
 		ctor, ctorOk := objCtors[className]
 
-		if !ctorOk {
-			return nil, fmt.Errorf("class %s is undefined", class)
+		if !ctorOk && className != "" {
+			return nil, fmt.Errorf("class '%s' is undefined", className)
 		}
 
 		ctor(inst)

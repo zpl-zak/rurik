@@ -34,7 +34,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	goaseprite "github.com/zaklaus/GoAseprite"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"gopkg.in/yaml.v2"
@@ -132,14 +131,13 @@ func InitAssets(archiveNames []string, isDebugMode bool) {
 				tags := parseAnnotationFile(tagData)
 
 				log.Printf(
-					"Archive '%s' has been loaded!\n-- Author: %s\n-- Version: %s\n-- Description: %s\n",
+					"Archive '%s' has been loaded!\n-- Author: %s\n-- Version: %s\n-- Description: %s\n-- Asset count: %d",
 					tags.Name,
 					tags.Version,
 					tags.Author,
 					tags.Description,
+					len(tags.Chunks),
 				)
-
-				spew.Dump(tags)
 
 				buildAssetStorage(v, tags)
 			}

@@ -1,5 +1,5 @@
 ---
-name: Rurik demo assets
+name: Demo gfx
 author: Dominik Madarász
 version: v1.0.0
 desc: Demo graphics assets
@@ -8,19 +8,14 @@ chunks:
   author: Dominik Madarász
 - file: gfx/player.json
   type: anim
+- default: true
+  type: gfx
 - file: gfx/player.png
-  type: gfx
 - file: gfx/avatar.png
-  type: gfx
 - file: gfx/bg.png
-  type: gfx
 - file: gfx/ulrich.png
-  type: gfx
 - file: gfx/ulrich_angry.png
-  type: gfx
 - file: gfx/ball.png
-  type: gfx
 - file: gfx/ball.json
   type: anim
 - file: gfx/chat_banner.png
-  type: gfx

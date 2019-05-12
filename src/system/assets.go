@@ -122,6 +122,10 @@ type MatchVector struct {
 
 // InitAssets initializes all asset info
 func InitAssets(archiveNames []string, isDebugMode bool) {
+	if _, err := os.Stat("data"); os.IsNotExist(err) {
+		os.Mkdir("data", 0666)
+	}
+
 	for _, v := range archiveNames {
 		if isDebugMode {
 			tagFileName := fmt.Sprintf("tags/%s.rtag", strings.Split(path.Base(v), ".")[0])

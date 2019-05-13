@@ -215,49 +215,49 @@ func UpdateMapUI() {
 			return
 		}
 
-		mapNode := pushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
-		mapNode.isHorizontal = true
+		mapNode := PushEditorElement(rootElement, "map", &mapNodeIsCollapsed)
+		mapNode.IsHorizontal = true
 
 		if !mapNodeIsCollapsed {
-			pushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.Name), nil)
-			pushEditorElement(mapNode, fmt.Sprintf("no. of tilesets: %d", len(CurrentMap.tilesets)), nil)
+			PushEditorElement(mapNode, fmt.Sprintf("name: %s", CurrentMap.Name), nil)
+			PushEditorElement(mapNode, fmt.Sprintf("no. of tilesets: %d", len(CurrentMap.tilesets)), nil)
 
-			tilesetsNode := pushEditorElement(mapNode, "tilesets", &tilesetsNodeIsCollapsed)
+			tilesetsNode := PushEditorElement(mapNode, "tilesets", &tilesetsNodeIsCollapsed)
 
 			if !tilesetsNodeIsCollapsed {
 				i := 0
 				for _, v := range CurrentMap.tilesets {
-					tilesetNode := pushEditorElement(tilesetsNode, fmt.Sprintf("%d. %s", i, v.Name), &v.IsCollapsed)
+					tilesetNode := PushEditorElement(tilesetsNode, fmt.Sprintf("%d. %s", i, v.Name), &v.IsCollapsed)
 					i++
 
 					if !v.IsCollapsed {
-						pushEditorElement(tilesetNode, fmt.Sprintf("name: %s", v.Name), nil)
-						pushEditorElement(tilesetNode, fmt.Sprintf("image: %s", v.ImageInfo.Source), nil)
-						pushEditorElement(tilesetNode, fmt.Sprintf("width: %d", v.ImageInfo.Width), nil)
-						pushEditorElement(tilesetNode, fmt.Sprintf("height: %d", v.ImageInfo.Height), nil)
+						PushEditorElement(tilesetNode, fmt.Sprintf("name: %s", v.Name), nil)
+						PushEditorElement(tilesetNode, fmt.Sprintf("image: %s", v.ImageInfo.Source), nil)
+						PushEditorElement(tilesetNode, fmt.Sprintf("width: %d", v.ImageInfo.Width), nil)
+						PushEditorElement(tilesetNode, fmt.Sprintf("height: %d", v.ImageInfo.Height), nil)
 					}
 				}
 			}
 
-			pushEditorElement(mapNode, fmt.Sprintf("map width: %d", CurrentMap.tilemap.Width), nil)
-			pushEditorElement(mapNode, fmt.Sprintf("map height: %d", CurrentMap.tilemap.Height), nil)
+			PushEditorElement(mapNode, fmt.Sprintf("map width: %d", CurrentMap.tilemap.Width), nil)
+			PushEditorElement(mapNode, fmt.Sprintf("map height: %d", CurrentMap.tilemap.Height), nil)
 			drawWorldUI(mapNode)
 		}
 	}
 }
 
-func drawWorldUI(mapNode *editorElement) {
-	worldNode := pushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
+func drawWorldUI(mapNode *EditorElement) {
+	worldNode := PushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
 
 	if !worldNodeIsCollapsed {
-		pushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.World.Objects)), nil)
-		pushEditorElement(worldNode, fmt.Sprintf("global id cursor: %d", CurrentMap.World.GlobalIndex), nil)
+		PushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.World.Objects)), nil)
+		PushEditorElement(worldNode, fmt.Sprintf("global id cursor: %d", CurrentMap.World.GlobalIndex), nil)
 
-		objsNode := pushEditorElement(worldNode, "objects", &objectsNodeIsCollapsed)
+		objsNode := PushEditorElement(worldNode, "objects", &objectsNodeIsCollapsed)
 
 		if !objectsNodeIsCollapsed {
 			for i, v := range CurrentMap.World.Objects {
-				pushEditorElement(objsNode, fmt.Sprintf("%d. %s (%s)", i, v.Name, v.Class), nil)
+				PushEditorElement(objsNode, fmt.Sprintf("%d. %s (%s)", i, v.Name, v.Class), nil)
 			}
 		}
 	}

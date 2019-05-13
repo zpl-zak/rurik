@@ -108,10 +108,10 @@ func (w *Weather) UpdateWeather() {
 	}
 
 	if DebugMode {
-		weatherElement := pushEditorElement(rootElement, "weather", &weatherIsCollapsed)
-		weatherElement.isHorizontal = true
-		pushEditorElement(weatherElement, fmt.Sprintf("sky: %s (%d)", w.SkyStageName, w.SkyStageIndex), nil)
-		pushEditorElement(weatherElement, fmt.Sprintf("sky time: %d/%d", int(w.SkyTargetTime-w.SkyTime), int(w.SkyTargetTime)), nil)
+		weatherElement := PushEditorElement(rootElement, "weather", &weatherIsCollapsed)
+		weatherElement.IsHorizontal = true
+		PushEditorElement(weatherElement, fmt.Sprintf("sky: %s (%d)", w.SkyStageName, w.SkyStageIndex), nil)
+		PushEditorElement(weatherElement, fmt.Sprintf("sky time: %d/%d", int(w.SkyTargetTime-w.SkyTime), int(w.SkyTargetTime)), nil)
 	}
 }
 

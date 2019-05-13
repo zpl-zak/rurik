@@ -26,10 +26,10 @@ import (
 
 var (
 	rootIsCollapsed = false
-	rootElement     = &editorElement{
-		text:        "editor",
-		isCollapsed: &rootIsCollapsed,
-		children:    []*editorElement{},
+	rootElement     = &EditorElement{
+		Text:        "editor",
+		IsCollapsed: &rootIsCollapsed,
+		Children:    []*EditorElement{},
 	}
 
 	editorElementCounter uint64
@@ -59,76 +59,87 @@ const (
 	elementTypeSlider
 )
 
-type editorElement struct {
+// EditorElement represents an editor UI element
+type EditorElement struct {
 	ID           uint64
-	class        uint8
-	text         string
-	isCollapsed  *bool
-	isHorizontal bool
-	padding      rl.RectangleInt32
-	children     []*editorElement
-	callback     func()
+	Class        uint8
+	Text         string
+	IsCollapsed  *bool
+	IsHorizontal bool
+	Padding      rl.RectangleInt32
+	Children     []*EditorElement
+	Callback     func()
 
 	// Graphs
-	graphEnabled bool
-	lineColor    rl.Color
-	dataMargin   int32
-	graphHeight  int32
-	graphWidth   int32
-	pointData    []float64
-	useCurves    bool
+	GraphEnabled bool
+	LineColor    rl.Color
+	DataMargin   int32
+	GraphHeight  int32
+	GraphWidth   int32
+	PointData    []float64
+	UseCurves    bool
 	ValueSuffix  string
 
 	// Buttons
-	buttonColor      rl.Color
-	buttonHoverColor rl.Color
-	buttonPressColor rl.Color
+	ButtonColor      rl.Color
+	ButtonHoverColor rl.Color
+	ButtonPressColor rl.Color
 
 	// Sliders
-	sliderValue          *float64
-	sliderValueMin       float64
-	sliderValueMax       float64
-	sliderValueRounding  int64
-	sliderValueLimitless bool
+	SliderValue          *float64
+	SliderValueMin       float64
+	SliderValueMax       float64
+	SliderValueRounding  int64
+	SliderValueLimitless bool
 }
 
-func pushEditorElement(element *editorElement, text string, isCollapsed *bool) *editorElement {
-	return pushEditorElementEx(element, text, isCollapsed, func() {})
+// GetRootElement retrieves root UI element
+func GetRootElement() *EditorElement {
+	return rootElement
 }
 
-func pushEditorElementEx(element *editorElement, text string, isCollapsed *bool, callback func()) *editorElement {
+// PushEditorElement adds new UI element to the editor
+func PushEditorElement(element *EditorElement, Text string, IsCollapsed *bool) *EditorElement {
+	return PushEditorElementEx(element, Text, IsCollapsed, func() {})
+}
+
+// PushEditorElementEx adds new UI element to the editor using extended features
+func PushEditorElementEx(element *EditorElement, Text string, IsCollapsed *bool, Callback func()) *EditorElement {
+
 	editorElementCounter++
-	child := &editorElement{
+	child := &EditorElement{
 		ID:          editorElementCounter,
-		text:        text,
-		isCollapsed: isCollapsed,
-		children:    []*editorElement{},
-		callback:    callback,
+		Text:        Text,
+		IsCollapsed: IsCollapsed,
+		Children:    []*EditorElement{},
+		Callback:    Callback,
 	}
-	element.children = append(element.children, child)
+	element.Children = append(element.Children, child)
 
 	return child
 }
 
-func setUpButton(element *editorElement, callback func(), isHorizontal bool) {
-	element.class = elementTypeButton
-	element.buttonColor = rl.DarkPurple
-	element.buttonHoverColor = rl.Purple
-	element.buttonPressColor = rl.Pink
-	element.isHorizontal = isHorizontal
-	element.callback = callback
+// SetUpButton initializes the UI element as a button
+func SetUpButton(element *EditorElement, Callback func(), IsHorizontal bool) {
+	element.Class = elementTypeButton
+	element.ButtonColor = rl.DarkPurple
+	element.ButtonHoverColor = rl.Purple
+	element.ButtonPressColor = rl.Pink
+	element.IsHorizontal = IsHorizontal
+	element.Callback = Callback
 }
 
-func setUpSlider(element *editorElement, value *float64, min, max float64) {
-	element.class = elementTypeSlider
-	element.sliderValue = value
+// SetUpSlider initializes the UI element as a slider
+func SetUpSlider(element *EditorElement, value *float64, min, max float64) {
+	element.Class = elementTypeSlider
+	element.SliderValue = value
 	if min != max {
-		element.sliderValueMax = max
-		element.sliderValueMin = min
+		element.SliderValueMax = max
+		element.SliderValueMin = min
 	} else {
-		element.sliderValueLimitless = true
+		element.SliderValueLimitless = true
 	}
-	element.sliderValueRounding = 2
+	element.SliderValueRounding = 2
 }
 
 // DrawEditor draws debug UI
@@ -145,18 +156,18 @@ func UpdateEditor() {
 	DebugShowAll = !rootIsCollapsed
 }
 
-func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
+func drawGraph(element *EditorElement, offsetX, offsetY int32) int32 {
 	var height, width int32
 
-	height = element.graphHeight
-	width = element.graphWidth
+	height = element.GraphHeight
+	width = element.GraphWidth
 
 	rl.DrawRectangle(offsetX, offsetY, width, height, rl.NewColor(40, 40, 40, 140))
 
 	// draw grid
-	gridColumns := int(width / element.dataMargin)
+	gridColumns := int(width / element.DataMargin)
 	for x := 0; x < gridColumns; x++ {
-		posX := int32(x * int(element.dataMargin))
+		posX := int32(x * int(element.DataMargin))
 		rl.DrawLine(
 			offsetX+posX,
 			offsetY,
@@ -165,9 +176,9 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 			rl.NewColor(255, 255, 255, 40),
 		)
 	}
-	gridRows := int(height / element.dataMargin)
+	gridRows := int(height / element.DataMargin)
 	for x := 0; x < gridRows; x++ {
-		posY := int32(x * int(element.dataMargin))
+		posY := int32(x * int(element.DataMargin))
 		rl.DrawLine(
 			offsetX,
 			offsetY+posY,
@@ -177,7 +188,7 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 		)
 	}
 
-	if element.pointData == nil || (element.pointData != nil && len(element.pointData) < 1) {
+	if element.PointData == nil || (element.PointData != nil && len(element.PointData) < 1) {
 		return height + 5
 	}
 
@@ -189,14 +200,14 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	var nodeCount int32
 
 	var graphXTreshold int32
-	actualGraphWidth := int32(len(element.pointData)) * element.dataMargin
+	actualGraphWidth := int32(len(element.PointData)) * element.DataMargin
 
 	if actualGraphWidth > width {
-		graphXTreshold = actualGraphWidth - width - element.dataMargin
+		graphXTreshold = actualGraphWidth - width - element.DataMargin
 	}
 
-	for x, v := range element.pointData {
-		if (int32(x) * element.dataMargin) < graphXTreshold {
+	for x, v := range element.PointData {
+		if (int32(x) * element.DataMargin) < graphXTreshold {
 			continue
 		}
 
@@ -222,35 +233,35 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 	// Plotting
 	var oldValue int32 = -1
-	for x, v := range element.pointData {
-		if (int32(x) * element.dataMargin) < graphXTreshold {
+	for x, v := range element.PointData {
+		if (int32(x) * element.DataMargin) < graphXTreshold {
 			continue
 		}
 
 		scaledValue := int32(float32(v-smallestValue) * float32(scaleY))
-		rl.DrawCircle(offsetX-graphXTreshold+(int32(x)*element.dataMargin), offsetY+height-scaledValue, 1, element.lineColor)
+		rl.DrawCircle(offsetX-graphXTreshold+(int32(x)*element.DataMargin), offsetY+height-scaledValue, 1, element.LineColor)
 
 		if oldValue != -1 {
-			if element.useCurves {
+			if element.UseCurves {
 				rl.DrawLineBezier(
 					rl.NewVector2(
-						float32(offsetX-graphXTreshold+(int32(x-1)*element.dataMargin)),
+						float32(offsetX-graphXTreshold+(int32(x-1)*element.DataMargin)),
 						float32(offsetY+height-oldValue),
 					),
 					rl.NewVector2(
-						float32(offsetX-graphXTreshold+(int32(x)*element.dataMargin)),
+						float32(offsetX-graphXTreshold+(int32(x)*element.DataMargin)),
 						float32(offsetY+height-scaledValue),
 					),
 					1,
-					element.lineColor,
+					element.LineColor,
 				)
 			} else {
 				rl.DrawLine(
-					offsetX-graphXTreshold+(int32(x-1)*element.dataMargin),
+					offsetX-graphXTreshold+(int32(x-1)*element.DataMargin),
 					offsetY+height-oldValue,
-					offsetX-graphXTreshold+(int32(x)*element.dataMargin),
+					offsetX-graphXTreshold+(int32(x)*element.DataMargin),
 					offsetY+height-scaledValue,
-					element.lineColor,
+					element.LineColor,
 				)
 			}
 		}
@@ -280,8 +291,8 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 		var closestPointPastX int
 
-		for x := range element.pointData {
-			if (x*int(element.dataMargin) - int(graphXTreshold)) < int(m[0]-offsetX) {
+		for x := range element.PointData {
+			if (x*int(element.DataMargin) - int(graphXTreshold)) < int(m[0]-offsetX) {
 				closestPointPastX = x
 			} else {
 				break
@@ -290,14 +301,14 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 
 		adjustment := 1
 
-		if len(element.pointData) == closestPointPastX+1 {
+		if len(element.PointData) == closestPointPastX+1 {
 			adjustment = 0
 		}
 
-		y0 := float32(element.pointData[closestPointPastX])
-		y1 := float32(element.pointData[closestPointPastX+adjustment])
-		x0 := float32(closestPointPastX) * float32(element.dataMargin)
-		x1 := float32(closestPointPastX+adjustment)*float32(element.dataMargin) + 1
+		y0 := float32(element.PointData[closestPointPastX])
+		y1 := float32(element.PointData[closestPointPastX+adjustment])
+		x0 := float32(closestPointPastX) * float32(element.DataMargin)
+		x1 := float32(closestPointPastX+adjustment)*float32(element.DataMargin) + 1
 		t := (float32(m[0]-offsetX) + float32(graphXTreshold) - x0) / (x1 - x0)
 		if t > 1 {
 			t = 1
@@ -364,42 +375,42 @@ func drawGraph(element *editorElement, offsetX, offsetY int32) int32 {
 	return height + 5
 }
 
-func drawButton(element *editorElement, offsetX, offsetY, textWidth int32, isInRectangle bool) {
+func drawButton(element *EditorElement, offsetX, offsetY, TextWidth int32, isInRectangle bool) {
 	if isInRectangle {
 		if rl.IsMouseButtonDown(rl.MouseLeftButton) {
 			rl.DrawRectangle(
 				offsetX-2,
 				offsetY-2,
-				textWidth+4,
+				TextWidth+4,
 				14,
-				element.buttonPressColor,
+				element.ButtonPressColor,
 			)
 		} else {
 			rl.DrawRectangle(
 				offsetX-2,
 				offsetY-2,
-				textWidth+4,
+				TextWidth+4,
 				14,
-				element.buttonHoverColor,
+				element.ButtonHoverColor,
 			)
 		}
 
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-			element.callback()
+			element.Callback()
 		}
 	} else {
 		rl.DrawRectangle(
 			offsetX-2,
 			offsetY-2,
-			textWidth+4,
+			TextWidth+4,
 			14,
-			element.buttonColor,
+			element.ButtonColor,
 		)
 	}
 }
 
-func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32) {
-	offsetX += textWidth + 3
+func drawSlider(element *EditorElement, offsetX, offsetY int32, TextWidth int32) {
+	offsetX += TextWidth + 3
 
 	rl.DrawRectangle(
 		offsetX,
@@ -410,23 +421,23 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 	)
 
 	rl.DrawText(
-		fmt.Sprintf("%.02f", *element.sliderValue),
+		fmt.Sprintf("%.02f", *element.SliderValue),
 		offsetX+defaultSliderWidth+3,
 		offsetY,
 		10,
 		rl.RayWhite,
 	)
 
-	if !element.sliderValueLimitless {
+	if !element.SliderValueLimitless {
 		rl.DrawText(
-			fmt.Sprintf("%.02f", element.sliderValueMin),
+			fmt.Sprintf("%.02f", element.SliderValueMin),
 			offsetX,
 			offsetY,
 			10,
 			rl.DarkPurple,
 		)
 
-		maxTxt := fmt.Sprintf("%.02f", element.sliderValueMax)
+		maxTxt := fmt.Sprintf("%.02f", element.SliderValueMax)
 		maxTxtWidth := rl.MeasureText(maxTxt, 10)
 		rl.DrawText(
 			maxTxt,
@@ -440,9 +451,9 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 	scaledPositionX := float64(defaultSliderWidth / 2)
 	scaleX := 1.0
 
-	if !element.sliderValueLimitless {
-		scaleX = float64(defaultSliderWidth) / float64(element.sliderValueMax-element.sliderValueMin)
-		scaledPositionX = float64((*element.sliderValue - element.sliderValueMin) * scaleX)
+	if !element.SliderValueLimitless {
+		scaleX = float64(defaultSliderWidth) / float64(element.SliderValueMax-element.SliderValueMin)
+		scaledPositionX = float64((*element.SliderValue - element.SliderValueMin) * scaleX)
 	}
 
 	isInRectangle := IsMouseInRectangle(
@@ -460,21 +471,21 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 		}
 
 		if element.ID == sliderHandleID {
-			if element.sliderValueLimitless {
+			if element.SliderValueLimitless {
 				m := system.MouseDelta
-				scaledPositionX = *element.sliderValue + float64(m[0])
-				*element.sliderValue = scaledPositionX
+				scaledPositionX = *element.SliderValue + float64(m[0])
+				*element.SliderValue = scaledPositionX
 			} else {
 				m := system.GetMousePosition()
 				scaledPositionX = float64(m[0]-offsetX) + defaultSliderHandleVisualWidth/4
-				*element.sliderValue = scaledPositionX - (defaultSliderWidth / 2)
+				*element.SliderValue = scaledPositionX - (defaultSliderWidth / 2)
 			}
 
 		}
 
 		var extraSliderOffset int32
 
-		if element.sliderValueLimitless && sliderHandleID != 0 {
+		if element.SliderValueLimitless && sliderHandleID != 0 {
 			extraSliderOffset = +defaultSliderHandleVisualWidth/4 + defaultSliderWidth/2
 		}
 
@@ -495,102 +506,102 @@ func drawSlider(element *editorElement, offsetX, offsetY int32, textWidth int32)
 		)
 	}
 
-	if !element.sliderValueLimitless {
-		*element.sliderValue = scaledPositionX/scaleX + element.sliderValueMin
-		if *element.sliderValue < element.sliderValueMin {
-			*element.sliderValue = element.sliderValueMin
-		} else if *element.sliderValue > element.sliderValueMax {
-			*element.sliderValue = element.sliderValueMax
+	if !element.SliderValueLimitless {
+		*element.SliderValue = scaledPositionX/scaleX + element.SliderValueMin
+		if *element.SliderValue < element.SliderValueMin {
+			*element.SliderValue = element.SliderValueMin
+		} else if *element.SliderValue > element.SliderValueMax {
+			*element.SliderValue = element.SliderValueMax
 		}
 	}
 
 	minSteps := []float64{1.0, 0.1, 0.01, 0.001, 0.0001, 0.00001, 0.000001, 0.0000001, 0.00000001, 0.000000001}
 	var decimalPrecision float64
-	if element.sliderValueRounding >= 0 && element.sliderValueRounding < 10 {
-		decimalPrecision = minSteps[element.sliderValueRounding]
+	if element.SliderValueRounding >= 0 && element.SliderValueRounding < 10 {
+		decimalPrecision = minSteps[element.SliderValueRounding]
 	} else {
-		decimalPrecision = math.Pow10(int(-element.sliderValueRounding))
+		decimalPrecision = math.Pow10(int(-element.SliderValueRounding))
 	}
 
-	*element.sliderValue = math.Round(*element.sliderValue/decimalPrecision) * decimalPrecision
+	*element.SliderValue = math.Round(*element.SliderValue/decimalPrecision) * decimalPrecision
 }
 
-func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32, int32, int32) {
+func handleEditorElement(element *EditorElement, offsetX, offsetY int32) (int32, int32, int32) {
 	color := rl.White
 	var ext int32 = 10
-	var textWidth = rl.MeasureText(element.text, 10)
-	var ext2 = textWidth
+	var TextWidth = rl.MeasureText(element.Text, 10)
+	var ext2 = TextWidth
 	var totale2 = ext2 + offsetX - 5
 
-	offsetX += element.padding.X
-	offsetY += element.padding.Y
-	ext += element.padding.Height
-	ext2 += element.padding.Width
+	offsetX += element.Padding.X
+	offsetY += element.Padding.Y
+	ext += element.Padding.Height
+	ext2 += element.Padding.Width
 	var buttonWidth int32
 	var buttonHeight int32
 
-	if element.class == elementTypeButton {
+	if element.Class == elementTypeButton {
 		buttonWidth = 4
 		buttonHeight = 8
 	}
 
-	isInRectangle := IsMouseInRectangle(offsetX-buttonWidth, offsetY, textWidth+buttonWidth, 10+buttonHeight)
+	isInRectangle := IsMouseInRectangle(offsetX-buttonWidth, offsetY, TextWidth+buttonWidth, 10+buttonHeight)
 
-	if element.isCollapsed != nil && isInRectangle {
+	if element.IsCollapsed != nil && isInRectangle {
 		color = rl.Red
 
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-			*element.isCollapsed = !*element.isCollapsed
+			*element.IsCollapsed = !*element.IsCollapsed
 		}
-	} else if isInRectangle && element.callback != nil && element.class == elementTypeStandard {
+	} else if isInRectangle && element.Callback != nil && element.Class == elementTypeStandard {
 		color = rl.Yellow
 
 		if rl.IsMouseButtonReleased(rl.MouseLeftButton) {
-			element.callback()
+			element.Callback()
 		}
-	} else if element.class == elementTypeButton {
+	} else if element.Class == elementTypeButton {
 		offsetY += 5
-		drawButton(element, offsetX, offsetY, textWidth, isInRectangle)
+		drawButton(element, offsetX, offsetY, TextWidth, isInRectangle)
 		ext += 8
 		ext2 += 5
 		totale2 += 5
-	} else if element.class == elementTypeSlider {
+	} else if element.Class == elementTypeSlider {
 		offsetY += 5
-		drawSlider(element, offsetX, offsetY, textWidth)
+		drawSlider(element, offsetX, offsetY, TextWidth)
 		ext += 8
 		ext2 += 5
 		totale2 += 5
 	}
 
-	rl.DrawText(element.text, offsetX+1, offsetY+1, 10, rl.Black)
-	rl.DrawText(element.text, offsetX, offsetY, 10, color)
+	rl.DrawText(element.Text, offsetX+1, offsetY+1, 10, rl.Black)
+	rl.DrawText(element.Text, offsetX, offsetY, 10, color)
 
-	if element.graphEnabled && element.isCollapsed != nil && *element.isCollapsed == false {
+	if element.GraphEnabled && element.IsCollapsed != nil && *element.IsCollapsed == false {
 		ext += drawGraph(element, offsetX+5, offsetY+ext)
 	}
 
-	if element.isCollapsed != nil && *element.isCollapsed {
+	if element.IsCollapsed != nil && *element.IsCollapsed {
 		return ext, ext2, totale2
 	}
 
 	var lastChildWidth int32
 	var lastChildHeight int32
 
-	for x, v := range element.children {
-		if x == 0 && v.isHorizontal && v.class != elementTypeStandard {
-			v.isHorizontal = false
+	for x, v := range element.Children {
+		if x == 0 && v.IsHorizontal && v.Class != elementTypeStandard {
+			v.IsHorizontal = false
 		}
 
 		var extraOffsetX int32
 		var extraOffsetY int32
-		if v.isHorizontal {
+		if v.IsHorizontal {
 			extraOffsetX = lastChildWidth + 5
 
-			if v.class != elementTypeStandard {
+			if v.Class != elementTypeStandard {
 				extraOffsetY = lastChildHeight
 			} else {
 				extraOffsetX = 0
-				if x != 0 && element.children[x-1].isHorizontal {
+				if x != 0 && element.Children[x-1].IsHorizontal {
 					extraOffsetX = totale2
 				}
 			}
@@ -599,7 +610,7 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 			extraOffsetY = 0
 		}
 		rext, rext2, rtotal := handleEditorElement(v, offsetX+5+extraOffsetX, offsetY+ext-extraOffsetY)
-		if !v.isHorizontal {
+		if !v.IsHorizontal {
 			lastChildWidth = rext2
 			ext += rext
 		} else {
@@ -615,10 +626,10 @@ func handleEditorElement(element *editorElement, offsetX, offsetY int32) (int32,
 }
 
 func flushEditorElement() {
-	rootElement = &editorElement{
-		text:        "editor",
-		isCollapsed: &rootIsCollapsed,
-		children:    []*editorElement{},
+	rootElement = &EditorElement{
+		Text:        "editor",
+		IsCollapsed: &rootIsCollapsed,
+		Children:    []*EditorElement{},
 	}
 
 	editorElementCounter = 0

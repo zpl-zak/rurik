@@ -151,6 +151,9 @@ func updateInternals(g *demoGameMode) {
 	if core.WindowWasResized {
 		/* initShaders() */
 	}
+
+	demoElement := core.PushEditorElement(core.GetRootElement(), "demo", nil)
+	demoElement.IsHorizontal = true
 }
 
 func drawBackground() {

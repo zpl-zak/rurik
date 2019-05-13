@@ -86,22 +86,22 @@ func updateProfiling(frameCounter, frames float64) {
 }
 
 func drawProfiling() {
-	profilerNode := pushEditorElement(rootElement, "profiler", &isProfilerCollapsed)
-	profilerNode.isHorizontal = true
+	profilerNode := PushEditorElement(rootElement, "profiler", &isProfilerCollapsed)
+	profilerNode.IsHorizontal = true
 
 	if !isProfilerCollapsed {
-		frameRateElement := pushEditorElement(profilerNode, frameRateString, &isFrameRateGraphOpened)
+		frameRateElement := PushEditorElement(profilerNode, frameRateString, &isFrameRateGraphOpened)
 
-		frameRateElement.graphEnabled = true
-		frameRateElement.lineColor = rl.Blue
-		frameRateElement.graphHeight = defaultGraphHeight
-		frameRateElement.graphWidth = defaultGraphWidth
-		frameRateElement.useCurves = true
+		frameRateElement.GraphEnabled = true
+		frameRateElement.LineColor = rl.Blue
+		frameRateElement.GraphHeight = defaultGraphHeight
+		frameRateElement.GraphWidth = defaultGraphWidth
+		frameRateElement.UseCurves = true
 		frameRateElement.ValueSuffix = "ms."
-		frameRateElement.dataMargin = int32(dataMarginZoom)
+		frameRateElement.DataMargin = int32(dataMarginZoom)
 
-		setUpButton(
-			pushEditorElement(frameRateElement, "Reset stats", nil),
+		SetUpButton(
+			PushEditorElement(frameRateElement, "Reset stats", nil),
 			func() {
 				frameRateStats = []float64{}
 				frameRateStatsBack = []float64{}
@@ -110,32 +110,32 @@ func drawProfiling() {
 			true,
 		)
 
-		setUpButton(
-			pushEditorElement(frameRateElement, "Pause stats", nil),
+		SetUpButton(
+			PushEditorElement(frameRateElement, "Pause stats", nil),
 			func() {
 				areFrameStatsPaused = !areFrameStatsPaused
 			},
 			true,
 		)
 
-		dataMarginSlider := pushEditorElement(frameRateElement, "Zoom:", nil)
-		setUpSlider(dataMarginSlider, &dataMarginZoom, 1, 25)
-		dataMarginSlider.sliderValueRounding = 0
+		dataMarginSlider := PushEditorElement(frameRateElement, "Zoom:", nil)
+		SetUpSlider(dataMarginSlider, &dataMarginZoom, 1, 25)
+		dataMarginSlider.SliderValueRounding = 0
 
 		if dataMarginPan == math.MaxFloat64 {
-			setUpButton(
-				pushEditorElement(frameRateElement, "Detach view", nil),
+			SetUpButton(
+				PushEditorElement(frameRateElement, "Detach view", nil),
 				func() {
 					dataMarginPan = -float64(len(frameRateStats)) + 1
 				},
 				false,
 			)
 		} else {
-			dataPanSlider := pushEditorElement(frameRateElement, "Pan:", nil)
-			setUpSlider(dataPanSlider, &dataMarginPan, 0, 0)
-			dataPanSlider.sliderValueRounding = 0
-			setUpButton(
-				pushEditorElement(frameRateElement, "Attach view", nil),
+			dataPanSlider := PushEditorElement(frameRateElement, "Pan:", nil)
+			SetUpSlider(dataPanSlider, &dataMarginPan, 0, 0)
+			dataPanSlider.SliderValueRounding = 0
+			SetUpButton(
+				PushEditorElement(frameRateElement, "Attach view", nil),
 				func() {
 					dataMarginPan = math.MaxFloat64
 				},
@@ -147,7 +147,7 @@ func drawProfiling() {
 			frameRateStatsBack = frameRateStats
 		}
 
-		frameRateElement.pointData = frameRateStatsBack
+		frameRateElement.PointData = frameRateStatsBack
 
 		if dataMarginPan != math.MaxFloat64 {
 			backupFrameRateStats := frameRateStatsBack
@@ -162,42 +162,42 @@ func drawProfiling() {
 
 				backupFrameRateStats = backupFrameRateStats[:int(-dataMarginPan)]
 			}
-			frameRateElement.pointData = backupFrameRateStats
+			frameRateElement.PointData = backupFrameRateStats
 		}
 
-		/* extraStatsButton := pushEditorElement(frameRateElement, "Random button", nil)
+		/* extraStatsButton := PushEditorElement(frameRateElement, "Random button", nil)
 			setUpButton(extraStatsButton, func() {
 				log.Println("This button has no purpose")
 		})
 		extraStatsButton.isHorizontal = true
 
-		pushEditorElement(frameRateElement, "Random string 2", nil)
+		PushEditorElement(frameRateElement, "Random string 2", nil)
 
-		extraStatsSlider := pushEditorElement(frameRateElement, "Some slider:", nil)
+		extraStatsSlider := PushEditorElement(frameRateElement, "Some slider:", nil)
 		setUpSlider(extraStatsSlider, &dataMarginZoom, 0, 1)
 
-		extraStatsSlider2 := pushEditorElement(frameRateElement, "Some slider 2:", nil)
+		extraStatsSlider2 := PushEditorElement(frameRateElement, "Some slider 2:", nil)
 		setUpSlider(extraStatsSlider2, &dataMarginZoom2, -30, 350)
 
-		pushEditorElement(frameRateElement, "Random string 2", nil) */
+		PushEditorElement(frameRateElement, "Random string 2", nil) */
 
-		pushEditorElement(profilerNode, otherTimeString, nil)
-		updateNode := pushEditorElement(profilerNode, updateProfiler.DisplayString, &updateProfiler.IsCollapsed)
+		PushEditorElement(profilerNode, otherTimeString, nil)
+		updateNode := PushEditorElement(profilerNode, updateProfiler.DisplayString, &updateProfiler.IsCollapsed)
 
 		if !updateProfiler.IsCollapsed {
-			pushEditorElement(updateNode, collisionProfiler.DisplayString, nil)
-			pushEditorElement(updateNode, scriptingProfiler.DisplayString, nil)
+			PushEditorElement(updateNode, collisionProfiler.DisplayString, nil)
+			PushEditorElement(updateNode, scriptingProfiler.DisplayString, nil)
 		}
-		pushEditorElement(profilerNode, musicProfiler.DisplayString, nil)
-		pushEditorElement(profilerNode, weatherProfiler.DisplayString, nil)
-		pushEditorElement(profilerNode, gameModeProfiler.DisplayString, nil)
+		PushEditorElement(profilerNode, musicProfiler.DisplayString, nil)
+		PushEditorElement(profilerNode, weatherProfiler.DisplayString, nil)
+		PushEditorElement(profilerNode, gameModeProfiler.DisplayString, nil)
 
-		renderNode := pushEditorElement(profilerNode, drawProfiler.DisplayString, &drawProfiler.IsCollapsed)
+		renderNode := PushEditorElement(profilerNode, drawProfiler.DisplayString, &drawProfiler.IsCollapsed)
 
 		if !drawProfiler.IsCollapsed {
-			pushEditorElement(renderNode, sortRenderProfiler.DisplayString, nil)
-			pushEditorElement(renderNode, cullRenderProfiler.DisplayString, nil)
-			pushEditorElement(renderNode, lightingProfiler.DisplayString, nil)
+			PushEditorElement(renderNode, sortRenderProfiler.DisplayString, nil)
+			PushEditorElement(renderNode, cullRenderProfiler.DisplayString, nil)
+			PushEditorElement(renderNode, lightingProfiler.DisplayString, nil)
 		}
 	}
 }

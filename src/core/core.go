@@ -111,25 +111,25 @@ func CloseGame() {
 }
 
 func updateDebugMenu() {
-	debugMenu := pushEditorElement(rootElement, "debug", &isDebugMenuCollapsed)
-	debugMenu.isHorizontal = true
+	debugMenu := PushEditorElement(rootElement, "debug", &isDebugMenuCollapsed)
+	debugMenu.IsHorizontal = true
 
-	if *debugMenu.isCollapsed == false {
-		cameraMenu := pushEditorElement(debugMenu, "camera", &isCameraMenuCollapsed)
+	if *debugMenu.IsCollapsed == false {
+		cameraMenu := PushEditorElement(debugMenu, "camera", &isCameraMenuCollapsed)
 
-		if *cameraMenu.isCollapsed == false {
-			pushEditorElement(cameraMenu, fmt.Sprintf("pos: %.02f %.02f", MainCamera.Position.X, MainCamera.Position.Y), nil)
-			pushEditorElement(cameraMenu, fmt.Sprintf("offset: %v", RenderCamera.Offset), nil)
-			pushEditorElement(cameraMenu, fmt.Sprintf("zoom: %.02f", RenderCamera.Zoom), nil)
-			pushEditorElement(cameraMenu, fmt.Sprintf("target zoom: %.02f", MainCamera.TargetZoom), nil)
-			pushEditorElement(cameraMenu, fmt.Sprintf("rot: %v", RenderCamera.Rotation), nil)
-			pushEditorElement(cameraMenu, fmt.Sprintf("scale ratio: %d", system.ScaleRatio), nil)
+		if *cameraMenu.IsCollapsed == false {
+			PushEditorElement(cameraMenu, fmt.Sprintf("pos: %.02f %.02f", MainCamera.Position.X, MainCamera.Position.Y), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("offset: %v", RenderCamera.Offset), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("zoom: %.02f", RenderCamera.Zoom), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("target zoom: %.02f", MainCamera.TargetZoom), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("rot: %v", RenderCamera.Rotation), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("scale ratio: %d", system.ScaleRatio), nil)
 		}
 
 		// actions
 
-		setUpButton(
-			pushEditorElement(debugMenu, "Exit Game", nil),
+		SetUpButton(
+			PushEditorElement(debugMenu, "Exit Game", nil),
 			func() {
 				CloseGame()
 			},

@@ -248,6 +248,11 @@ func UpdateMapUI() {
 
 func drawWorldUI(mapNode *EditorElement) {
 	worldNode := PushEditorElement(mapNode, "world", &worldNodeIsCollapsed)
+	w := CurrentMap.Weather
+	weatherElement := PushEditorElement(mapNode, "weather", &weatherIsCollapsed)
+	weatherElement.IsHorizontal = true
+	PushEditorElement(weatherElement, fmt.Sprintf("sky: %s (%d)", w.SkyStageName, w.SkyStageIndex), nil)
+	PushEditorElement(weatherElement, fmt.Sprintf("sky time: %d/%d", int(w.SkyTargetTime-w.SkyTime), int(w.SkyTargetTime)), nil)
 
 	if !worldNodeIsCollapsed {
 		PushEditorElement(worldNode, fmt.Sprintf("object count: %d", len(CurrentMap.World.Objects)), nil)

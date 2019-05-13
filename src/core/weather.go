@@ -17,7 +17,6 @@
 package core
 
 import (
-	"fmt"
 	"strconv"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -105,13 +104,6 @@ func (w *Weather) UpdateWeather() {
 		}
 
 		SkyColor = Vec3ToColor(w.SkyCurrentColor)
-	}
-
-	if DebugMode {
-		weatherElement := PushEditorElement(rootElement, "weather", &weatherIsCollapsed)
-		weatherElement.IsHorizontal = true
-		PushEditorElement(weatherElement, fmt.Sprintf("sky: %s (%d)", w.SkyStageName, w.SkyStageIndex), nil)
-		PushEditorElement(weatherElement, fmt.Sprintf("sky time: %d/%d", int(w.SkyTargetTime-w.SkyTime), int(w.SkyTargetTime)), nil)
 	}
 }
 

@@ -194,7 +194,12 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		for unprocessedTime > float64(system.FrameTime) {
 			system.UpdateInput()
 			UpdateEditor()
-			updateDebugMenu()
+
+			if DebugMode {
+				updateDebugMenu()
+				UpdateMapUI()
+				drawProfiling()
+			}
 
 			updateProfiler.StartInvocation()
 			musicProfiler.StartInvocation()
@@ -204,8 +209,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 			gameModeProfiler.StartInvocation()
 			CurrentGameMode.Update()
 			gameModeProfiler.StopInvocation()
-
-			UpdateMapUI()
 
 			FireEvent("onUpdate")
 			updateProfiler.StopInvocation()
@@ -223,10 +226,6 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 		}
 
 		if shouldRender {
-			if DebugMode {
-				drawProfiling()
-			}
-
 			renderGame()
 
 			// WindowWasResized should be reset this cycle now

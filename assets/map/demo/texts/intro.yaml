@@ -1,0 +1,32 @@
+---
+name: Ulrich
+avatar: ulrich.png
+text: Hello World! Are you ready to play?
+choices:
+- text: Yes, definitely!
+  next:
+    name: Ulrich
+    avatar: ulrich.png
+    text: Let's start then!
+    event: onDemoStartChoice
+    eventArgs: slow
+- text: Sure, but skip all that crap.
+  next:
+    name: Ulrich
+    avatar: ulrich.png
+    text: Okay...
+    event: onDemoStartChoice
+    eventArgs: quick
+- text: No, I don't even like this game!
+  next:
+    name: Ulrich
+    avatar: ulrich_angry.png
+    text: So be it!
+    event: onDemoStartChoice
+    eventArgs: angry
+    next:
+      name: Ulrich
+      avatar: ulrich_angry.png
+      text: Go back to DOS, you worm!
+      event: onDemoStartChoice
+      eventArgs: exit

@@ -6,5 +6,5 @@ desc: Demo asset files for Rurik game engine
 chunks:
 - default: true
   author: various
-- file: map/demo/texts/bouncingBall.json
-- file: map/demo/texts/intro.json
+- file: map/demo/texts/bouncingBall.yaml
+- file: map/demo/texts/intro.yaml

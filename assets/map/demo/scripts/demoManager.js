@@ -58,7 +58,7 @@
 
     addEventHandler("onBouncingBallTrigger", function() {
         invoke("initDialogue", {
-            File: "bouncingBall.json"
+            File: "bouncingBall.yaml"
         })
     })
 
@@ -69,6 +69,6 @@
     })
 
     invoke("initDialogue", {
-        File: "intro.json"
+        File: "intro.yaml"
     })
 }

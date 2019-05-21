@@ -4,10 +4,10 @@ import (
 	"fmt"
 	"log"
 
-	jsoniter "github.com/json-iterator/go"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/core"
 	"github.com/zaklaus/rurik/src/system"
+	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -29,27 +29,27 @@ var dialogue dialogueData
 
 // Dialogue defines connversation flow
 type Dialogue struct {
-	Name       string `json:"name"`
-	Avatar     *rl.Texture2D
-	AvatarFile string    `json:"avatar"`
-	Text       string    `json:"text"`
-	Choices    []*Choice `json:"choices"`
-	Event      string    `json:"event"`
-	EventArgs  string    `json:"eventArgs"`
-	SkipPrompt bool      `json:"skipPrompt"`
-	Next       *Dialogue `json:"next"`
+	Name       string    `yaml:"name"`
+	AvatarFile string    `yaml:"avatar"`
+	Text       string    `yaml:"text"`
+	Choices    []*Choice `yaml:"choices"`
+	Event      string    `yaml:"event"`
+	EventArgs  string    `yaml:"eventArgs"`
+	SkipPrompt bool      `yaml:"skipPrompt"`
+	Next       *Dialogue `yaml:"next"`
+	avatar     *rl.Texture2D
 }
 
 // Choice is a selection from dialogue branches
 type Choice struct {
-	Text string    `json:"text"`
-	Next *Dialogue `json:"next"`
+	Text string    `yaml:"text"`
+	Next *Dialogue `yaml:"next"`
 }
 
 // InitText initializes the dialogue's text
 func InitText(t *Dialogue) {
 	if t.AvatarFile != "" {
-		t.Avatar = system.GetTexture("gfx/" + t.AvatarFile)
+		t.avatar = system.GetTexture("gfx/" + t.AvatarFile)
 	}
 
 	if t.Next != nil {
@@ -74,7 +74,7 @@ func GetDialogue(name string) *Dialogue {
 	}
 
 	data := system.GetFile(fmt.Sprintf("texts/%s", name), false)
-	err := jsoniter.Unmarshal(data, &dia)
+	err := yaml.Unmarshal(data, &dia)
 
 	if err != nil {
 		log.Printf("Dialogue '%s' is broken!\n", name)
@@ -196,8 +196,8 @@ func drawDialogue() {
 	// Scale W: 34, 35
 	if ot.AvatarFile != "" {
 		rl.DrawTexturePro(
-			*ot.Avatar,
-			rl.NewRectangle(0, 0, float32(ot.Avatar.Width), float32(ot.Avatar.Height)),
+			*ot.avatar,
+			rl.NewRectangle(0, 0, float32(ot.avatar.Width), float32(ot.avatar.Height)),
 			rl.NewRectangle(5, float32(start)+5, 32, 32),
 			rl.Vector2{},
 			0,

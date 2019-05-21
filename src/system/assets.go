@@ -372,6 +372,17 @@ func GetTexture(texturePath string) *rl.Texture2D {
 	return &tx
 }
 
+// GetBestTexture retrieves a texture matching specs
+func GetBestTexture(vec MatchVector) *rl.Texture2D {
+	a := GetBestAsset(vec)
+
+	if a == nil {
+		return nil
+	}
+
+	return GetTexture(a.FileName)
+}
+
 // GetAnimData retrieves a cached Aseprite anim data from a disk
 func GetAnimData(animPath string) goaseprite.File {
 	ani, ok := animData[animPath]
@@ -396,6 +407,17 @@ func GetAnimData(animPath string) goaseprite.File {
 	ani = *dat
 	animData[animPath] = ani
 	return ani
+}
+
+// GetBestAnimData retrieves a animation data matching specs
+func GetBestAnimData(vec MatchVector) goaseprite.File {
+	a := GetBestAsset(vec)
+
+	if a == nil {
+		return goaseprite.File{}
+	}
+
+	return GetAnimData(a.FileName)
 }
 
 // GetFile retrieves a file from a disk

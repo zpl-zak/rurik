@@ -6,7 +6,7 @@ This framework is in active development and its features/API is subject to chang
 
 ## Features
 
-Rurik Frammework consists of the following key features:
+Rurik Framework consists of the following key features:
 - Fast, small and clean codebase, which is easily extendable and tweakable.
 - [Tiled](https://www.mapeditor.org/) map support which makes level designing much easier.
 - Robust scripting backend, which offers an ability to flexibly alternate the game world or introduce scripted sequences.

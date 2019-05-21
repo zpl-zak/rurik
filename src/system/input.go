@@ -188,8 +188,8 @@ func GetAxis(action string) (rate float32) {
 func GetMousePosition() [2]int32 {
 	mo := rl.GetMousePosition()
 	m := [2]int32{
-		int32(mo.X) / ScaleRatio,
-		int32(mo.Y) / ScaleRatio,
+		int32(mo.X / ScaleRatio),
+		int32(mo.Y / ScaleRatio),
 	}
 
 	return m

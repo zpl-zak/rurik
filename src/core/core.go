@@ -70,7 +70,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.InitRenderer(name, windowW, windowH)
 	system.ScreenWidth = screenW
 	system.ScreenHeight = screenH
-	system.ScaleRatio = system.WindowWidth / system.ScreenWidth
+	system.ScaleRatio = float32(system.WindowWidth) / float32(system.ScreenWidth)
 	updateSystemRenderTargets()
 
 	WorldTexture = system.CreateRenderTarget(screenW, screenH)
@@ -284,8 +284,8 @@ func updateWindow() {
 
 		system.WindowWidth = width
 		system.WindowHeight = height
-		system.ScreenWidth = width / system.ScaleRatio
-		system.ScreenHeight = height / system.ScaleRatio
+		system.ScreenWidth = int32(float32(width) / system.ScaleRatio)
+		system.ScreenHeight = int32(float32(height) / system.ScaleRatio)
 		WindowWasResized = true
 
 		rl.UnloadRenderTexture(WorldTexture)

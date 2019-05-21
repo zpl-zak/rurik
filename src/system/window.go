@@ -34,7 +34,7 @@ var (
 	WindowHeight int32
 
 	// ScaleRatio between window and screen resolution
-	ScaleRatio int32
+	ScaleRatio float32
 
 	// FrameTime is the target update time
 	FrameTime float32 = 1 / 60.0

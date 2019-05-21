@@ -13,11 +13,11 @@ import (
 
 const (
 	screenW = 640
-	screenH = 480
+	screenH = 360
 
 	// Apply 2x upscaling
-	windowW = screenW * 2
-	windowH = screenH * 2
+	windowW = 1600
+	windowH = 900
 
 	defaultCameraZoom = 1.43
 )

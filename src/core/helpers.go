@@ -166,11 +166,7 @@ func IsMouseInRectangle(x, y, x2, y2 int32) bool {
 	x2 = x + x2
 	y2 = y + y2
 
-	mo := rl.GetMousePosition()
-	m := [2]int32{
-		int32(mo.X) / system.ScaleRatio,
-		int32(mo.Y) / system.ScaleRatio,
-	}
+	m := system.GetMousePosition()
 
 	if m[0] > x && m[0] < x2 &&
 		m[1] > y && m[1] < y2 {

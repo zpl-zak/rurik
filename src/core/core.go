@@ -129,6 +129,14 @@ func updateDebugMenu() {
 		// actions
 
 		SetUpButton(
+			PushEditorElement(debugMenu, "Toggle Lightmap", nil),
+			func() {
+				showLightmap = !showLightmap
+			},
+			false,
+		)
+
+		SetUpButton(
 			PushEditorElement(debugMenu, "Exit Game", nil),
 			func() {
 				CloseGame()

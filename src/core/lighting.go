@@ -24,6 +24,8 @@ import (
 var (
 	additiveLightTexture       system.RenderTarget
 	multiplicativeLightTexture system.RenderTarget
+
+	showLightmap bool
 )
 
 // UpdateLightingSolution generates all lightmaps and pushes them onto the blending stack
@@ -52,7 +54,13 @@ func UpdateLightingSolution() {
 	populateAdditiveLayer()
 	populateMultiplicativeLight()
 	lightingProfiler.StopInvocation()
-	PushRenderTarget(multiplicativeLightTexture, false, rl.BlendMultiplied)
+	lmState := rl.BlendMultiplied
+
+	if showLightmap {
+		lmState = rl.BlendAlpha
+	}
+
+	PushRenderTarget(multiplicativeLightTexture, false, lmState)
 	PushRenderTarget(additiveLightTexture, false, rl.BlendAdditive)
 }
 

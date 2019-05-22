@@ -123,7 +123,7 @@ func updateDebugMenu() {
 			PushEditorElement(cameraMenu, fmt.Sprintf("zoom: %.02f", RenderCamera.Zoom), nil)
 			PushEditorElement(cameraMenu, fmt.Sprintf("target zoom: %.02f", MainCamera.TargetZoom), nil)
 			PushEditorElement(cameraMenu, fmt.Sprintf("rot: %v", RenderCamera.Rotation), nil)
-			PushEditorElement(cameraMenu, fmt.Sprintf("scale ratio: %d", system.ScaleRatio), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("scale ratio: %f", system.ScaleRatio), nil)
 		}
 
 		// actions

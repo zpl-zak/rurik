@@ -37,7 +37,6 @@ type TriggerContact struct {
 func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
-	o.DebugVisible = false
 
 	o.Draw = func(o *Object) {
 		if !DebugMode || !o.DebugVisible {
@@ -51,7 +50,25 @@ func (o *Object) NewCollision() {
 			o.isColliding = false
 		}
 
-		rl.DrawRectangleLines(int32(o.Position.X), int32(o.Position.Y), int32(o.Meta.Width), int32(o.Meta.Height), color)
+		if o.PolyLines != nil {
+			for _, pl := range o.PolyLines {
+				for idx := 0; idx < len(*pl.Points)-1; idx++ {
+					pts := *pl.Points
+					p0 := pts[idx+0]
+					p1 := pts[idx+1]
+
+					rl.DrawLine(
+						int32(o.Position.X)+int32(p0.X),
+						int32(o.Position.Y)+int32(p0.Y),
+						int32(o.Position.X)+int32(p1.X),
+						int32(o.Position.Y)+int32(p1.Y),
+						color,
+					)
+				}
+			}
+		} else {
+			rl.DrawRectangleLines(int32(o.Position.X), int32(o.Position.Y), int32(o.Meta.Width), int32(o.Meta.Height), color)
+		}
 
 		c := o.GetAABB(o)
 		DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
@@ -98,8 +115,9 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	var try resolv.Collision
 
 	// NOTE: Slope handling
-	if b.Meta.PolyLines != nil && deltaY != 0 {
-		for _, pl := range b.Meta.PolyLines {
+	if b.PolyLines != nil && deltaY != 0 {
+		for _, pl := range b.PolyLines {
+			done := false
 			for idx := 0; idx < len(*pl.Points)-1; idx++ {
 				pts := *pl.Points
 				p0 := pts[idx+0]
@@ -114,8 +132,13 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 				try = resolv.Resolve(&resolveFirst, line, 0, deltaY+4)
 
 				if try.Colliding() {
-					return try, true
+					done = true
+					break
 				}
+			}
+
+			if done {
+				break
 			}
 		}
 	}

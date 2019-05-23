@@ -66,6 +66,7 @@ type Object struct {
 	HasSpecularLight bool
 	Offset           rl.Vector2
 	LocalTileset     *tilesetData
+	PolyLines        []*tiled.PolyLine
 	UserData         ObjectUserData
 
 	// Internal fields

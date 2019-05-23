@@ -23,6 +23,8 @@ import (
 	"io/ioutil"
 	"log"
 
+	"github.com/zaklaus/go-tiled"
+
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
@@ -157,10 +159,11 @@ type defaultObjectData struct {
 	Position    rl.Vector2
 	Movement    rl.Vector2
 	Facing      rl.Vector2
-	Custom      []byte   `json:"custom"`
-	Color       rl.Color `json:"color"`
-	Attenuation float32  `json:"atten"`
-	Radius      float32  `json:"rad"`
+	Custom      []byte            `json:"custom"`
+	Color       rl.Color          `json:"color"`
+	Attenuation float32           `json:"atten"`
+	Radius      float32           `json:"rad"`
+	PolyLines   []*tiled.PolyLine `json:"polylines"`
 }
 
 func defaultSaveProvider(state *GameState) defaultSaveData {
@@ -198,6 +201,7 @@ func defaultSaveProvider(state *GameState) defaultSaveData {
 				Color:       b.Color,
 				Attenuation: b.Attenuation,
 				Radius:      b.Radius,
+				PolyLines:   b.PolyLines,
 				Custom:      buf.Bytes(),
 			}
 
@@ -244,6 +248,7 @@ func defaultLoadProvider(state *GameState) {
 			o.Color = wo.Color
 			o.Attenuation = wo.Attenuation
 			o.Radius = wo.Radius
+			o.PolyLines = wo.PolyLines
 
 			buf := bytes.NewBuffer(wo.Custom)
 			dec := gob.NewDecoder(buf)

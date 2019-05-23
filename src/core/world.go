@@ -78,11 +78,14 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 			w.GlobalIndex++
 			return idx
 		}(),
-		world:        w,
-		Name:         o.Name,
-		Class:        o.Type,
-		Visible:      true,
-		DebugVisible: DebugShowAll,
+		world:   w,
+		Name:    o.Name,
+		Class:   o.Type,
+		Visible: true,
+		DebugVisible: func() bool {
+			dbgVis := o.Properties.GetString("dbgShow") == "1"
+			return dbgVis
+		}(),
 		Meta:         o,
 		Depends:      []*Object{},
 		Rotation:     float32(o.Rotation),
@@ -103,6 +106,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Attenuation:      GetFloatFromProperty(o, "atten"),
 		Radius:           GetFloatFromProperty(o, "radius"),
 		Offset:           GetVec2FromProperty(o, "offset"),
+		PolyLines:        o.PolyLines,
 
 		// Callbacks
 		Finish:               func(o *Object) {},

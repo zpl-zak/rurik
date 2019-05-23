@@ -148,7 +148,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	var try resolv.Collision
 
 	// NOTE: Slope handling
-	if b.PolyLines != nil /* && deltaY != 0 */ {
+	if b.PolyLines != nil && b.CollisionType == "slope" {
 		for _, pl := range b.PolyLines {
 			done := false
 			for idx := 0; idx < len(*pl.Points)-1; idx++ {
@@ -165,13 +165,21 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 				try = resolv.Resolve(&resolveFirst, line, 0, deltaY)
 
 				if try.Colliding() {
+					xpos := a.Position.X - b.Position.X
+					m := float32(p1.Y-p0.Y) / float32(p1.X-p0.X)
+					bc := float32(p0.Y) - (m * float32(p0.X))
+					ypos := m*(xpos) + bc
+
 					if DebugMode {
-						xpos := a.Position.X - b.Position.X
-						m := float32(p1.Y-p0.Y) / float32(p1.X-p0.X)
-						bc := float32(p0.Y) - (m * float32(p0.X))
-						ypos := m*(xpos) + bc
 						colDbgX = int32(b.Position.X) + int32(xpos)
 						colDbgY = int32(b.Position.Y) + int32(ypos)
+					}
+
+					a.Position.Y = float32(b.Position.Y) + float32(ypos) - 20
+
+					if try.Teleporting {
+						try.ResolveX = deltaX
+						try.Teleporting = false
 					}
 
 					done = true
@@ -185,7 +193,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		}
 	}
 
-	if !try.Colliding() {
+	if !try.Colliding() && b.CollisionType != "slope" {
 		rayRectangleInt32ToResolv(&resolveSecond, b.GetAABB(b))
 		try = resolv.Resolve(&resolveFirst, &resolveSecond, deltaX, deltaY)
 	}

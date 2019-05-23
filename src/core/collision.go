@@ -17,8 +17,15 @@
 package core
 
 import (
+	"strings"
+
 	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
+)
+
+var (
+	colDbgX int32
+	colDbgY int32
 )
 
 type collision struct {
@@ -38,6 +45,12 @@ func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 
+	if o.PolyLines != nil {
+		o.CollisionType = "slope"
+	} else if o.CollisionType == "" {
+		o.CollisionType = "solid"
+	}
+
 	o.Draw = func(o *Object) {
 		if !DebugMode || !o.DebugVisible {
 			return
@@ -49,6 +62,8 @@ func (o *Object) NewCollision() {
 			color = rl.Red
 			o.isColliding = false
 		}
+
+		rl.DrawCircle(colDbgX, colDbgY, 5, rl.Blue)
 
 		if o.PolyLines != nil {
 			for _, pl := range o.PolyLines {
@@ -79,6 +94,11 @@ func (o *Object) NewCollision() {
 
 // CheckForCollision performs collision detection and resolution
 func CheckForCollision(o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
+	return CheckForCollisionEx("solid+trigger", o, deltaX, deltaY)
+}
+
+// CheckForCollisionEx performs collision detection and resolution
+func CheckForCollisionEx(collisionType string, o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
 	collisionProfiler.StartInvocation()
 
 	if !o.IsCollidable {
@@ -86,7 +106,20 @@ func CheckForCollision(o *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		return resolv.Collision{}, false
 	}
 
+	colTypes := strings.Split(collisionType, "+")
+
 	for _, c := range o.world.Objects {
+		sig := false
+		for _, ct := range colTypes {
+			if c.CollisionType == ct || ct == "*" {
+				sig = true
+			}
+		}
+
+		if !sig {
+			continue
+		}
+
 		col, ok := resolveContact(o, c, deltaX, deltaY)
 
 		if ok {
@@ -115,7 +148,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	var try resolv.Collision
 
 	// NOTE: Slope handling
-	if b.PolyLines != nil && deltaY != 0 {
+	if b.PolyLines != nil /* && deltaY != 0 */ {
 		for _, pl := range b.PolyLines {
 			done := false
 			for idx := 0; idx < len(*pl.Points)-1; idx++ {
@@ -129,9 +162,18 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 					int32(b.Position.Y)+int32(p1.Y),
 				)
 
-				try = resolv.Resolve(&resolveFirst, line, 0, deltaY+4)
+				try = resolv.Resolve(&resolveFirst, line, 0, deltaY)
 
 				if try.Colliding() {
+					if DebugMode {
+						xpos := a.Position.X - b.Position.X
+						m := float32(p1.Y-p0.Y) / float32(p1.X-p0.X)
+						bc := float32(p0.Y) - (m * float32(p0.X))
+						ypos := m*(xpos) + bc
+						colDbgX = int32(b.Position.X) + int32(xpos)
+						colDbgY = int32(b.Position.Y) + int32(ypos)
+					}
+
 					done = true
 					break
 				}

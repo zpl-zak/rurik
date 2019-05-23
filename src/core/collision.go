@@ -175,7 +175,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 						colDbgY = int32(b.Position.Y) + int32(ypos)
 					}
 
-					a.Position.Y = float32(b.Position.Y) + float32(ypos) - 20
+					try.ResolveY = RoundFloatToInt32(b.Position.Y - a.Position.Y + float32(ypos) - 20)
 
 					if try.Teleporting {
 						try.ResolveX = deltaX

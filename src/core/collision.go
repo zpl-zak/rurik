@@ -94,9 +94,39 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	}
 
 	rayRectangleInt32ToResolv(&resolveFirst, a.GetAABB(a))
-	rayRectangleInt32ToResolv(&resolveSecond, b.GetAABB(b))
 
-	try := resolv.Resolve(&resolveFirst, &resolveSecond, deltaX, deltaY)
+	var try resolv.Collision
+
+	if b.Meta.PolyLines != nil {
+		for _, pl := range b.Meta.PolyLines {
+			done := false
+			for idx := 0; idx < len(*pl.Points)-1; idx++ {
+				pts := *pl.Points
+				p0 := pts[idx+0]
+				p1 := pts[idx+1]
+				line := resolv.NewLine(
+					int32(b.Position.X)+int32(p0.X),
+					int32(b.Position.Y)+int32(p0.Y),
+					int32(b.Position.X)+int32(p1.X),
+					int32(b.Position.Y)+int32(p1.Y),
+				)
+
+				try = resolv.Resolve(&resolveFirst, line, deltaX, deltaY)
+
+				if try.Colliding() {
+					done = true
+					break
+				}
+			}
+
+			if done {
+				break
+			}
+		}
+	} else {
+		rayRectangleInt32ToResolv(&resolveSecond, b.GetAABB(b))
+		try = resolv.Resolve(&resolveFirst, &resolveSecond, deltaX, deltaY)
+	}
 
 	if try.Colliding() {
 		if DebugMode {

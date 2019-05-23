@@ -137,8 +137,8 @@ func InitAssets(archiveNames []string, isDebugMode bool) {
 				log.Printf(
 					"Archive '%s' has been loaded!\n-- Author: %s\n-- Version: %s\n-- Description: %s\n-- Asset count: %d",
 					tags.Name,
-					tags.Version,
 					tags.Author,
+					tags.Version,
 					tags.Description,
 					len(tags.Chunks),
 				)

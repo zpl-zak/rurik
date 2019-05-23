@@ -103,6 +103,11 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		}
 
 		a.HandleCollision(&try, a, b)
+		b.HandleCollision(&try, b, a)
+
+		if b.CollisionType == "trigger" {
+			return resolv.Collision{}, false
+		}
 
 		return try, true
 	}

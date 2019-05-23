@@ -20,6 +20,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
@@ -177,7 +178,7 @@ func finishCamera(c *Object) {
 }
 
 func updateCamera(c *Object, dt float32) {
-	var dest Vec2
+	var dest rl.Vector2
 
 	CanSave = BitsSet(CanSave, IsSequenceHappening)
 
@@ -191,13 +192,7 @@ func updateCamera(c *Object, dt float32) {
 			CanSave = BitsClear(CanSave, IsSequenceHappening)
 		}
 
-		dest = Vec2FromRayVector2(
-			Vector2Lerp(
-				RayVector2FromVec2(c.Position),
-				RayVector2FromVec2(c.Follow.Position),
-				c.Smoothing,
-			),
-		)
+		dest = Vector2Lerp(c.Position, c.Follow.Position, c.Smoothing)
 	} else if c.Mode == CameraModeLerp {
 		if c.Start == nil || c.End == nil {
 			log.Println("Camera object lerps between nil references.")
@@ -213,11 +208,14 @@ func updateCamera(c *Object, dt float32) {
 		dest = c.Position
 	}
 
+	dest.X = float32(math.Round(float64(dest.X)))
+	dest.Y = float32(math.Round(float64(dest.Y)))
+
 	if !c.First || c.Mode == CameraModeLerp {
 		t := c.Speed
 
 		if c.Mode == CameraModeLerp {
-			vd := raymath.Vector2Distance(RayVector2FromVec2(dest), RayVector2FromVec2(c.Position))
+			vd := raymath.Vector2Distance(dest, c.Position)
 
 			if c.Progress > 1 {
 				c.Progress = 1
@@ -233,22 +231,10 @@ func updateCamera(c *Object, dt float32) {
 				t = vd
 			}
 
-			c.Position = Vec2FromRayVector2(
-				Vector2Lerp(
-					RayVector2FromVec2(c.Start.Position),
-					RayVector2FromVec2(dest),
-					c.Progress,
-				),
-			)
+			c.Position = Vector2Lerp(c.Start.Position, dest, c.Progress)
 			c.Progress += t * dt
 		} else {
-			c.Position = Vec2FromRayVector2(
-				Vector2Lerp(
-					RayVector2FromVec2(c.Position),
-					RayVector2FromVec2(dest),
-					t,
-				),
-			)
+			c.Position = Vector2Lerp(c.Position, dest, t)
 		}
 	} else {
 		c.Position = dest

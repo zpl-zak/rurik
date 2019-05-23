@@ -154,9 +154,9 @@ type objectData interface{}
 type defaultObjectData struct {
 	Name        string `json:"objectName"`
 	Type        string `json:"class"`
-	Position    Vec2
-	Movement    Vec2
-	Facing      Vec2
+	Position    rl.Vector2
+	Movement    rl.Vector2
+	Facing      rl.Vector2
 	Custom      []byte   `json:"custom"`
 	Color       rl.Color `json:"color"`
 	Attenuation float32  `json:"atten"`

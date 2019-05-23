@@ -27,8 +27,8 @@ func (m *minimapProg) Apply() {
 
 	minimapCamera := rl.NewCamera2D(rl.NewVector2(0, 0), rl.NewVector2(0, 0), 0, 1)
 	minimapCamera.Offset = rl.Vector2{
-		X: float32(int(-core.MainCamera.Position.X + 320/2)),
-		Y: float32(int(-core.MainCamera.Position.Y + 320/2)),
+		X: float32(int(-core.MainCamera.Position.X + float32(320)/2)),
+		Y: float32(int(-core.MainCamera.Position.Y + float32(320)/2)),
 	}
 
 	rl.BeginTextureMode(m.RenderTexture)

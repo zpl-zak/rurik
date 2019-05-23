@@ -100,16 +100,7 @@ func ScalarLerp(v1, v2 float32, amount float32) (result float32) {
 }
 
 // StringToVec2 conv
-func StringToVec2(inp string) Vec2 {
-	comps := strings.Split(inp, " ")
-	x, _ := strconv.ParseFloat(comps[0], 32)
-	y, _ := strconv.ParseFloat(comps[1], 32)
-
-	return NewVec2(int32(x), int32(y))
-}
-
-// StringToRayVector2 conv
-func StringToRayVector2(inp string) rl.Vector2 {
+func StringToVec2(inp string) rl.Vector2 {
 	comps := strings.Split(inp, " ")
 	x, _ := strconv.ParseFloat(comps[0], 32)
 	y, _ := strconv.ParseFloat(comps[1], 32)
@@ -200,16 +191,16 @@ func IsMouseInRectangle(x, y, x2, y2 int32) bool {
 func GetSpriteAABB(o *Object) rl.RectangleInt32 {
 	if o.Ase == nil {
 		return rl.RectangleInt32{
-			X:      o.Position.X,
-			Y:      o.Position.Y - 32,
+			X:      int32(o.Position.X),
+			Y:      int32(o.Position.Y - 32),
 			Width:  32,
 			Height: 32,
 		}
 	}
 
 	return rl.RectangleInt32{
-		X:      o.Position.X - o.Ase.FrameWidth/2 + o.Ase.FrameWidth/4,
-		Y:      o.Position.Y,
+		X:      int32(o.Position.X) - int32(float32(o.Ase.FrameWidth/2)) + int32(float32(o.Ase.FrameWidth/4)),
+		Y:      int32(o.Position.Y),
 		Width:  o.Ase.FrameWidth / 2,
 		Height: o.Ase.FrameHeight / 2,
 	}
@@ -218,8 +209,8 @@ func GetSpriteAABB(o *Object) rl.RectangleInt32 {
 // GetSolidAABB retrieves solid boundaries
 func GetSolidAABB(o *Object) rl.RectangleInt32 {
 	return rl.RectangleInt32{
-		X:      o.Position.X,
-		Y:      o.Position.Y,
+		X:      int32(o.Position.X),
+		Y:      int32(o.Position.Y),
 		Width:  o.Size[0],
 		Height: o.Size[1],
 	}
@@ -270,22 +261,10 @@ func GetColorFromProperty(o *tiled.Object, name string) rl.Color {
 	return color
 }
 
-// GetRayVector2FromProperty retrieves a Vector2 from property
-func GetRayVector2FromProperty(o *tiled.Object, name string) rl.Vector2 {
+// GetVec2FromProperty retrieves a Vector2 from property
+func GetVec2FromProperty(o *tiled.Object, name string) rl.Vector2 {
 	txtVec := o.Properties.GetString(name)
 	var vec rl.Vector2
-
-	if txtVec != "" {
-		vec = StringToRayVector2(txtVec)
-	}
-
-	return vec
-}
-
-// GetVec2FromProperty retrieves a Vector2 from property
-func GetVec2FromProperty(o *tiled.Object, name string) Vec2 {
-	txtVec := o.Properties.GetString(name)
-	var vec Vec2
 
 	if txtVec != "" {
 		vec = StringToVec2(txtVec)

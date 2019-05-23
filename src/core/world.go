@@ -171,8 +171,8 @@ func (w *World) spawnObject(objectData *tiled.Object) *Object {
 		return nil
 	}
 
-	obj.Position = NewVec2(int32(objectData.X), int32(objectData.Y))
-	obj.Movement = NewVec2(0, 0)
+	obj.Position = rl.NewVector2(float32(objectData.X), float32(objectData.Y))
+	obj.Movement = rl.NewVector2(0, 0)
 
 	if obj.CollisionType != "" {
 		obj.IsCollidable = obj.CollisionType != "none"
@@ -295,10 +295,10 @@ func (w *World) DrawObjects() {
 
 		rec := v.GetAABB(v)
 		orig := v.Position
-		orig.X += int32(rec.Width / 2.0)
-		orig.Y += int32(rec.Height / 2.0)
+		orig.X += float32(rec.Width / 2.0)
+		orig.Y += float32(rec.Height / 2.0)
 
-		if !IsPointWithinFrustum(RayVector2FromVec2(orig)) && cullingEnabled {
+		if !IsPointWithinFrustum(orig) && cullingEnabled {
 			continue
 		}
 
@@ -327,8 +327,8 @@ func (w *World) DrawObjectUI() {
 }
 
 // SetPosition sets the object's position
-func (o *Object) SetPosition(x, y int32) {
-	o.Position = NewVec2(x, y)
+func (o *Object) SetPosition(x, y float32) {
+	o.Position = rl.NewVector2(x, y)
 }
 
 // GetWorld returns the active world

@@ -225,8 +225,8 @@ func Run(newGameMode GameMode, enableProfiler bool) {
 
 			if MainCamera != nil {
 				RenderCamera.Offset = rl.Vector2{
-					X: float32(int(-float32(MainCamera.Position.X)*MainCamera.Zoom + float32(system.ScreenWidth)/2)),
-					Y: float32(int(-float32(MainCamera.Position.Y)*MainCamera.Zoom + float32(system.ScreenHeight)/2)),
+					X: float32(int(-MainCamera.Position.X*MainCamera.Zoom + float32(system.ScreenWidth)/2)),
+					Y: float32(int(-MainCamera.Position.Y*MainCamera.Zoom + float32(system.ScreenHeight)/2)),
 				}
 			}
 

@@ -1,6 +1,8 @@
 package main
 
 import (
+	"math"
+
 	"github.com/zaklaus/rurik/src/core"
 
 	"github.com/solarlune/resolv/resolv"
@@ -23,7 +25,7 @@ func NewPlayer(p *core.Object) {
 	p.Draw = drawPlayer
 	p.GetAABB = core.GetSpriteAABB
 	p.HandleCollision = handlePlayerCollision
-	p.Facing = core.NewVec2(1, 0)
+	p.Facing = rl.NewVector2(1, 0)
 	p.IsCollidable = true
 	p.InsideArea = func(o, area *core.Object) bool {
 		return system.IsKeyPressed("use")
@@ -38,32 +40,25 @@ func NewPlayer(p *core.Object) {
 func updatePlayer(p *core.Object, dt float32) {
 	p.Ase.Update(dt)
 
-	var moveSpeed float32 = 2
+	var moveSpeed float32 = 85
 
 	p.Movement.X = 0
 	p.Movement.Y = 0
 
 	if core.CanSave == 0 || core.BitsHas(core.CanSave, core.IsInChallenge) {
-		factorX := system.GetAxis("horizontal")
-		factorY := system.GetAxis("vertical")
-
-		p.Movement.X = int32(factorX * 2)
-		p.Movement.Y = int32(factorY * 2)
+		p.Movement.X = system.GetAxis("horizontal")
+		p.Movement.Y = system.GetAxis("vertical")
 	}
 
 	var tag string
 
-	if ry.Vector2Length(core.RayVector2FromVec2(p.Movement)) > 0 {
+	if ry.Vector2Length(p.Movement) > 0 {
 		//ry.Vector2Normalize(&p.Movement)
-		mov := core.RayVector2FromVec2(p.Movement)
-		ry.Vector2Scale(&mov, moveSpeed)
-		p.Movement = core.Vec2FromRayVector2(mov)
+		ry.Vector2Scale(&p.Movement, moveSpeed)
 
 		p.Facing.X = p.Movement.X
 		p.Facing.Y = p.Movement.Y
-		facing := core.RayVector2FromVec2(p.Facing)
-		ry.Vector2Normalize(&facing)
-		p.Facing = core.Vec2FromRayVector2(facing)
+		ry.Vector2Normalize(&p.Facing)
 
 		tag = "Walk"
 	} else {
@@ -84,15 +79,21 @@ func updatePlayer(p *core.Object, dt float32) {
 
 	core.PlayAnim(p, tag)
 
+	p.Movement.X *= dt
+	p.Movement.Y *= dt
+
+	p.Movement.X = float32(math.RoundToEven(float64(p.Movement.X)))
+	p.Movement.Y = float32(math.RoundToEven(float64(p.Movement.Y)))
+
 	resX, okX := core.CheckForCollision(p, int32(p.Movement.X), 0)
 	resY, okY := core.CheckForCollision(p, 0, int32(p.Movement.Y))
 
 	if okX {
-		p.Movement.X = resX.ResolveX
+		p.Movement.X = float32(resX.ResolveX)
 	}
 
 	if okY {
-		p.Movement.Y = resY.ResolveY
+		p.Movement.Y = float32(resY.ResolveY)
 	}
 
 	p.Position.X += p.Movement.X

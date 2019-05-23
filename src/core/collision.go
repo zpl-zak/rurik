@@ -17,8 +17,6 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
@@ -40,7 +38,6 @@ func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 	o.DebugVisible = false
-	o.ContainedObjects = []TriggerContact{}
 
 	o.Draw = func(o *Object) {
 		if !DebugMode || !o.DebugVisible {
@@ -123,7 +120,6 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 				}
 
 				b.ContainedObjects = append(b.ContainedObjects, ctx)
-				fmt.Println(b.ContainedObjects)
 			} else {
 				ct.wasUpdated = true
 				ct.Res = try
@@ -153,7 +149,6 @@ func findExistingContainedObject(o, other *Object, res resolv.Collision) *Trigge
 func (o *Object) updateTriggerArea() {
 	newObjects := []TriggerContact{}
 
-	//fmt.Printf("contact: %v\n", o.ContainedObjects)
 	for k := range o.ContainedObjects {
 		v := &o.ContainedObjects[k]
 

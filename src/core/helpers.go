@@ -18,7 +18,6 @@ package core
 
 import (
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 
@@ -160,16 +159,6 @@ func MixColor(a, b rl.Color) rl.Color {
 		ColorToVec3(b),
 		0.5,
 	))
-}
-
-// RoundFloat rounds a value
-func RoundFloat(x float32) float32 {
-	return float32(math.Round(float64(x)))
-}
-
-// RoundFloatToInt32 rounds a value and casts it into int32
-func RoundFloatToInt32(x float32) int32 {
-	return int32(math.Round(float64(x)))
 }
 
 // IsMouseInRectangle checks whether a mouse is inside of a rectangle

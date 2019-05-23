@@ -118,7 +118,7 @@ func updateDebugMenu() {
 		cameraMenu := PushEditorElement(debugMenu, "camera", &isCameraMenuCollapsed)
 
 		if *cameraMenu.IsCollapsed == false {
-			PushEditorElement(cameraMenu, fmt.Sprintf("pos: %d %d", MainCamera.Position.X, MainCamera.Position.Y), nil)
+			PushEditorElement(cameraMenu, fmt.Sprintf("pos: %.02f %.02f", MainCamera.Position.X, MainCamera.Position.Y), nil)
 			PushEditorElement(cameraMenu, fmt.Sprintf("offset: %v", RenderCamera.Offset), nil)
 			PushEditorElement(cameraMenu, fmt.Sprintf("zoom: %.02f", RenderCamera.Zoom), nil)
 			PushEditorElement(cameraMenu, fmt.Sprintf("target zoom: %.02f", MainCamera.TargetZoom), nil)

@@ -73,17 +73,19 @@ type Object struct {
 	world      *World
 
 	// Callbacks
-	Init            func(o *Object)
-	Finish          func(o *Object)
-	Update          func(o *Object, dt float32)
-	Draw            func(o *Object)
-	DrawUI          func(o *Object)
-	Trigger         func(o, inst *Object)
-	HandleCollision func(res *resolv.Collision, o, other *Object)
-	InsideArea      func(o, a *Object) bool
-	GetAABB         func(o *Object) rl.RectangleInt32
-	Serialize       func(o *Object, enc *gob.Encoder)
-	Deserialize     func(o *Object, dec *gob.Decoder)
+	Init                 func(o *Object)
+	Finish               func(o *Object)
+	Update               func(o *Object, dt float32)
+	Draw                 func(o *Object)
+	DrawUI               func(o *Object)
+	Trigger              func(o, inst *Object)
+	HandleCollision      func(res *resolv.Collision, o, other *Object)
+	HandleCollisionEnter func(res *resolv.Collision, o, other *Object)
+	HandleCollisionLeave func(res *resolv.Collision, o, other *Object)
+	InsideArea           func(o, a *Object) bool
+	GetAABB              func(o *Object) rl.RectangleInt32
+	Serialize            func(o *Object, enc *gob.Encoder)
+	Deserialize          func(o *Object, dec *gob.Decoder)
 
 	// Specialized data
 	collision

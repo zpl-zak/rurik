@@ -17,12 +17,22 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
 
 type collision struct {
-	isColliding bool
+	isColliding      bool
+	ContainedObjects []TriggerContact
+}
+
+// TriggerContact specifies a trigger point
+type TriggerContact struct {
+	Object     *Object
+	Res        resolv.Collision
+	wasUpdated bool
 }
 
 // NewCollision static map collision
@@ -30,6 +40,7 @@ func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 	o.DebugVisible = false
+	o.ContainedObjects = []TriggerContact{}
 
 	o.Draw = func(o *Object) {
 		if !DebugMode || !o.DebugVisible {
@@ -49,14 +60,7 @@ func (o *Object) NewCollision() {
 		DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
 	}
 
-	o.GetAABB = func(o *Object) rl.RectangleInt32 {
-		return rl.RectangleInt32{
-			X:      int32(o.Position.X),
-			Y:      int32(o.Position.Y),
-			Width:  o.Size[0],
-			Height: o.Size[1],
-		}
-	}
+	o.GetAABB = GetSolidAABB
 }
 
 // CheckForCollision performs collision detection and resolution
@@ -106,6 +110,25 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		b.HandleCollision(&try, b, a)
 
 		if b.CollisionType == "trigger" {
+			ct := findExistingContainedObject(b, a, try)
+
+			if ct == nil {
+				a.HandleCollisionEnter(&try, a, b)
+				b.HandleCollisionEnter(&try, b, a)
+
+				ctx := TriggerContact{
+					Object:     a,
+					Res:        try,
+					wasUpdated: true,
+				}
+
+				b.ContainedObjects = append(b.ContainedObjects, ctx)
+				fmt.Println(b.ContainedObjects)
+			} else {
+				ct.wasUpdated = true
+				ct.Res = try
+			}
+
 			return resolv.Collision{}, false
 		}
 
@@ -113,4 +136,35 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	}
 
 	return resolv.Collision{}, false
+}
+
+func findExistingContainedObject(o, other *Object, res resolv.Collision) *TriggerContact {
+	for k := range o.ContainedObjects {
+		v := &o.ContainedObjects[k]
+
+		if v.Object == other {
+			return v
+		}
+	}
+
+	return nil
+}
+
+func (o *Object) updateTriggerArea() {
+	newObjects := []TriggerContact{}
+
+	//fmt.Printf("contact: %v\n", o.ContainedObjects)
+	for k := range o.ContainedObjects {
+		v := &o.ContainedObjects[k]
+
+		if v.wasUpdated {
+			v.wasUpdated = false
+			newObjects = append(newObjects, *v)
+		} else {
+			v.Object.HandleCollisionLeave(&v.Res, v.Object, o)
+			o.HandleCollisionLeave(&v.Res, o, v.Object)
+		}
+	}
+
+	o.ContainedObjects = newObjects
 }

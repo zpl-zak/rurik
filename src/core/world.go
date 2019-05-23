@@ -105,17 +105,19 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Offset:           GetVec2FromProperty(o, "offset"),
 
 		// Callbacks
-		Finish:          func(o *Object) {},
-		Init:            func(o *Object) {},
-		Update:          func(o *Object, dt float32) {},
-		Trigger:         func(o, inst *Object) {},
-		Draw:            func(o *Object) {},
-		DrawUI:          func(o *Object) {},
-		HandleCollision: func(res *resolv.Collision, o, other *Object) {},
-		InsideArea:      func(o, a *Object) bool { return false },
-		GetAABB:         func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
-		Serialize:       func(o *Object, enc *gob.Encoder) {},
-		Deserialize:     func(o *Object, dec *gob.Decoder) {},
+		Finish:               func(o *Object) {},
+		Init:                 func(o *Object) {},
+		Update:               func(o *Object, dt float32) {},
+		Trigger:              func(o, inst *Object) {},
+		Draw:                 func(o *Object) {},
+		DrawUI:               func(o *Object) {},
+		HandleCollision:      func(res *resolv.Collision, o, other *Object) {},
+		HandleCollisionEnter: func(res *resolv.Collision, o, other *Object) {},
+		HandleCollisionLeave: func(res *resolv.Collision, o, other *Object) {},
+		InsideArea:           func(o, a *Object) bool { return false },
+		GetAABB:              func(o *Object) rl.RectangleInt32 { return rl.RectangleInt32{} },
+		Serialize:            func(o *Object, enc *gob.Encoder) {},
+		Deserialize:          func(o *Object, dec *gob.Decoder) {},
 	}
 }
 
@@ -278,6 +280,7 @@ func (w *World) updateObject(o, orig *Object) {
 		}
 	}
 
+	o.updateTriggerArea()
 	o.Update(o, system.FrameTime*float32(TimeScale))
 	o.WasUpdated = true
 }

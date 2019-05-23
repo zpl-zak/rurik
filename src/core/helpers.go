@@ -18,6 +18,7 @@ package core
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 	"strings"
 
@@ -99,7 +100,16 @@ func ScalarLerp(v1, v2 float32, amount float32) (result float32) {
 }
 
 // StringToVec2 conv
-func StringToVec2(inp string) rl.Vector2 {
+func StringToVec2(inp string) Vec2 {
+	comps := strings.Split(inp, " ")
+	x, _ := strconv.ParseFloat(comps[0], 32)
+	y, _ := strconv.ParseFloat(comps[1], 32)
+
+	return NewVec2(int32(x), int32(y))
+}
+
+// StringToRayVector2 conv
+func StringToRayVector2(inp string) rl.Vector2 {
 	comps := strings.Split(inp, " ")
 	x, _ := strconv.ParseFloat(comps[0], 32)
 	y, _ := strconv.ParseFloat(comps[1], 32)
@@ -161,6 +171,16 @@ func MixColor(a, b rl.Color) rl.Color {
 	))
 }
 
+// RoundFloat rounds a value
+func RoundFloat(x float32) float32 {
+	return float32(math.Round(float64(x)))
+}
+
+// RoundFloatToInt32 rounds a value and casts it into int32
+func RoundFloatToInt32(x float32) int32 {
+	return int32(math.Round(float64(x)))
+}
+
 // IsMouseInRectangle checks whether a mouse is inside of a rectangle
 func IsMouseInRectangle(x, y, x2, y2 int32) bool {
 	x2 = x + x2
@@ -212,7 +232,7 @@ func GetSpriteRectangle(o *Object) rl.Rectangle {
 
 // GetSpriteOrigin retrieves sprite's origin
 func GetSpriteOrigin(o *Object) rl.Rectangle {
-	return rl.NewRectangle(o.Position.X-float32(o.Ase.FrameWidth/2), o.Position.Y-float32(o.Ase.FrameHeight/2), float32(o.Ase.FrameWidth), float32(o.Ase.FrameHeight))
+	return rl.NewRectangle(float32(o.Position.X)-float32(o.Ase.FrameWidth/2), float32(o.Position.Y)-float32(o.Ase.FrameHeight/2), float32(o.Ase.FrameWidth), float32(o.Ase.FrameHeight))
 }
 
 // IsPointWithinRectangle checks whether a point is within a rectangle
@@ -240,10 +260,22 @@ func GetColorFromProperty(o *tiled.Object, name string) rl.Color {
 	return color
 }
 
-// GetVector2FromProperty retrieves a Vector2 from property
-func GetVector2FromProperty(o *tiled.Object, name string) rl.Vector2 {
+// GetRayVector2FromProperty retrieves a Vector2 from property
+func GetRayVector2FromProperty(o *tiled.Object, name string) rl.Vector2 {
 	txtVec := o.Properties.GetString(name)
 	var vec rl.Vector2
+
+	if txtVec != "" {
+		vec = StringToRayVector2(txtVec)
+	}
+
+	return vec
+}
+
+// GetVec2FromProperty retrieves a Vector2 from property
+func GetVec2FromProperty(o *tiled.Object, name string) Vec2 {
+	txtVec := o.Properties.GetString(name)
+	var vec Vec2
 
 	if txtVec != "" {
 		vec = StringToVec2(txtVec)
@@ -274,8 +306,8 @@ func IsPointWithinFrustum(p rl.Vector2) bool {
 	}
 
 	camOffset := rl.Vector2{
-		X: float32(int(MainCamera.Position.X - float32(system.ScreenWidth)/2/MainCamera.Zoom)),
-		Y: float32(int(MainCamera.Position.Y - float32(system.ScreenHeight)/2/MainCamera.Zoom)),
+		X: float32(int(float32(MainCamera.Position.X) - float32(system.ScreenWidth)/2/MainCamera.Zoom)),
+		Y: float32(int(float32(MainCamera.Position.Y) - float32(system.ScreenHeight)/2/MainCamera.Zoom)),
 	}
 
 	cam := rl.Rectangle{

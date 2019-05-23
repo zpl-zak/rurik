@@ -47,7 +47,7 @@ func (o *Object) NewArea() {
 				continue
 			}
 
-			vd := raymath.Vector2Distance(getAreaOrigin(o), obj.Position)
+			vd := raymath.Vector2Distance(getAreaOrigin(o), RayVector2FromVec2(obj.Position))
 
 			if vd < float32(o.Radius) {
 				hit = true
@@ -82,12 +82,12 @@ func (o *Object) NewArea() {
 
 func getAreaOrigin(o *Object) rl.Vector2 {
 	if o.Proxy != nil {
-		p := o.Proxy.Position
+		p := RayVector2FromVec2(o.Proxy.Position)
 		b := o.Proxy.GetAABB(o.Proxy)
 		p.Y += float32(b.Height / 2)
 
 		return p
 	}
 
-	return o.Position
+	return RayVector2FromVec2(o.Proxy.Position)
 }

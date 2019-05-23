@@ -82,7 +82,7 @@ func (o *Object) NewTile() {
 			return
 		}
 
-		dest := rl.NewRectangle(o.Position.X, o.Position.Y, float32(o.Width), float32(o.Height))
+		dest := rl.NewRectangle(float32(o.Position.X), float32(o.Position.Y), float32(o.Width), float32(o.Height))
 
 		if DebugMode && o.DebugVisible {
 			c := o.GetAABB(o)

@@ -34,10 +34,10 @@ type Object struct {
 	Class            string
 	Visible          bool
 	DebugVisible     bool
-	Position         rl.Vector2
-	Movement         rl.Vector2
+	Position         Vec2
+	Movement         Vec2
 	Rotation         float32
-	Facing           rl.Vector2
+	Facing           Vec2
 	Size             []int32
 	Meta             *tiled.Object
 	Depends          []*Object
@@ -64,7 +64,7 @@ type Object struct {
 	Radius           float32
 	HasLight         bool
 	HasSpecularLight bool
-	Offset           rl.Vector2
+	Offset           Vec2
 	LocalTileset     *tilesetData
 	UserData         ObjectUserData
 

@@ -200,18 +200,28 @@ func IsMouseInRectangle(x, y, x2, y2 int32) bool {
 func GetSpriteAABB(o *Object) rl.RectangleInt32 {
 	if o.Ase == nil {
 		return rl.RectangleInt32{
-			X:      int32(o.Position.X),
-			Y:      int32(o.Position.Y - 32),
+			X:      o.Position.X,
+			Y:      o.Position.Y - 32,
 			Width:  32,
 			Height: 32,
 		}
 	}
 
 	return rl.RectangleInt32{
-		X:      int32(o.Position.X) - int32(float32(o.Ase.FrameWidth/2)) + int32(float32(o.Ase.FrameWidth/4)),
-		Y:      int32(o.Position.Y),
+		X:      o.Position.X - o.Ase.FrameWidth/2 + o.Ase.FrameWidth/4,
+		Y:      o.Position.Y,
 		Width:  o.Ase.FrameWidth / 2,
 		Height: o.Ase.FrameHeight / 2,
+	}
+}
+
+// GetSolidAABB retrieves solid boundaries
+func GetSolidAABB(o *Object) rl.RectangleInt32 {
+	return rl.RectangleInt32{
+		X:      o.Position.X,
+		Y:      o.Position.Y,
+		Width:  o.Size[0],
+		Height: o.Size[1],
 	}
 }
 

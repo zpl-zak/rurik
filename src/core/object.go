@@ -118,7 +118,7 @@ func initObjectTypes() {
 }
 
 // RegisterClass adds a new object type
-func RegisterClass(class, methodName string, ctor func(o *Object)) error {
+func RegisterClass(class string, ctor func(o *Object)) error {
 	_, ok := objCtors[class]
 
 	if ok {

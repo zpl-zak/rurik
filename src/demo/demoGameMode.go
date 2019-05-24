@@ -21,10 +21,10 @@ func (g *demoGameMode) Init() {
 	core.LoadNextTrack()
 
 	// test class
-	err := core.RegisterClass("demo_testclass", "TestClass", NewTestClass)
+	err := core.RegisterClass("demo_testclass", NewTestClass)
 
 	// player class
-	core.RegisterClass("player", "Player", NewPlayer)
+	core.RegisterClass("player", NewPlayer)
 
 	if err != nil {
 		fmt.Printf("Custom type registration has failed: %s", err.Error())

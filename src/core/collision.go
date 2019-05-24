@@ -166,6 +166,10 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 
 				if try.Colliding() {
 					xpos := a.Position.X - b.Position.X
+
+					// NOTE: y = mx + b
+					// m = (Y2-Y1)/(X2-X1)
+					// b = Y1 - mX1
 					m := float32(p1.Y-p0.Y) / float32(p1.X-p0.X)
 					bc := float32(p0.Y) - (m * float32(p0.X))
 					ypos := m*(xpos) + bc
@@ -176,11 +180,6 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 					}
 
 					try.ResolveY = RoundFloatToInt32(b.Position.Y - a.Position.Y + float32(ypos) - 20)
-
-					if try.Teleporting {
-						try.ResolveX = deltaX
-						try.Teleporting = false
-					}
 
 					done = true
 					break

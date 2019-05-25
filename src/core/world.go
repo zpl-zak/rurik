@@ -99,6 +99,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		HasLight:         o.Properties.GetString("light") == "1",
 		HasSpecularLight: o.Properties.GetString("specular") == "1",
 		FileName:         o.Properties.GetString("file"),
+		IsOverlay:        o.Properties.GetString("overlay") == "1",
 		EventName:        o.Properties.GetString("event"),
 		EventArgs:        CompileEventArgs(o.Properties.GetString("eventArgs")),
 		TintColor:        GetColorFromProperty(o, "tint"),
@@ -296,7 +297,7 @@ func (w *World) DrawObjects() {
 	drawObjects = []*Object{}
 
 	for _, v := range w.Objects {
-		if !v.Visible {
+		if !v.Visible || v.IsOverlay {
 			continue
 		}
 
@@ -305,7 +306,7 @@ func (w *World) DrawObjects() {
 		orig.X += float32(rec.Width / 2.0)
 		orig.Y += float32(rec.Height / 2.0)
 
-		if !IsPointWithinFrustum(orig) && cullingEnabled {
+		if cullingEnabled && !IsPointWithinFrustum(orig) {
 			continue
 		}
 
@@ -318,6 +319,12 @@ func (w *World) DrawObjects() {
 		return drawObjects[i].Position.Y < drawObjects[j].Position.Y
 	})
 	sortRenderProfiler.StopInvocation()
+
+	for _, v := range w.Objects {
+		if v.IsOverlay {
+			drawObjects = append(drawObjects, v)
+		}
+	}
 
 	for _, o := range drawObjects {
 		o.Draw(o)

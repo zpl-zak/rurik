@@ -64,6 +64,7 @@ type Object struct {
 	Radius           float32
 	HasLight         bool
 	HasSpecularLight bool
+	IsOverlay        bool
 	Offset           rl.Vector2
 	LocalTileset     *tilesetData
 	PolyLines        []*tiled.PolyLine

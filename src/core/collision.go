@@ -97,6 +97,29 @@ func CheckForCollision(o *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	return CheckForCollisionEx("solid+trigger", o, deltaX, deltaY)
 }
 
+var (
+	dummyCollisionObject = Object{
+		IsCollidable: true,
+		GetAABB:      GetSolidAABB,
+		Size:         []int32{32, 32},
+
+		HandleCollision:      func(res *resolv.Collision, o, other *Object) {},
+		HandleCollisionEnter: func(res *resolv.Collision, o, other *Object) {},
+		HandleCollisionLeave: func(res *resolv.Collision, o, other *Object) {},
+		InsideArea:           func(o, a *Object) bool { return false },
+	}
+)
+
+// CheckForCollisionRectangle performs collision detection and resolution
+func CheckForCollisionRectangle(world *World, rect rl.RectangleInt32, collisionType string, deltaX, deltaY int32) (resolv.Collision, bool) {
+	dummyCollisionObject.Position.X = float32(rect.X)
+	dummyCollisionObject.Position.Y = float32(rect.Y)
+	dummyCollisionObject.Size[0] = rect.Width
+	dummyCollisionObject.Size[1] = rect.Height
+	dummyCollisionObject.world = world
+	return CheckForCollisionEx(collisionType, &dummyCollisionObject, deltaX, deltaY)
+}
+
 // CheckForCollisionEx performs collision detection and resolution
 func CheckForCollisionEx(collisionType string, o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
 	collisionProfiler.StartInvocation()

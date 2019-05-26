@@ -260,7 +260,7 @@ func findExistingContainedObject(o, other *Object, res resolv.Collision) *Trigge
 	for k := range o.ContainedObjects {
 		v := &o.ContainedObjects[k]
 
-		if v.Object == other {
+		if v.Object.GID == other.GID {
 			return v
 		}
 	}

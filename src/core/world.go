@@ -328,6 +328,19 @@ func (w *World) DrawObjects() {
 
 	for _, o := range drawObjects {
 		o.Draw(o)
+
+		if DebugMode && o.DebugVisible {
+			rect := o.GetAABB(o)
+			rl.DrawRectangleLines(
+				rect.X,
+				rect.Y,
+				rect.Width,
+				rect.Height,
+				rl.RayWhite,
+			)
+
+			DrawTextCentered(o.Name, rect.X+rect.Width/2, rect.Y+rect.Height+2, 1, rl.White)
+		}
 	}
 }
 

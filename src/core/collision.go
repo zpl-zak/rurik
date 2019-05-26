@@ -17,8 +17,6 @@
 package core
 
 import (
-	"strings"
-
 	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
 )
@@ -26,6 +24,24 @@ import (
 var (
 	colDbgX int32
 	colDbgY int32
+
+	collisionTypes     = []uint32{}
+	collisionTypeNames = []string{}
+)
+
+const (
+	// CollisionNone specifies no collision behaviour
+	CollisionNone uint32 = iota
+	// CollisionSolid specifies immovable behaviour
+	CollisionSolid
+	// CollisionRigid specifies movable rigid behaviour
+	CollisionRigid
+	// CollisionTrigger specifies trigger-able behaviour
+	CollisionTrigger
+	// CollisionSlope specifies special behaviour of a slope collision
+	CollisionSlope
+	// FirstCollisionType is used for custom types
+	FirstCollisionType
 )
 
 type collision struct {
@@ -40,15 +56,40 @@ type TriggerContact struct {
 	wasUpdated bool
 }
 
+// AddCollisionType registers a custom collision type
+func AddCollisionType(name string, col uint32) {
+	collisionTypeNames = append(collisionTypeNames, name)
+	collisionTypes = append(collisionTypes, col)
+}
+
+// RetrieveCollisionType retrieves collision type id by name
+func RetrieveCollisionType(name string) uint32 {
+	for k := range collisionTypeNames {
+		if collisionTypeNames[k] == name {
+			return collisionTypes[k]
+		}
+	}
+
+	return 0
+}
+
+func initDefaultCollisionTypes() {
+	AddCollisionType("none", CollisionNone)
+	AddCollisionType("rigid", CollisionRigid)
+	AddCollisionType("solid", CollisionSolid)
+	AddCollisionType("slope", CollisionSlope)
+	AddCollisionType("trigger", CollisionTrigger)
+}
+
 // NewCollision static map collision
 func (o *Object) NewCollision() {
 	o.IsCollidable = true
 	o.Size = []int32{int32(o.Meta.Width), int32(o.Meta.Height)}
 
 	if o.PolyLines != nil {
-		o.CollisionType = "slope"
-	} else if o.CollisionType == "" {
-		o.CollisionType = "solid"
+		o.CollisionType = CollisionSlope
+	} else if o.CollisionType == CollisionNone {
+		o.CollisionType = CollisionSolid
 	}
 
 	o.Draw = func(o *Object) {
@@ -94,7 +135,7 @@ func (o *Object) NewCollision() {
 
 // CheckForCollision performs collision detection and resolution
 func CheckForCollision(o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
-	return CheckForCollisionEx("solid+trigger", o, deltaX, deltaY)
+	return CheckForCollisionEx([]uint32{CollisionSolid, CollisionRigid, CollisionTrigger}, o, deltaX, deltaY)
 }
 
 var (
@@ -111,17 +152,17 @@ var (
 )
 
 // CheckForCollisionRectangle performs collision detection and resolution
-func CheckForCollisionRectangle(world *World, rect rl.RectangleInt32, collisionType string, deltaX, deltaY int32) (resolv.Collision, bool) {
+func CheckForCollisionRectangle(world *World, rect rl.RectangleInt32, collisionTypes []uint32, deltaX, deltaY int32) (resolv.Collision, bool) {
 	dummyCollisionObject.Position.X = float32(rect.X)
 	dummyCollisionObject.Position.Y = float32(rect.Y)
 	dummyCollisionObject.Size[0] = rect.Width
 	dummyCollisionObject.Size[1] = rect.Height
 	dummyCollisionObject.world = world
-	return CheckForCollisionEx(collisionType, &dummyCollisionObject, deltaX, deltaY)
+	return CheckForCollisionEx(collisionTypes, &dummyCollisionObject, deltaX, deltaY)
 }
 
 // CheckForCollisionEx performs collision detection and resolution
-func CheckForCollisionEx(collisionType string, o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
+func CheckForCollisionEx(collisionTypes []uint32, o *Object, deltaX, deltaY int32) (resolv.Collision, bool) {
 	collisionProfiler.StartInvocation()
 
 	if !o.IsCollidable {
@@ -129,17 +170,15 @@ func CheckForCollisionEx(collisionType string, o *Object, deltaX, deltaY int32) 
 		return resolv.Collision{}, false
 	}
 
-	colTypes := strings.Split(collisionType, "+")
-
 	for _, c := range o.world.Objects {
 		sig := false
-		for _, ct := range colTypes {
-			if c.CollisionType == ct || ct == "*" {
+		for _, ct := range collisionTypes {
+			if c.CollisionType == ct {
 				sig = true
 			}
 		}
 
-		if !sig {
+		if !sig && len(collisionTypes) != 0 {
 			continue
 		}
 
@@ -171,7 +210,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 	var try resolv.Collision
 
 	// NOTE: Slope handling
-	if b.PolyLines != nil && b.CollisionType == "slope" {
+	if b.PolyLines != nil && b.CollisionType == CollisionSlope {
 		for _, pl := range b.PolyLines {
 			done := false
 			for idx := 0; idx < len(*pl.Points)-1; idx++ {
@@ -215,7 +254,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		}
 	}
 
-	if !try.Colliding() && b.CollisionType != "slope" {
+	if !try.Colliding() && b.CollisionType != CollisionSlope {
 		rayRectangleInt32ToResolv(&resolveSecond, b.GetAABB(b))
 		try = resolv.Resolve(&resolveFirst, &resolveSecond, deltaX, deltaY)
 	}
@@ -228,7 +267,7 @@ func resolveContact(a, b *Object, deltaX, deltaY int32) (resolv.Collision, bool)
 		a.HandleCollision(&try, a, b)
 		b.HandleCollision(&try, b, a)
 
-		if b.CollisionType == "trigger" {
+		if b.CollisionType == CollisionTrigger {
 			ct := findExistingContainedObject(b, a, try)
 
 			if ct == nil {

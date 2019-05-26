@@ -92,7 +92,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		IsPersistent: true,
 
 		// Properties
-		CollisionType:    o.Properties.GetString("colType"),
+		CollisionType:    RetrieveCollisionType(o.Properties.GetString("colType")),
 		AutoStart:        o.Properties.GetString("autostart") == "1",
 		CanRepeat:        o.Properties.GetString("canRepeat") == "1",
 		Fullbright:       o.Properties.GetString("fullbright") == "1",
@@ -181,9 +181,7 @@ func (w *World) spawnObject(objectData *tiled.Object) *Object {
 	obj.Position = rl.NewVector2(float32(objectData.X), float32(objectData.Y))
 	obj.Movement = rl.NewVector2(0, 0)
 
-	if obj.CollisionType != "" {
-		obj.IsCollidable = obj.CollisionType != "none"
-	}
+	obj.IsCollidable = obj.CollisionType != CollisionNone
 
 	return obj
 }

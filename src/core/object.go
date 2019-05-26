@@ -51,7 +51,7 @@ type Object struct {
 	LastTrigger      float32
 	AutoStart        bool
 	IsCollidable     bool
-	CollisionType    string
+	CollisionType    uint32
 	Started          bool
 	WasExecuted      bool
 	CanRepeat        bool

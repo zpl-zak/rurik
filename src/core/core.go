@@ -72,6 +72,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	system.ScreenHeight = screenH
 	system.ScaleRatio = float32(system.WindowWidth) / float32(system.ScreenWidth)
 	updateSystemRenderTargets()
+	initDefaultCollisionTypes()
 
 	WorldTexture = system.CreateRenderTarget(screenW, screenH)
 	UITexture = system.CreateRenderTarget(screenW, screenH)

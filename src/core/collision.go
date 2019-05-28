@@ -17,8 +17,8 @@
 package core
 
 import (
-	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/resolv/resolv"
 )
 
 var (

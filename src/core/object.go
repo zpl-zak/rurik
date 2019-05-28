@@ -21,10 +21,10 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/solarlune/resolv/resolv"
 	goaseprite "github.com/zaklaus/GoAseprite"
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/resolv/resolv"
 )
 
 // Object is a world object with logic and data

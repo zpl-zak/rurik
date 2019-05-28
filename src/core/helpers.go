@@ -22,10 +22,10 @@ import (
 	"strings"
 
 	colorful "github.com/lucasb-eyer/go-colorful"
-	"github.com/solarlune/resolv/resolv"
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/raylib-go/raymath"
+	"github.com/zaklaus/resolv/resolv"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -65,9 +65,8 @@ func CompileEventArgs(args string) []string {
 func rayRectangleInt32ToResolv(rec *resolv.Rectangle, i rl.RectangleInt32) {
 	*rec = resolv.Rectangle{
 		BasicShape: resolv.BasicShape{
-			X:           i.X,
-			Y:           i.Y,
-			Collideable: true,
+			X: i.X,
+			Y: i.Y,
 		},
 		W: i.Width,
 		H: i.Height,

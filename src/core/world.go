@@ -23,9 +23,9 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/solarlune/resolv/resolv"
 	tiled "github.com/zaklaus/go-tiled"
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/resolv/resolv"
 	"github.com/zaklaus/rurik/src/system"
 )
 

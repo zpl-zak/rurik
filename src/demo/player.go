@@ -5,9 +5,9 @@ import (
 
 	"github.com/zaklaus/rurik/src/core"
 
-	"github.com/solarlune/resolv/resolv"
 	rl "github.com/zaklaus/raylib-go/raylib"
 	ry "github.com/zaklaus/raylib-go/raymath"
+	"github.com/zaklaus/resolv/resolv"
 	"github.com/zaklaus/rurik/src/system"
 )
 

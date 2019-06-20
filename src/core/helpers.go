@@ -175,6 +175,23 @@ func IsMouseInRectangle(x, y, x2, y2 int32) bool {
 	return false
 }
 
+// IsMouseInRectangleRec checks whether a mouse is inside of a rectangle
+func IsMouseInRectangleRec(rec rl.Rectangle) bool {
+	x := int32(rec.X)
+	y := int32(rec.Y)
+	x2 := x + int32(rec.Width)
+	y2 := y + int32(rec.Height)
+
+	m := system.GetMousePosition()
+
+	if m[0] > x && m[0] < x2 &&
+		m[1] > y && m[1] < y2 {
+		return true
+	}
+
+	return false
+}
+
 // GetSpriteAABB retrieves Aseprite boundaries
 func GetSpriteAABB(o *Object) rl.RectangleInt32 {
 	if o.Ase == nil {

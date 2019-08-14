@@ -20,8 +20,7 @@ jobs:
       run: mkdir -p go/src/github.com
 
     - name: Check out Rurik source code
-      run: cd go/src/github.com
-      uses: actions/checkout@v1
+      run: cd go/src/github.com && git fetch && git checkout $GITHUB_SHA
 
     - name: Get dependencies
       env:

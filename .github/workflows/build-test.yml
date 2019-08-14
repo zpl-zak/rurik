@@ -14,7 +14,7 @@ jobs:
       id: go
       
     - name: Set up system dependencies
-      run: apt update && apt install -y libgl1-mesa-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
+      run: sudo apt update && sudo apt install -y libgl1-mesa-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
 
     - name: Check out code into the Go module directory
       uses: actions/checkout@v1

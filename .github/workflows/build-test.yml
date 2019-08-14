@@ -17,17 +17,19 @@ jobs:
       run: sudo apt install -y libgl1-mesa-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
       
     - name: Set up GOPATH
-      run: mkdir -p go/src/github.com
+      run: mkdir -p go/src/github.com/zaklaus
 
     - name: Check out Rurik source code
       uses: actions/checkout@v1
       with:
-        path: go/src/github.com
+        path: go/src/github.com/zaklaus/rurik
 
     - name: Get dependencies
       env:
-        GOPATH: ~/runner/work/rurik/go
-      run: cd src/demo && go get -v ./...
+        GOPATH: /home/runner/work/rurik/go
+      run: cd $GOPATH/src/github.com/zaklaus/rurik/src/demo && go get -v ./...
 
     - name: Build
-      run: go build -v src/demo/*.go
+      env:
+        GOPATH: /home/runner/work/rurik/go
+      run: cd $GOPATH/src/github.com/zaklaus/rurik && go build -v src/demo/*.go

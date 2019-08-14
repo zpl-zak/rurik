@@ -5,6 +5,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      GOPATH: ~/runner/work/rurik/go
     steps:
 
     - name: Set up Go 1.12
@@ -15,8 +17,12 @@ jobs:
       
     - name: Set up system dependencies
       run: sudo apt install -y libgl1-mesa-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
+      
+    - name: Set up GOPATH
+      run: mkdir -p go/src/github.com
 
-    - name: Check out code into the Go module directory
+    - name: Check out Rurik source code
+      run: cd go/src/github.com
       uses: actions/checkout@v1
 
     - name: Get dependencies

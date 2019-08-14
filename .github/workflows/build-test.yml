@@ -1,0 +1,29 @@
+name: Go
+on: [push]
+jobs:
+
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+
+    - name: Set up Go 1.12
+      uses: actions/setup-go@v1
+      with:
+        version: 1.12
+      id: go
+      
+    - name: Set up system dependencies
+      run: apt update && apt install -y libgl1-mesa-dev libxi-dev libxcursor-dev libxrandr-dev libxinerama-dev
+
+    - name: Check out code into the Go module directory
+      use: actions/checkout@master
+      path: ${{ go.module-path }}
+
+    - name: Get dependencies
+      working-directory: ${{ go.module-path }}
+      run: go get -v -t -d src/demo/...
+
+    - name: Build
+      working-directory: ${{ go.module-path }}
+      run: go build -v src/demo/*.go

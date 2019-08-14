@@ -5,8 +5,6 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    env:
-      GOPATH: ~/runner/work/rurik/go
     steps:
 
     - name: Set up Go 1.12
@@ -26,6 +24,8 @@ jobs:
       uses: actions/checkout@v1
 
     - name: Get dependencies
+      env:
+        GOPATH: ~/runner/work/rurik/go
       run: cd src/demo && go get -v ./...
 
     - name: Build

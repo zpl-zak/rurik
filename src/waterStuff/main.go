@@ -6,7 +6,6 @@ import (
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/raylib-go/raymath"
 	"github.com/zaklaus/rurik/src/core"
-	"github.com/zaklaus/rurik/src/system"
 )
 
 const (
@@ -29,16 +28,13 @@ type piece struct {
 }
 
 func main() {
-	system.InitAssets([]string{"gfx.dta"}, true)
-
 	rl.InitWindow(800, 800, "raylib [core] example - basic window")
 
 	grid := []piece{}
-	/* var blyat float32 = 0.0 */
 
 	var worldSize int32 = 200
 	var worldTileSize int32 = 4
-	mousePickId := 0
+	mousePickID := 0
 
 	for idx := 0; idx < int(worldSize*worldSize); idx++ {
 		grid = append(grid, piece{
@@ -76,24 +72,7 @@ func main() {
 				iw := x + 1
 				is := y + 1
 				in := y - 1
-				/*
-					if ie < 0 {
-						ie = worldSize - 1
-					}
 
-					if iw >= worldSize {
-						iw = 0
-					}
-
-					if is >= worldSize {
-						is = 0
-					}
-
-					if in < 0 {
-						in = worldSize - 1
-					} */
-
-				//fmt.Println(ie, iw, is, in)
 				ve := &grid[(y*worldSize)+ie]
 				vw := &grid[(y*worldSize)+iw]
 				vs := &grid[(is*worldSize)+x]
@@ -104,12 +83,6 @@ func main() {
 					(ve.temp+vw.temp+vs.temp+vn.temp+m.temp)/5,
 					1,
 				)
-
-				/* cyka := (ve.temp + vw.temp + vs.temp + vn.temp + m.temp) / 5
-				/* if ve.temp > 0 {
-					fmt.Println(ve.temp, vw.temp, vs.temp, vn.temp, m.temp, cyka)
-				} */
-				//m.temp = m.temp - (m.temp - cyka)
 			}
 
 			x = 1
@@ -119,31 +92,19 @@ func main() {
 		mousePos.X = clamp(mousePos.X, 0, float32(worldSize)*float32(worldTileSize)-1) / float32(worldTileSize)
 		mousePos.Y = clamp(mousePos.Y, 0, float32(worldSize)*float32(worldTileSize)-1) / float32(worldTileSize)
 
-		//grid[mousePickId].temp = 50
+		//grid[mousePickID].temp = 50
 
-		mousePickId = int((int32(mousePos.Y) * worldSize) + int32(mousePos.X))
-		//fmt.Println(mousePos, mousePickId)
+		mousePickID = int((int32(mousePos.Y) * worldSize) + int32(mousePos.X))
+		//fmt.Println(mousePos, mousePickID)
 
 		if rl.IsMouseButtonDown(0) {
-			grid[mousePickId].temp = 1000
+			grid[mousePickID].temp = 1000
 		}
 
 		if rl.IsMouseButtonDown(1) {
-			grid[mousePickId].temp = -1000
+			grid[mousePickID].temp = -1000
 		}
 
-		/* for idx := 0; idx < int(worldSize*worldSize); idx++ {
-			k := &grid[idx]
-			k.temp = core.ScalarLerp(k.temp, rand.Float32()*100, 0.09)
-		} */
-		/*
-			az := &grid[(34*worldSize)+worldSize/2+int32(blyat)]
-			az.temp = 0
-			bz := &grid[(78*worldSize)+worldSize/2+int32(blyat)]
-			bz.temp = 100
-
-			blyat += float32(math.Sin(float64(rl.GetFrameTime()))) * 400
-		*/
 		// hot water and cold as well cause fuck you that's why
 		var ix int32
 		for ix = 0; ix < worldSize; ix++ {

@@ -20,12 +20,13 @@ import "encoding/gob"
 
 // GameMode describes main game rules and subsystems
 type GameMode interface {
-	Init()
-	Shutdown()
-	Update()
-	Draw()
-	DrawUI()
-	PostDraw()
-	Serialize(enc *gob.Encoder)
-	Deserialize(dec *gob.Decoder)
+   Init()
+   Shutdown()
+   Update()
+   Draw()
+   DrawUI()
+   DebugDraw()
+   PostDraw()
+   Serialize(enc *gob.Encoder)
+   Deserialize(dec *gob.Decoder)
 }

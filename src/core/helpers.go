@@ -192,14 +192,33 @@ func IsMouseInRectangleRec(rec rl.Rectangle) bool {
 	return false
 }
 
+// IsMouseInRectangle2D checks whether a mouse is inside of a rectangle on the map
+func IsMouseInRectangle2D(rec rl.RectangleInt32) bool {
+	x := float32(rec.X)
+	y := float32(rec.Y)
+	x2 := x + float32(rec.Width)
+	y2 := y + float32(rec.Height)
+
+	m := GetMousePosition2D()
+	mX := float32(m[0])
+	mY := float32(m[1])
+
+	if mX > x && mX < x2 &&
+		mY > y && mY < y2 {
+		return true
+	}
+
+	return false
+}
+
 // GetSpriteAABB retrieves Aseprite boundaries
 func GetSpriteAABB(o *Object) rl.RectangleInt32 {
 	if o.Ase == nil {
 		return rl.RectangleInt32{
-			X:      int32(o.Position.X),
-			Y:      int32(o.Position.Y - 32),
-			Width:  32,
-			Height: 32,
+			X:      int32(o.Position.X) - o.Size[0]/2,
+			Y:      int32(o.Position.Y) - o.Size[1]/2,
+			Width:  o.Size[0],
+			Height: o.Size[1],
 		}
 	}
 
@@ -219,6 +238,71 @@ func GetSolidAABB(o *Object) rl.RectangleInt32 {
 		Width:  o.Size[0],
 		Height: o.Size[1],
 	}
+}
+
+// Vector2ToIntArray converts raylib Vector2 to int32 array
+func Vector2ToIntArray(a rl.Vector2) [2]int32 {
+	return [2]int32{
+		int32(a.X), int32(a.Y),
+	}
+}
+
+// IntArrayToVector2 converts int32 array to raylib Vector2
+func IntArrayToVector2(a [2]int32) rl.Vector2 {
+	return rl.NewVector2(float32(a[0]), float32(a[1]))
+}
+
+// ScreenToWorldPos translates screen position to 2D world position
+func ScreenToWorldPos(a [2]int32) [2]int32 {
+	camPos := rl.Vector2{}
+	var camZoom float32 = 1
+
+	if MainCamera != nil {
+		camPos = MainCamera.Position
+		camZoom = MainCamera.Zoom
+	}
+
+	return [2]int32{
+		int32(camPos.X + float32(a[0])/camZoom - float32(system.ScreenWidth)/2/camZoom),
+		int32(camPos.Y + float32(a[1])/camZoom - float32(system.ScreenHeight)/2/camZoom),
+	}
+}
+
+// WorldToScreenPos translates 2D world position to screen position
+func WorldToScreenPos(a [2]int32) [2]int32 {
+	camPos := rl.Vector2{}
+	var camZoom float32 = 1
+
+	if MainCamera != nil {
+		camPos = MainCamera.Position
+		camZoom = MainCamera.Zoom
+	}
+
+	return [2]int32{
+		int32((float32(a[0]) - camPos.X + float32(system.ScreenWidth)/2/camZoom) * camZoom),
+		int32((float32(a[1]) - camPos.Y + float32(system.ScreenHeight)/2/camZoom) * camZoom),
+	}
+}
+
+// ScreenToWorldPosRec translates screen position to 2D world position
+func ScreenToWorldPosRec(a rl.RectangleInt32) [2]int32 {
+	return ScreenToWorldPos([2]int32{a.X, a.Y})
+}
+
+// WorldToScreenPosRec translates screen position to 2D world position
+func WorldToScreenPosRec(a rl.RectangleInt32) [2]int32 {
+	return WorldToScreenPos([2]int32{a.X, a.Y})
+}
+
+// GetMousePosition2D returns a mouse position within a map
+func GetMousePosition2D() [2]int32 {
+	mo := rl.GetMousePosition()
+	m := [2]int32{
+		int32(mo.X / system.ScaleRatio),
+		int32(mo.Y / system.ScaleRatio),
+	}
+
+	return ScreenToWorldPos(m)
 }
 
 // PlayAnim plays an animation for a given object

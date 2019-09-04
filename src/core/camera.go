@@ -89,6 +89,12 @@ func (c *Object) NewCamera() {
 	}
 	spd, _ := strconv.ParseFloat(c.Meta.Properties.GetString("speed"), 32)
 
+	zoom, _ := strconv.ParseFloat(c.Meta.Properties.GetString("zoom"), 1)
+
+	if zoom != 0 {
+		c.SetCameraZoom(float32(zoom))
+	}
+
 	if spd == 0 {
 		spd = 1
 	}
@@ -241,6 +247,7 @@ func updateCamera(c *Object, dt float32) {
 	}
 
 	c.Zoom = ScalarLerp(c.Zoom, c.TargetZoom, c.ZoomSpeed*dt)
+	RenderCamera.Zoom = c.Zoom
 
 	c.First = false
 }

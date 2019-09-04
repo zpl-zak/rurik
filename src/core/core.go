@@ -75,6 +75,7 @@ func InitCore(name string, windowW, windowH, screenW, screenH int32) {
 	initDefaultCollisionTypes()
 
 	WorldTexture = system.CreateRenderTarget(screenW, screenH)
+	DebugTexture = system.CreateRenderTarget(screenW, screenH)
 	UITexture = system.CreateRenderTarget(screenW, screenH)
 	NullTexture = system.CreateRenderTarget(screenW, screenH)
 	finalRenderTexture = system.CreateRenderTarget(screenW, screenH)

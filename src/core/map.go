@@ -422,7 +422,7 @@ func (m *Map) DrawTilemap(renderOverlays bool) {
 
 			tilePos := rl.NewVector2(tileWorldX+tileW/2, tileWorldY+tileH/2)
 
-			if !IsPointWithinFrustum(tilePos) && cullingEnabled {
+			if cullingEnabled && !IsPointWithinFrustum(tilePos) {
 				continue
 			}
 

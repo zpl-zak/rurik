@@ -79,6 +79,7 @@ type Object struct {
 	Finish               func(o *Object)
 	Update               func(o *Object, dt float32)
 	Draw                 func(o *Object)
+	DebugDraw            func(o *Object)
 	DrawUI               func(o *Object)
 	Trigger              func(o, inst *Object)
 	HandleCollision      func(res *resolv.Collision, o, other *Object)
@@ -107,14 +108,15 @@ type ObjectUserData interface {
 
 func initObjectTypes() {
 	objTypes = map[string]string{
-		"col":    "Collision",
-		"cam":    "Camera",
-		"target": "Target",
-		"wait":   "Wait",
-		"script": "Script",
-		"anim":   "Anim",
-		"area":   "Area",
-		"tile":   "Tile",
+		"col":     "Collision",
+		"cam":     "Camera",
+		"target":  "Target",
+		"wait":    "Wait",
+		"script":  "Script",
+		"anim":    "Anim",
+		"area":    "Area",
+		"tile":    "Tile",
+		"notnull": "NotNull",
 	}
 }
 

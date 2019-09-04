@@ -115,6 +115,7 @@ func (w *World) NewObject(o *tiled.Object) *Object {
 		Update:               func(o *Object, dt float32) {},
 		Trigger:              func(o, inst *Object) {},
 		Draw:                 func(o *Object) {},
+		DebugDraw:            func(o *Object) {},
 		DrawUI:               func(o *Object) {},
 		HandleCollision:      func(res *resolv.Collision, o, other *Object) {},
 		HandleCollisionEnter: func(res *resolv.Collision, o, other *Object) {},
@@ -326,18 +327,15 @@ func (w *World) DrawObjects() {
 
 	for _, o := range drawObjects {
 		o.Draw(o)
+	}
+}
 
+// DrawDebugObjects draws debug elements for debug-visible objects.
+func (w *World) DrawDebugObjects() {
+	for _, o := range w.Objects {
 		if DebugMode && o.DebugVisible {
-			rect := o.GetAABB(o)
-			rl.DrawRectangleLines(
-				rect.X,
-				rect.Y,
-				rect.Width,
-				rect.Height,
-				rl.RayWhite,
-			)
-
-			DrawTextCentered(o.Name, rect.X+rect.Width/2, rect.Y+rect.Height+2, 1, rl.White)
+			drawObjectDebug2D(o)
+			o.DebugDraw(o)
 		}
 	}
 }

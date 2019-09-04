@@ -41,7 +41,10 @@ func (o *Object) NewTile() {
 		o.Width = int32(o.Meta.Width)
 		o.Height = int32(o.Meta.Height)
 		o.Ase = nil
-		o.DebugVisible = false
+		o.Size = []int32{
+			int32(o.Width),
+			int32(o.Height),
+		}
 
 		o.HorizontalFlip = rawGID&tileHorizontalFlipMask != 0
 		o.VerticalFlip = rawGID&tileVerticalFlipMask != 0
@@ -84,19 +87,6 @@ func (o *Object) NewTile() {
 
 		dest := rl.NewRectangle(o.Position.X, o.Position.Y, float32(o.Width), float32(o.Height))
 
-		if DebugMode && o.DebugVisible {
-			c := o.GetAABB(o)
-			rl.DrawRectangleLinesEx(c.ToFloat32(), 1, rl.Blue)
-			{
-				b := rl.Vector2{X: dest.X, Y: dest.Y}
-				e := rl.Vector2{X: float32(c.X), Y: float32(c.Y)}
-				rl.DrawCircle(int32(b.X), int32(b.Y), 2, rl.Green)
-				rl.DrawCircle(int32(e.X), int32(e.Y), 2, rl.Red)
-				rl.DrawLineEx(b, e, 1, rl.Yellow)
-			}
-			DrawTextCentered(o.Name, c.X+c.Width/2, c.Y+c.Height+2, 1, rl.White)
-		}
-
 		var rot float32
 
 		if o.HorizontalFlip {
@@ -125,5 +115,17 @@ func (o *Object) NewTile() {
 		}
 
 		rl.DrawTexturePro(*tex, source, dest, rl.Vector2{X: 0, Y: float32(o.Height)}, rot+o.Rotation, tint)
+	}
+
+	o.DebugDraw = func(o *Object) {
+		dest := rl.NewRectangle(o.Position.X, o.Position.Y, float32(o.Width), float32(o.Height))
+		c := o.GetAABB(o)
+		{
+			b := rl.Vector2{X: dest.X, Y: dest.Y}
+			e := rl.Vector2{X: float32(c.X), Y: float32(c.Y)}
+			rl.DrawCircle(int32(b.X), int32(b.Y), 2, rl.Green)
+			rl.DrawCircle(int32(e.X), int32(e.Y), 2, rl.Red)
+			rl.DrawLineEx(b, e, 1, rl.Yellow)
+		}
 	}
 }

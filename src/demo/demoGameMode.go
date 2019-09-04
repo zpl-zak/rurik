@@ -193,6 +193,17 @@ func (g *demoGameMode) DrawUI() {
 	}
 }
 
+func (g *demoGameMode) DebugDraw() {
+	switch g.playState {
+	case statePlay:
+		rl.BeginMode2D(core.RenderCamera)
+		{
+			core.CurrentMap.World.DrawDebugObjects()
+		}
+		rl.EndMode2D()
+	}
+}
+
 func (g *demoGameMode) PostDraw() {
 
 	switch g.playState {

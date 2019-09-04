@@ -82,8 +82,8 @@ func populateAdditiveLayer() {
 				out := o.Color
 				out.A = 0
 				rl.DrawCircleGradient(
-					int32(o.Position.X+16+o.Offset.X),
-					int32(o.Position.Y-16+o.Offset.Y),
+					int32(o.Position.X+o.Offset.X),
+					int32(o.Position.Y+o.Offset.Y),
 					float32(o.Radius),
 					in,
 					out,
@@ -114,8 +114,8 @@ func populateMultiplicativeLight() {
 					}
 
 					rl.DrawCircleGradient(
-						int32(o.Position.X+16+o.Offset.X),
-						int32(o.Position.Y-16+o.Offset.Y),
+						int32(o.Position.X+o.Offset.X),
+						int32(o.Position.Y+o.Offset.Y),
 						o.Attenuation,
 						o.Color,
 						rl.Blank,

@@ -21,6 +21,7 @@ import (
 	"math"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
+	"github.com/zaklaus/raylib-go/raymath"
 	"github.com/zaklaus/rurik/src/system"
 )
 
@@ -142,10 +143,125 @@ func SetUpSlider(element *EditorElement, value *float64, min, max float64) {
 	element.SliderValueRounding = 2
 }
 
+var (
+	editorPickMode     = false
+	editorPickObject   *Object
+	editorPickMousePos [2]int32
+	editorPickOffset   rl.Vector2
+	editorPickVector   rl.Vector2
+	editorPickCalm     = 0
+)
+
+func editorHandleObjectTransform(o *Object) {
+	if editorPickObject == nil || !rl.IsKeyDown(rl.KeyLeftShift) {
+		return
+	}
+
+	mo := GetMousePosition2D()
+
+	if editorPickMousePos != mo {
+		editorPickVector = raymath.Vector2Subtract(
+			IntArrayToVector2(mo),
+			IntArrayToVector2(editorPickMousePos),
+		)
+
+		editorPickCalm = 0
+	} else {
+		editorPickCalm++
+	}
+
+	editorPickObject.Position = rl.NewVector2(
+		float32(mo[0])+editorPickOffset.X,
+		float32(mo[1])+editorPickOffset.Y,
+	)
+
+	editorPickMousePos = mo
+
+	editorPickObject.Movement = rl.Vector2{}
+}
+
+func drawObjectDebug2D(o *Object) {
+	rect := o.GetAABB(o)
+	col := rl.RayWhite
+
+	mouseOver := IsMouseInRectangle2D(rect)
+
+	if mouseOver {
+		col = rl.Yellow
+
+		mo := IntArrayToVector2(GetMousePosition2D())
+		rl.DrawLineV(o.Position, mo, rl.Yellow)
+	}
+
+	rl.DrawRectangleLines(
+		rect.X,
+		rect.Y,
+		rect.Width,
+		rect.Height,
+		col,
+	)
+
+	DrawTextCentered(o.Name, rect.X+rect.Width/2, rect.Y+rect.Height+2, 1, rl.White)
+}
+
 // DrawEditor draws debug UI
 func DrawEditor() {
 	if DebugMode {
 		handleEditorElement(rootElement, 5, 5)
+	}
+
+	if CurrentMap != nil {
+		for _, o := range CurrentMap.World.Objects {
+			if !DebugMode || !o.DebugVisible {
+				continue
+			}
+
+			rect := o.GetAABB(o)
+
+			if IsMouseInRectangle2D(rect) {
+				pos := WorldToScreenPosRec(rect)
+				mo := GetMousePosition2D()
+				dir := raymath.Vector2Subtract(
+					IntArrayToVector2(mo),
+					o.Position,
+				)
+				offset := Vector2ToIntArray(dir)
+
+				rl.DrawText(
+					fmt.Sprintf(
+						"X: %.02f\nY: %.02f\nW: %d\nH: %d\nOX: %d\n OY: %d\n",
+						o.Position.X,
+						o.Position.Y,
+						rect.Width,
+						rect.Height,
+						offset[0],
+						offset[1],
+					),
+					pos[0]+int32(float32(rect.Width+2)*MainCamera.Zoom),
+					pos[1],
+					10,
+					rl.Yellow,
+				)
+
+				if rl.IsKeyDown(rl.KeyLeftShift) && editorPickObject == nil {
+					editorPickObject = o
+
+					editorPickOffset = raymath.Vector2Subtract(
+						o.Position,
+						IntArrayToVector2(mo),
+					)
+				}
+			}
+
+			editorHandleObjectTransform(o)
+		}
+
+		if !rl.IsKeyDown(rl.KeyLeftShift) && editorPickObject != nil {
+			if editorPickCalm < 2 {
+				editorPickObject.Movement = editorPickVector
+			}
+			editorPickObject = nil
+		}
 	}
 }
 

@@ -25,6 +25,9 @@ var (
 	// WorldTexture represents the render target used by the game world
 	WorldTexture system.RenderTarget
 
+	// DebugTexture represents the render target used by the game world debug elements
+	DebugTexture system.RenderTarget
+
 	// UITexture represents the render target used by the interface
 	UITexture system.RenderTarget
 
@@ -75,6 +78,13 @@ func renderGame() {
 		}
 		rl.EndTextureMode()
 
+		rl.BeginTextureMode(DebugTexture)
+		{
+			rl.ClearBackground(rl.Blank)
+			CurrentGameMode.DebugDraw()
+		}
+		rl.EndTextureMode()
+
 		// Render all UI elements
 		rl.BeginTextureMode(UITexture)
 		{
@@ -113,6 +123,8 @@ func renderGame() {
 					rl.EndBlendMode()
 				}
 			}
+
+			rl.DrawTexture(DebugTexture.Texture, 0, 0, rl.White)
 
 			rl.BeginBlendMode(rl.BlendAlpha)
 			{

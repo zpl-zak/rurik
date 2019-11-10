@@ -1,0 +1,80 @@
+Title: Heal yourself!   YOU   HAVE   TO!!!
+
+Briefing:
+Use 'stimpak' %healCount%-times to heal yourself in times of danger.
+This is a second line on a briefing to showcase text blocks in the Quest Language!
+
+QRC:
+
+Message: 1010
+You're running dangerously low on health! Use stimpak to heal yourself!
+Make sure you get at least %requiredHealCount% shots!
+
+Message: 1015
+Hey! You should already apply your stimpak!
+
+Message: 1020
+That's the spirit! Don't forget to heal often!
+Stimpaks are very helpful mechanic to keep you alive during the worst times.
+
+Message: 1025
+I told you! :)
+
+Sound: 1030
+HurraySound00.wav, HurraySound01.wav, HurraySound02.wav
+
+Video: 1040
+HealthTutorial.mp4
+
+Stage: 2000
+Use stimpak %requiredHealCount% times.
+
+Stage: 2005
+(Optional) Use the stimpak before the timer runs out! Time left: %_ReadyToRemind_%
+
+Stage: 2010
+You are done!
+
+QST:
+    variable healCount
+    setvar requiredHealCount ($random % 5 + 3)
+    setvar rewardGold (10 + ($random % 15) - 5)
+    timer _ReadyToRemind_ 5
+    timer _SetHealCountToRequiredValue_ 15
+
+    say 1010
+    stage 2000
+    stage 2005
+    fire _ReadyToRemind_
+    fire _SetHealCountToRequiredValue_
+
+task _RemindToUseStimpak_:
+    done _ReadyToRemind_
+    say 1015
+    fire _ReadyToRemind_
+    stfail 2005
+    repeat
+
+task _TestSetHealCount_:
+    done _SetHealCountToRequiredValue_
+    setvar healCount 99
+
+task _TestSetHealCountDone_:
+    when _TestSetHealCount_
+    play 1030
+
+task _PlayerHasHealedHimself_:
+    when healCount above requiredHealCount
+    say 1020
+    give gold rewardGold
+    stdone 2000
+    stage 2010
+    stdone 2010
+    finish
+
+task _PlayerHasDied_:
+    when $pc.health below 0
+    say 1025
+    stfail 2000
+    stfail 2005
+    fail

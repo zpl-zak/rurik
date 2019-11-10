@@ -100,6 +100,30 @@ func initDefaultEvents() {
 		}
 	})
 
+	RegisterNative("quest", func(jsData InvokeData) interface{} {
+		var data struct {
+			ID        int64
+			EventName string
+			Args      []float64
+		}
+		data.ID = -1
+
+		DecodeInvokeData(&data, jsData)
+
+		Quests.CallEvent(data.ID, data.EventName, data.Args)
+		return nil
+	})
+
+	RegisterNative("addQuest", func(jsData InvokeData) interface{} {
+		var data struct {
+			Name string
+		}
+		DecodeInvokeData(&data, jsData)
+
+		_, _, id := Quests.AddQuest(data.Name, nil)
+		return id
+	})
+
 	if InitUserEvents != nil {
 		InitUserEvents()
 	}

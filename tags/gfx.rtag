@@ -19,3 +19,4 @@ chunks:
 - file: gfx/ball.json
   type: anim
 - file: gfx/chat_banner.png
+- file: gfx/gamehud.png

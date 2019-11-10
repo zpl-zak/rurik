@@ -1,0 +1,83 @@
+%YAML 1.2
+---
+# Dominik Madarász <zaklaus@outlook.com>
+file_extensions:
+  - qst
+scope: source
+variables:
+  property: '^[a-zA-Z]+\:'
+contexts:
+  main:
+    - include: qst_match
+    - match: '\+[A-Za-z]+'
+      scope: storage.modifier
+
+    - match: '^(qrc|QRC)\:'
+      scope: keyword.control
+      push: qrc
+
+    - match: '({{property}})(.*)$'
+      captures:
+        1: keyword.control
+        2: string.quoted.double
+      push: res_data
+
+  qrc:
+    - meta_scope: source
+    - include: qst_match
+    - match: '{{property}}\s*([0-9]+)'
+      captures:
+        1: constant.numeric
+      scope: keyword.control
+      push: res_data
+
+  res_data:
+    - meta_scope: string.quoted.double
+    # Handle this match better
+    - match: '({{property}})(.*)$'
+      captures:
+        1: keyword.control
+        2: string.quoted.double
+    - match: '^\s*$'
+      pop: true
+
+  qst_match:
+    - match: '^(qst|QST):$'
+      push: qst
+      scope: keyword.control
+
+  numbers:
+    - match: '\b(-)?[0-9.]+\b'
+      scope: constant.numeric
+
+  qst:
+    - meta_scope: source
+    - include: numbers
+    - include: task_match
+
+    - match: '\b(\w+)(.*)$'
+      captures:
+        1: entity.name.function
+        2: storage.type.class
+
+  task_match:
+    - match: '^\w+\s+(.+)\:'
+      captures:
+        1: entity.name.function
+      scope: keyword.control
+      push: task
+
+  task:
+    - meta_scope: source
+    - include: task_match
+
+    - match: '\b(\w+)'
+      scope: source
+      captures:
+        1: entity.name.function
+      push:
+        - include: numbers
+        - match: '\b(equals|notequals|if|else|for|while|above|below)\b'
+          scope: keyword.control
+        - match: '$'
+          pop: true

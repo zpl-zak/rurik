@@ -58,6 +58,16 @@ var (
 
 	isDebugMenuCollapsed  = true
 	isCameraMenuCollapsed = true
+
+	// Quests holds all registered events/quests
+	Quests QuestManager
+
+	// ProcessCustomVariables allows us to update quest globals at runtime
+	ProcessCustomVariables func(qs *Quest)
+
+	// QuestInitCustomCommands allows us to extend the quest system using custom
+	// commands
+	QuestInitCustomCommands func(q *QuestManager)
 )
 
 const (

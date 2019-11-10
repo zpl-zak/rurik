@@ -30,7 +30,11 @@ func initLevels() {
 			mapName: "demo",
 		},
 		level{
-			title:   "Lighting & Shaders",
+			title:   "Quests & events",
+			mapName: "quests",
+		},
+		level{
+			title:   "Lighting & shaders",
 			mapName: "village",
 		},
 		level{

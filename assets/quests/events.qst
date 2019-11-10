@@ -1,0 +1,45 @@
++BACKGROUND
+TITLE: Event-driven quest
+BRIEFING: This quest makes use of linked variables and event messaging
+
+QRC:
+
+MESSAGE: 1000
+We're done!
+
+QST:
+
+variable _Counter_
+variable _YPosition_
+variable _DistanceBetweenVectors_
+
+vec ^pos
+
+task _S.00_:
+    variable *madeToCrash*
+    when _Counter_ above 100
+    say 1000
+    finish
+
+task _E.Crash_:
+    log str This field shouldn't be resolved: *madeToCrash*
+
+event _TestIncrementCounter_:
+    pop @A
+    setvar _Counter_ (_Counter_ + @A)
+
+    addvec ^pos ^pos $pc.position
+    log vec ^pos
+
+    getvec ^pos 0 _YPosition_
+    log num _YPosition_
+
+    copyvec ^dpos ^pos
+    log vec ^dpos
+
+    getvec ^dpos ^^0 ^^1
+    setvec ^dpos (^^0) (^^1 + 5)
+
+    subvec ^pos2dpos ^pos ^dpos
+    lenvec _DistanceBetweenVectors_ ^pos2dpos
+    log num _DistanceBetweenVectors_

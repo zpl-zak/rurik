@@ -1,0 +1,43 @@
+TITLE: Demo quest
+BRIEFING: This is a demo quest.
+The text can continue for longer.
+Even on a third line.
+
+QRC:
+
+MESSAGE: 1000
+Quest started message!
+
+MESSAGE: 1010
+Quest has been completed!
+
+MESSAGE: 1015
+Remaining time is %_WaitForCompletion_%!
+
+STAGE: 2000
+Wait 10 seconds for completion
+
+QST:
+
+timer _WaitForCompletion_ 10
+timer _EveryThreeSeconds_ 3
+
+task _S.00_:
+    say 1000
+    stage 2000
+    fire _WaitForCompletion_
+    fire _EveryThreeSeconds_
+    done _WaitForCompletion_
+
+task _S.01_:
+    when _S.00_
+    say 1010
+    stdone 2000
+    stop _EveryThreeSeconds_
+    finish
+
+task _CallEveryThreeSeconds_:
+    done _EveryThreeSeconds_
+    fire _EveryThreeSeconds_
+    say 1015
+    repeat

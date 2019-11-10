@@ -11,3 +11,4 @@ chunks:
 - file: map/demo/demo.tmx
 - file: map/stress/stress.tmx
 - file: map/village/village.tmx
+- file: map/quests/quests.tmx

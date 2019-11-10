@@ -63,7 +63,14 @@ func main() {
 
 	rl.SetExitKey(0)
 	rl.SetConfigFlags(rl.FlagWindowResizable)
+
+	core.ProcessCustomVariables = func(qs *core.Quest) {
+		qs.SetVariable("$pc.health", float64(barStats[barHealth].Value))
+	}
+
+	core.QuestInitCustomCommands = questInitMiscCommands
 	core.InitUserEvents = demoUserEvents
+
 	core.InitCore("Demo game | Rurik Framework", windowW, windowH, screenW, screenH)
 
 	demoGame := &demoGameMode{}

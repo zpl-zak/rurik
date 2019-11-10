@@ -18,10 +18,11 @@ package core
 
 // InitDatabase prepares the database connection
 func InitDatabase() {
-	CurrentSaveSystem.InitSaveSystem()
+   CurrentSaveSystem.InitSaveSystem()
+   Quests = MakeQuestManager()
 }
 
 // ShutdownDatabase disposes all database data and closes all connections
 func ShutdownDatabase() {
-	CurrentSaveSystem.ShutdownSaveSystem()
+   CurrentSaveSystem.ShutdownSaveSystem()
 }

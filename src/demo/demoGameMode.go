@@ -4,6 +4,7 @@ import (
 	"encoding/gob"
 	"fmt"
 	"math"
+	"strings"
 
 	rl "github.com/zaklaus/raylib-go/raylib"
 	"github.com/zaklaus/rurik/src/core"
@@ -41,6 +42,7 @@ func (g *demoGameMode) Init() {
 	}
 
 	initShaders()
+	initHUD()
 }
 
 func (g *demoGameMode) Shutdown() {}
@@ -80,6 +82,7 @@ func (g *demoGameMode) Update() {
 
 	case statePlay:
 		core.UpdateMaps()
+		core.Quests.ProcessQuests()
 		updateDialogue()
 		updateNotifications()
 
@@ -223,4 +226,74 @@ func (g *demoGameMode) PostDraw() {
 		}
 	}
 
+}
+
+func questInitMiscCommands(q *core.QuestManager) {
+	q.RegisterCommand("say", func(qs *core.Quest, qt *core.QuestTask, args []string) bool {
+		if len(args) != 1 {
+			return core.QuestCommandErrorArgCount("say", qs, qt, len(args), 1)
+		}
+
+		res, ok := qs.GetResource(args[0])
+
+		if !ok {
+			return core.QuestCommandErrorThing("say", "message", qs, qt, args[0])
+		}
+
+		qs.Printf(qt, "temp saying[%s]: %s", args[0], qs.ProcessText(res.Content))
+		PushNotification(qs.ProcessText(res.Content), rl.RayWhite)
+
+		return true
+	})
+
+	q.RegisterCommand("play", func(qs *core.Quest, qt *core.QuestTask, args []string) bool {
+		qs.Printf(qt, "playing something")
+		return true
+	})
+
+	q.RegisterCommand("give", func(qs *core.Quest, qt *core.QuestTask, args []string) bool {
+		if len(args) != 2 {
+			return core.QuestCommandErrorArgCount("give", qs, qt, len(args), 2)
+		}
+
+		amount, ok := qs.GetNumberOrVariable(args[1])
+
+		if !ok {
+			return core.QuestCommandErrorArgType("give", qs, qt, args[1], "string", "integer")
+		}
+
+		qs.Printf(qt, "giving %f of %s", amount, args[0])
+		return true
+	})
+
+	q.RegisterCommand("log", func(qs *core.Quest, qt *core.QuestTask, args []string) bool {
+		if len(args) < 2 {
+			return core.QuestCommandErrorArgCount("log", qs, qt, len(args), 2)
+		}
+
+		logType := args[0]
+
+		switch logType {
+		case "str":
+			qs.Printf(qt, "%s", strings.Join(args[1:], " "))
+		case "num":
+			num, ok := qs.GetNumberOrVariable(args[1])
+
+			if ok {
+				qs.Printf(qt, "%f", num)
+			} else {
+				qs.Printf(qt, "<unresolved>")
+			}
+		case "vec":
+			vec, ok := qs.GetVector(args[1])
+
+			if ok {
+				qs.Printf(qt, "[%f, %f]", vec.X, vec.Y)
+			} else {
+				qs.Printf(qt, "[<unresolved>]")
+			}
+		}
+
+		return true
+	})
 }

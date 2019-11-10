@@ -397,3 +397,8 @@ func IsPointWithinFrustum(p rl.Vector2) bool {
 
 	return IsPointWithinRectangle(p, cam)
 }
+
+func atoiUnsafe(s string) int {
+	val, _ := strconv.Atoi(s)
+	return val
+}

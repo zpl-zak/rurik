@@ -10,3 +10,4 @@ chunks:
 - file: map/stress/scripts/spawnSprites.js
 - file: scripts/eventDemo.js
 - file: scripts/pulsatingLights.js
+- file: scripts/questing.js
